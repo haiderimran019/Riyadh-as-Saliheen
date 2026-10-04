@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:overflow": "playwright test e2e/overflow.e2e.ts",
     "data:build": "node scripts/import-data.mjs",
     "data:adapt:fawaz": "node scripts/adapters/fawazahmed0.mjs"
   },
@@ -24,6 +25,7 @@
     "vite-plugin-pwa": "^0.21.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.10.2",

@@ -2,6 +2,7 @@ node_modules
 dist
 .DS_Store
 *.local
+.env*
 coverage
 *.tsbuildinfo
 vite.config.js
@@ -11,3 +12,7 @@ vite.config.d.ts
 # verified licence and provenance for every file.
 scripts/raw-data/
 scripts/source-data/real/
+/data-local/
+/screenshots/
+/playwright-report/
+/test-results/

@@ -6,7 +6,10 @@
 - [x] 4. Site footer and policy pages
 - [x] 5. Feedback flow
 - [x] 6. Placeholder and real data modes
-- [ ] 7. Publish preparation and audits
+- [x] 7. Publish preparation and audits
 - [ ] 8. Branding
 - [ ] 9. HadeethEnc stage 5a import
 - [ ] 10. P2 screenshot matrix and Lighthouse
+
+- Audit: no personal names, personal emails, or local paths found; one generic Git author identity; the old third-party dataset username remains in history and will not be rewritten.
+- Overflow: Home, hadith view, and Settings pass at 320, 390, and 1440 px.
