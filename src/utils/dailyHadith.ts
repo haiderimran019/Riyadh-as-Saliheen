@@ -9,6 +9,10 @@ export function dateKey(date: Date) {
 
 export function selectDailyHadith<T extends HadithRecord>(records: T[], date: Date): T | undefined {
   if (records.length === 0) return undefined
+  return records[selectDailyIndex(records.length, date)]
+}
+
+export function selectDailyIndex(length: number, date: Date) {
   const seed = [...dateKey(date)].reduce((total, character) => ((total * 31) + character.charCodeAt(0)) >>> 0, 0)
-  return records[seed % records.length]
+  return length > 0 ? seed % length : -1
 }

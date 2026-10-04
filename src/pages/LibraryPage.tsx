@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { DATA_MODE } from '../config'
-import { loadCollections } from '../data/loader'
+import { hadithRepository } from '../data/HadithRepository'
 import type { CollectionsManifest } from '../types/hadith'
 
 export function LibraryPage() {
@@ -10,7 +10,7 @@ export function LibraryPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    loadCollections().then(setManifest).catch((reason: Error) => setError(reason.message))
+    hadithRepository.listCollections().then(setManifest).catch((reason: Error) => setError(reason.message))
   }, [])
 
   return (
@@ -34,6 +34,13 @@ export function LibraryPage() {
             </div>
           </Link>
         ))}
+        <article className="collection-card collection-card-pending" aria-labelledby="riyad-title">
+          <div>
+            <span className="label">Coming soon</span>
+            <h2 id="riyad-title">Riyad as-Salihin</h2>
+            <p>Not included until redistribution rights for its translation are clear.</p>
+          </div>
+        </article>
       </div>
     </main>
   )

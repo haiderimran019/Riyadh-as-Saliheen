@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { loadAllHadith } from '../data/loader'
+import { hadithRepository } from '../data/HadithRepository'
 import { createHadithSearch, type SearchableHadith } from '../search'
 
 export function SearchPage() {
@@ -12,7 +12,7 @@ export function SearchPage() {
   const recordById = useMemo(() => new Map(records.map((record) => [record.id, record])), [records])
 
   useEffect(() => {
-    loadAllHadith().then(setRecords).catch((reason: Error) => setError(reason.message))
+    hadithRepository.getAllHadith().then(setRecords).catch((reason: Error) => setError(reason.message))
   }, [])
 
   const results = query.trim()

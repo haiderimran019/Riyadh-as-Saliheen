@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import { getSetting, setSetting } from '../data/db'
 
-type Theme = 'light' | 'dark' | 'sepia'
+type Theme = 'system' | 'light' | 'dark' | 'sepia'
 
 export function ThemeSwitcher() {
-  const [theme, setTheme] = useState<Theme>('light')
+  const [theme, setTheme] = useState<Theme>('system')
 
   useEffect(() => {
-    getSetting<Theme>('theme', 'light').then(setTheme)
+    getSetting<Theme>('theme', 'system').then(setTheme)
   }, [])
 
   useEffect(() => {

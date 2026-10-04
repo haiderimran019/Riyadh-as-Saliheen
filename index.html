@@ -4,8 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#315c52" />
-    <meta name="description" content="A calm, private, offline-capable hadith reader." />
-    <title>Hadith App</title>
+    <meta name="description" content="A calm, offline-capable hadith reader from HadeethEnc.com." />
+    <meta property="og:title" content="Hadith Reader" />
+    <meta property="og:description" content="Read hadith from HadeethEnc.com, with offline access and private on-device settings." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="%BASE_URL%icons/icon-512.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Hadith Reader" />
+    <meta name="twitter:description" content="Read hadith from HadeethEnc.com, with offline access and private on-device settings." />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%icons/icon.svg" />
+    <link rel="apple-touch-icon" href="%BASE_URL%icons/icon-192.png" />
+    <title>Hadith Reader</title>
+    <style>
+      html, body { min-height: 100%; margin: 0; background: #f7f8f5; }
+      #root:empty::before { content: 'Hadith Reader'; display: grid; min-height: 100svh; place-items: center; color: #315c52; font: 600 1.25rem system-ui, sans-serif; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

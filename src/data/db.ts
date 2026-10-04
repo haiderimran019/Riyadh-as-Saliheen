@@ -40,6 +40,15 @@ class HadithDatabase extends Dexie {
       progress: 'collectionId, updatedAt',
       settings: 'key',
     })
+    this.version(2).stores({
+      bookmarks: 'hadithId, collectionId, chapterId, folderId, createdAt',
+      folders: 'id, name, createdAt',
+      progress: 'collectionId, updatedAt',
+      settings: 'key',
+    }).upgrade(async (transaction) => {
+      const theme = await transaction.table('settings').get('theme')
+      if (!theme) await transaction.table('settings').put({ key: 'theme', value: 'system' })
+    })
   }
 }
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { loadSources } from '../data/loader'
+import { hadithRepository } from '../data/HadithRepository'
 import type { SourceCredit } from '../types/hadith'
 import { CAUTION_TEXT } from '../components/SiteFooter'
 
@@ -10,7 +10,7 @@ export function SourcesPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    loadSources().then((value) => setSources(value.sources)).catch((reason: Error) => setError(reason.message))
+    hadithRepository.getSources().then((value) => setSources(value.sources)).catch((reason: Error) => setError(reason.message))
   }, [])
 
   return (

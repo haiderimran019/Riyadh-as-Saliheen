@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { FolderPlus, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { db, type Bookmark, type BookmarkFolder } from '../data/db'
-import { loadAllHadith } from '../data/loader'
+import { hadithRepository } from '../data/HadithRepository'
 import type { SearchableHadith } from '../search'
 
 export function SavedPage() {
@@ -23,7 +23,7 @@ export function SavedPage() {
   }
 
   useEffect(() => {
-    Promise.all([refresh(), loadAllHadith().then(setRecords)]).catch(console.error)
+    Promise.all([refresh(), hadithRepository.getAllHadith().then(setRecords)]).catch(console.error)
   }, [])
 
   const addFolder = async (event: React.FormEvent) => {

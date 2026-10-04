@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { loadAllHadith } from '../data/loader'
-import { selectDailyHadith } from '../utils/dailyHadith'
+import { hadithRepository } from '../data/HadithRepository'
 import { SHOW_FEEDBACK } from '../config'
 
 export function HomePage() {
   const [error, setError] = useState('')
-  const [daily, setDaily] = useState<Awaited<ReturnType<typeof loadAllHadith>>[number] | undefined>()
+  const [daily, setDaily] = useState<Awaited<ReturnType<typeof hadithRepository.getDailyHadith>>>()
 
   useEffect(() => {
-    loadAllHadith().then((records) => setDaily(selectDailyHadith(records, new Date()))).catch((reason: Error) => setError(reason.message))
+    hadithRepository.getDailyHadith(new Date()).then(setDaily).catch((reason: Error) => setError(reason.message))
   }, [])
 
   return (
@@ -27,6 +26,7 @@ export function HomePage() {
           <p dir="rtl" lang="ar">{daily.arabic}</p>
           <footer>
             <span>{daily.collection} · no. {daily.number}</span>
+            <span>Hadith text and grades: HadeethEnc.com</span>
             <span>{daily.grades.length > 0 ? daily.grades.map((grade) => `${grade.grade} · ${grade.grader}`).join('; ') : 'Grade not available'}</span>
             <Link to={`/collection/${daily.collectionId}/chapter/${daily.chapterId}#${daily.id}`}>Open reading</Link>
           </footer>

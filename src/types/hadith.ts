@@ -24,7 +24,7 @@ export type HadeethEncRecord = {
   [key: string]: unknown
 }
 
-export type Translation = { text: string; raw?: HadeethEncRecord }
+export type Translation = { text: string; raw?: HadeethEncRecord; language?: string }
 
 export type HadithGrade = {
   grader: string
@@ -74,12 +74,15 @@ export type CollectionIndex = {
   languageCounts?: Record<string, number>
   languageNames?: Record<string, string>
   allFile?: string
+  recordIds?: string[]
 }
 
 export type ArabicChapterDataset = {
   metadata: DatasetMetadata
   records: HadithRecord[]
 }
+
+export type ArabicRecordDataset = { metadata: DatasetMetadata; record: HadithRecord }
 
 export type TranslationChapterDataset = {
   metadata: DatasetMetadata

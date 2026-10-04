@@ -1,4 +1,4 @@
-import { cpSync, existsSync } from 'node:fs'
+import { copyFileSync, cpSync, existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -7,15 +7,19 @@ import { APP_NAME } from './src/config'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const base = '/Riyadh-as-Saliheen/'
+  const base = '/hadith-reader/'
+  const reportPath = resolve('data-local/report.json')
+  const report = existsSync(reportPath) ? JSON.parse(readFileSync(reportPath, 'utf8')) : null
+  const dataVersion = report?.retrieved ?? 'unavailable'
 
   return {
     // 1. Set the repository base path for Vite
     base: base,
+    define: { __DATA_VERSION__: JSON.stringify(`HadeethEnc ${dataVersion}`) },
     plugins: [
       react(),
       VitePWA({
-        registerType: 'autoUpdate',
+        registerType: 'prompt',
         includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
         manifest: {
           name: APP_NAME,
@@ -33,6 +37,7 @@ export default defineConfig(({ mode }) => {
           ],
         },
         workbox: {
+          clientsClaim: true,
           navigateFallback: `${base}index.html`,
           globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
           runtimeCaching: [
@@ -40,8 +45,8 @@ export default defineConfig(({ mode }) => {
               urlPattern: ({ url }) => url.pathname.includes('/data/') || url.pathname.includes('/data-local/'),
               handler: 'CacheFirst',
               options: {
-                cacheName: 'hadith-chapters-v1',
-                expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 365 },
+                cacheName: `hadith-content-${dataVersion}`,
+                expiration: { maxEntries: 2500, maxAgeSeconds: 60 * 60 * 24 * 365 },
                 cacheableResponse: { statuses: [0, 200] },
               },
             },
@@ -55,6 +60,7 @@ export default defineConfig(({ mode }) => {
           const source = resolve('data-local/generated')
           if (!existsSync(source)) throw new Error('Real mode requires data-local/generated. Run npm run data:fetch:hadeethenc first.')
           cpSync(source, resolve('dist/data-local/generated'), { recursive: true })
+          copyFileSync(resolve('dist/index.html'), resolve('dist/404.html'))
         },
       },
     ],

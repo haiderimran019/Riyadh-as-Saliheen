@@ -91,12 +91,15 @@ const sourceMetadata = { sourceName: 'HadeethEnc.com', sourceUrl: 'https://hadee
 const chapters = categories.filter((category) => (recordsForCategory.get(String(category.id))?.length ?? 0) > 0).map((category) => ({ id: String(category.id), title: category.title, file: `category-${category.id}.json`, count: recordsForCategory.get(String(category.id)).length }))
 const languageCounts = Object.fromEntries(languages.map((language) => [language, recordsByLanguage.get(language)?.length ?? 0]))
 const categoryTitle = new Map(categories.map((category) => [String(category.id), category.title]))
-const normalizeArabic = (raw, chapterTitle = categoryTitle.get(String(raw.categories?.[0])) ?? 'Topics') => ({ id: String(raw.id), collection: 'HadeethEnc', book: 'HadeethEnc', chapter: chapterTitle, number: String(raw.id), arabic: raw.hadeeth_ar, title: raw.title, attribution: raw.attribution, grades: raw.grade ? [{ grader: 'HadeethEnc', grade: raw.grade }] : [], references: [], topics: raw.categories, hadeethEnc: raw })
+const normalizeArabic = (raw, chapterTitle = categoryTitle.get(String(raw.categories?.[0])) ?? 'Topics') => ({ id: String(raw.id), collection: 'HadeethEnc', book: 'HadeethEnc', chapter: chapterTitle, number: String(raw.id), arabic: raw.hadeeth_ar ?? raw.hadeeth, title: raw.title, attribution: raw.attribution, grades: raw.grade ? [{ grader: 'HadeethEnc', grade: raw.grade }] : [], references: [], topics: raw.categories, hadeethEnc: raw })
 
 await writeJson(join(OUTPUT_ROOT, 'collections.json'), { metadata: sourceMetadata, collections: [{ id: 'hadeethenc', title: 'HadeethEnc', description: 'Hadith organized by topic.', index: 'hadeethenc/index.json' }] })
 await writeJson(join(OUTPUT_ROOT, 'sources.json'), { metadata: sourceMetadata, sources: languages.map((language) => ({ collection: 'hadeethenc', kind: language === 'ar' ? 'arabic' : 'translation', language: language === 'ar' ? undefined : language, metadata: sourceMetadata })) })
-await writeJson(join(OUTPUT_ROOT, 'hadeethenc/index.json'), { id: 'hadeethenc', title: 'HadeethEnc', description: 'Browse hadith by topic.', languages: languages.filter((language) => language !== 'ar'), languageCounts, languageNames: Object.fromEntries(languages.map((language) => [language, languageByCode.get(language).native])), metadata: sourceMetadata, allFile: 'all.json', chapters, categories, roots: roots.map((root) => String(root.id)) })
+await writeJson(join(OUTPUT_ROOT, 'hadeethenc/index.json'), { id: 'hadeethenc', title: 'HadeethEnc', description: 'Browse hadith by topic.', languages: languages.filter((language) => language !== 'ar'), languageCounts, languageNames: Object.fromEntries(languages.map((language) => [language, languageByCode.get(language).native])), metadata: sourceMetadata, allFile: 'all.json', recordIds: ids, chapters, categories, roots: roots.map((root) => String(root.id)) })
 await writeJson(join(OUTPUT_ROOT, 'hadeethenc/all.json'), { metadata: sourceMetadata, records: arabicRecords.map((raw) => normalizeArabic(raw)) })
+for (const raw of arabicRecords) {
+  await writeJson(join(OUTPUT_ROOT, 'hadeethenc', 'records', `${raw.id}.json`), { metadata: sourceMetadata, record: normalizeArabic(raw) })
+}
 
 for (const chapter of chapters) {
   const records = recordsForCategory.get(chapter.id)

@@ -19,6 +19,7 @@ type Props = {
 }
 
 const ARABIC_DIACRITICS = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g
+const LANGUAGE_NAMES: Record<string, string> = { en: 'English', ar: 'Arabic', ur: 'Urdu', bn: 'Bengali', hi: 'Hindi' }
 
 export function stripArabicDiacritics(value: string) {
   return value.replace(ARABIC_DIACRITICS, '')
@@ -73,7 +74,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
           <details className="translation-about">
             <summary><Info size={16} /> About this translation</summary>
             <div>
-              <p><strong>Language:</strong> {language.toUpperCase()}</p>
+              <p><strong>Language:</strong> {LANGUAGE_NAMES[language] ?? language.toUpperCase()}</p>
               <p><strong>Translation:</strong> HadeethEnc.com</p>
               <p>Not reviewed by this app's team.</p>
               <p><Link to="/sources">Sources</Link>{SHOW_FEEDBACK && <> · <Link to={`/feedback?type=mistake&hadith=${encodeURIComponent(hadith.id)}`}>Report an error</Link></>}</p>

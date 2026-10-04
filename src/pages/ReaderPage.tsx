@@ -6,7 +6,8 @@ import type { ReadingPreferences } from '../components/ReadingControlsSheet'
 import { VirtualizedHadithList } from '../components/VirtualizedHadithList'
 import { db, getSetting, setSetting } from '../data/db'
 import { getDataRoot } from '../config'
-import { loadChapter, loadCollection, loadTranslation } from '../data/loader'
+import { hadithRepository } from '../data/HadithRepository'
+import { APP_EVENTS, dispatchAppEvent } from '../core/appEvents'
 import type { ArabicChapterDataset, CollectionIndex, HadithRecord, TranslationChapterDataset } from '../types/hadith'
 
 type TrustFilter = 'sahih' | 'sahih-hasan' | 'all'
@@ -56,7 +57,7 @@ export function ReaderPage() {
       setShowDiacritics(diacritics)
       setArabicSize(size)
     })
-    Promise.all([loadCollection(collectionId), getSetting('language', 'en')])
+    Promise.all([hadithRepository.getCollection(collectionId), getSetting('language', 'en')])
       .then(([value, preferredLanguage]) => {
         setCollection(value)
         const available = ['ar', ...value.languages]
@@ -71,8 +72,8 @@ export function ReaderPage() {
       const available = ['ar', ...(collection?.languages ?? [])]
       setLanguage(available.includes(preferred) ? preferred : available.includes('en') ? 'en' : 'ar')
     }
-    window.addEventListener('app-language-change', update)
-    return () => window.removeEventListener('app-language-change', update)
+    window.addEventListener(APP_EVENTS.languageChange, update)
+    return () => window.removeEventListener(APP_EVENTS.languageChange, update)
   }, [collection])
 
   useEffect(() => {
@@ -81,13 +82,13 @@ export function ReaderPage() {
       setShowDiacritics(preferences.showDiacritics)
       setArabicSize(preferences.arabicSize)
     }
-    window.addEventListener('reading-preferences-change', update)
-    return () => window.removeEventListener('reading-preferences-change', update)
+    window.addEventListener(APP_EVENTS.readingPreferencesChange, update)
+    return () => window.removeEventListener(APP_EVENTS.readingPreferencesChange, update)
   }, [])
 
   useEffect(() => {
     if (!chapterIndex) return
-    loadChapter(collectionId, chapterIndex.file)
+    hadithRepository.getChapter(collectionId, chapterIndex.file)
       .then((value) => {
         setChapter(value)
         setSelectedHadith(value.records[0] ?? null)
@@ -100,10 +101,20 @@ export function ReaderPage() {
       setTranslation(null)
       return
     }
-    loadTranslation(language, collectionId, chapterIndex.file)
-      .then(setTranslation)
+    hadithRepository.getTranslation(language, collectionId, chapterIndex.file)
+      .then(async (selected) => {
+        const selectedTranslations = Object.fromEntries(Object.entries(selected.translations).map(([id, value]) => [id, { ...value, language }]))
+        const missingIds = (chapter?.records ?? []).filter((record) => !selected.translations[record.id]).map((record) => record.id)
+        if (language === 'en' || missingIds.length === 0) {
+          setTranslation({ ...selected, translations: selectedTranslations })
+          return
+        }
+        const english = await hadithRepository.getTranslation('en', collectionId, chapterIndex.file).catch(() => null)
+        const englishFallbacks = Object.fromEntries(Object.entries(english?.translations ?? {}).filter(([id]) => missingIds.includes(id)).map(([id, value]) => [id, { ...value, language: 'en' }]))
+        setTranslation({ ...selected, translations: { ...englishFallbacks, ...selectedTranslations } })
+      })
       .catch(() => setTranslation(null))
-  }, [chapterIndex, collectionId, language])
+  }, [chapter, chapterIndex, collectionId, language])
 
   useEffect(() => {
     if (!chapter) return
@@ -152,7 +163,7 @@ export function ReaderPage() {
       arabicSize={arabicSize}
       collectionId={collectionId}
       chapterId={chapterId}
-      language={language}
+      language={translation?.translations[hadith.id]?.language ?? language}
       onOpenDetails={() => openContext(hadith)}
     />
   )
@@ -181,7 +192,7 @@ export function ReaderPage() {
         </div>
 
         <div className="reader-toolbar" aria-label="Reader controls">
-          <button className="open-reading-controls" onClick={() => window.dispatchEvent(new Event('open-reading-settings'))}><Type size={17} /> Reading settings</button>
+          <button className="open-reading-controls" onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}><Type size={17} /> Reading settings</button>
           {collection && collection.languages.length > 0 && (
             <label className="language-control">
               <span>Translation</span>

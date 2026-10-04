@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, ChevronRight } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
-import { loadCollection } from '../data/loader'
+import { hadithRepository } from '../data/HadithRepository'
 import { db, type ReadingProgress } from '../data/db'
 import type { CollectionIndex } from '../types/hadith'
 import { TopicTree } from '../components/TopicTree'
@@ -13,7 +13,7 @@ export function CollectionPage() {
   const [progress, setProgress] = useState<ReadingProgress | null>(null)
 
   useEffect(() => {
-    loadCollection(collectionId).then(setCollection).catch((reason: Error) => setError(reason.message))
+    hadithRepository.getCollection(collectionId).then(setCollection).catch((reason: Error) => setError(reason.message))
     db.progress.get(collectionId).then((value) => setProgress(value ?? null))
   }, [collectionId])
 

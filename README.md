@@ -1,6 +1,6 @@
 # Hadith Reader
 
-A free, ad-free, offline-capable hadith reading PWA. The app is static and has no backend, accounts, cookies, analytics, or runtime third-party requests.
+A free, ad-free, offline-capable hadith reading PWA. The app is static and has no backend, accounts, cookies, or analytics. It makes no third-party runtime requests except an optional feedback submission.
 
 Bookmarks, bookmark folders, reading progress, themes, and reader settings are stored only in the browser with IndexedDB.
 
@@ -19,6 +19,8 @@ npm run dev
 ```bash
 npm test
 npm run build
+npm run test:overflow
+npm run verify
 ```
 
 The production build includes a Workbox service worker. The app shell is precached; Arabic chapters and optional translation files are cached on-device after first use.
@@ -39,7 +41,7 @@ The fetch is resumable from cached raw responses. Use the same `--languages` fla
 
 ### Cloudflare Pages
 
-- Build command: `npm run build`
+- Build command: `npm run data:fetch:hadeethenc -- --languages=ar,en,ur,bn,hi && npm run build`
 - Output directory: `dist`
 - Environment: fetch approved data in the build job; for feedback, set `VITE_FEEDBACK_ENDPOINT` and `VITE_FEEDBACK_KEY` and ensure the endpoint host appears in `public/_headers` under `connect-src`.
 - The tracked `wrangler.toml`, `public/_redirects`, and `public/_headers` provide the Pages output directory, SPA fallback, CSP, and security headers.
@@ -54,7 +56,7 @@ npm run build -- --base=/hadith-reader/
 
 For a user or organization site at the domain root, use the normal `npm run build`. The site is entirely static.
 
-GitHub Pages does not apply `public/_headers`; set equivalent headers at a proxy or custom domain if those controls are required. The Pages workflow fetches the approved public HadeethEnc dataset at build time and deploys `dist`; no secrets are used for content retrieval.
+GitHub Pages does not apply `public/_headers`; set equivalent headers at a proxy or custom domain if those controls are required. The CI workflow validates, tests, and builds without deploying. For a manual GitHub Pages release, publish `dist` and keep the generated `404.html` fallback; no deployment is performed by this repository.
 
 ## Privacy and offline behavior
 

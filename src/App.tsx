@@ -1,24 +1,17 @@
-import { lazy, Suspense } from 'react'
-import { BookOpen, Bookmark, House, Search, Type } from 'lucide-react'
-import { Link, NavLink, Route, Routes } from 'react-router-dom'
+import { Suspense } from 'react'
+import { BookOpen } from 'lucide-react'
+import { Link, Route, Routes } from 'react-router-dom'
 import { APP_NAME, DATA_MODE } from './config'
 import { InstallPrompt } from './components/InstallPrompt'
 import { LanguagePicker } from './components/LanguagePicker'
 import { ReadingControlsSheet } from './components/ReadingControlsSheet'
 import { SiteFooter } from './components/SiteFooter'
 import { FeedbackModal } from './components/FeedbackModal'
+import { UpdatePrompt } from './components/UpdatePrompt'
+import { routeFeatures } from './features/registry'
+import { BottomNavigation } from './ui/BottomNavigation'
 
-const CollectionPage = lazy(() => import('./pages/CollectionPage').then((module) => ({ default: module.CollectionPage })))
-const AboutPage = lazy(() => import('./pages/AboutPage').then((module) => ({ default: module.AboutPage })))
-const HomePage = lazy(() => import('./pages/HomePage').then((module) => ({ default: module.HomePage })))
-const LibraryPage = lazy(() => import('./pages/LibraryPage').then((module) => ({ default: module.LibraryPage })))
-const ReaderPage = lazy(() => import('./pages/ReaderPage').then((module) => ({ default: module.ReaderPage })))
-const SavedPage = lazy(() => import('./pages/SavedPage').then((module) => ({ default: module.SavedPage })))
-const SearchPage = lazy(() => import('./pages/SearchPage').then((module) => ({ default: module.SearchPage })))
-const SettingsPage = lazy(() => import('./pages/SettingsPage').then((module) => ({ default: module.SettingsPage })))
-const SourcesPage = lazy(() => import('./pages/SourcesPage').then((module) => ({ default: module.SourcesPage })))
-const PrivacyPage = lazy(() => import('./pages/PrivacyPage').then((module) => ({ default: module.PrivacyPage })))
-const TermsPage = lazy(() => import('./pages/TermsPage').then((module) => ({ default: module.TermsPage })))
+const HomeFallback = routeFeatures[0].page
 
 export function App() {
   return (
@@ -36,18 +29,8 @@ export function App() {
       <div id="main-content" tabIndex={-1}>
         <Suspense fallback={<div className="route-loading" role="status">Loading…</div>}>
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/library" element={<LibraryPage />} />
-            <Route path="/collection/:collectionId" element={<CollectionPage />} />
-            <Route path="/collection/:collectionId/chapter/:chapterId" element={<ReaderPage />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/saved" element={<SavedPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/sources" element={<SourcesPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/terms" element={<TermsPage />} />
-            <Route path="*" element={<HomePage />} />
+            {routeFeatures.map(({ path, page: Page }) => <Route key={path} path={path} element={<Page />} />)}
+            <Route path="*" element={<HomeFallback />} />
           </Routes>
         </Suspense>
       </div>
@@ -57,14 +40,9 @@ export function App() {
       <InstallPrompt />
       <ReadingControlsSheet />
       <FeedbackModal />
+      <UpdatePrompt />
 
-      <nav className="floating-nav" aria-label="Primary navigation">
-        <NavLink to="/" end aria-label="Home"><House size={20} /><span>Home</span></NavLink>
-        <NavLink to="/library" aria-label="Library"><BookOpen size={20} /><span>Library</span></NavLink>
-        <NavLink to="/search"><Search size={20} /><span>Search</span></NavLink>
-        <NavLink to="/saved"><Bookmark size={20} /><span>Saved</span></NavLink>
-        <button type="button" aria-label="Reading settings" onClick={() => window.dispatchEvent(new Event('open-reading-settings'))}><Type size={20} /><span>Reading settings</span></button>
-      </nav>
+      <BottomNavigation />
     </div>
   )
 }

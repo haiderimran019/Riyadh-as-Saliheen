@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getSetting, setSetting } from '../data/db'
+import { APP_EVENTS, dispatchAppEvent } from '../core/appEvents'
 
 export const APP_LANGUAGES = [
   { code: 'en', name: 'English' },
@@ -19,7 +20,7 @@ export function LanguagePicker() {
   const chooseLanguage = (value: string) => {
     setLanguage(value)
     void setSetting('language', value)
-    window.dispatchEvent(new CustomEvent('app-language-change', { detail: value }))
+    dispatchAppEvent(APP_EVENTS.languageChange, value)
   }
 
   return (

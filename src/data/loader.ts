@@ -1,6 +1,7 @@
 import { getDataRoot } from '../config'
 import type {
   ArabicChapterDataset,
+  ArabicRecordDataset,
   CollectionIndex,
   CollectionsManifest,
   SourcesManifest,
@@ -27,6 +28,9 @@ export const loadCollection = (collectionId: string) =>
 
 export const loadChapter = (collectionId: string, file: string) =>
   loadJson<ArabicChapterDataset>(`${collectionId}/${file}`)
+
+export const loadHadithRecord = (collectionId: string, id: string) =>
+  loadJson<ArabicRecordDataset>(`${collectionId}/records/${encodeURIComponent(id)}.json`)
 
 export const loadTranslation = (language: string, collectionId: string, file: string) =>
   loadJson<TranslationChapterDataset>(`translations/${language}/${collectionId}/${file}`)

@@ -1,16 +1,14 @@
 # Progress
 
-- [x] 1. Typography and anti-cramping
-- [x] 2. Floating bottom navigation
-- [x] 3. Reading controls and translation details
-- [x] 4. Site footer and policy pages
-- [x] 5. Feedback flow
-- [x] 6. Placeholder and real data modes
-- [x] 7. Publish preparation and audits
-- [ ] 8. Branding — blocked: `/assets/brand` was not provided; no substitute artwork created
-- [x] 9. HadeethEnc stage 5a import
-- [ ] 10. P2 screenshot matrix and Lighthouse — skipped to preserve budget
+- [x] Real-data default, HadeethEnc build fetch, and Zod validation; fabricated records removed.
+- [x] Repository adapter and route/navigation registry; storage migration and system theme.
+- [x] Per-script fonts, reading controls, attribution, feedback flow, footer, and policy pages.
+- [x] Responsive and offline browser checks; 360 px screenshots saved under ignored `/screenshots`.
+- [x] Publish preparation; CI tests/builds but does not deploy.
+- [x] Riyad as-Salihin licensing reviewed; excluded pending clear English redistribution rights.
+- [ ] Branding polish — blocked: `/assets/brand` was not present; existing icon retained. Lighthouse targets not measured.
+- [ ] Full screenshot matrix and Lighthouse 90/95 goals — skipped; quick overflow matrix was run instead.
 
-- Audit: no personal names, personal emails, or local paths found; one generic Git author identity; the old third-party dataset username remains in history and will not be rewritten.
-- Overflow: Home, hadith view, and Settings pass at 320, 390, and 1440 px.
-- Stage 5a: 2,328 Arabic; 2,328 English; 2,220 Urdu; 1,925 Bengali; 2,314 Hindi. Missing: 0 / 0 / 108 / 403 / 14. Stage 5b not run.
+- Audit: working tree has no developer name/email or absolute local path. Existing Git history contains a personal author identity, two generic/noreply identities, and an obsolete third-party dataset plan; history was not rewritten. New public snapshot will use a fresh anonymous commit.
+- Overflow: Home, Library, Reader, and Settings pass at 320, 360, 390, 412, and 1440 px; offline reload retained five Arabic and English hadith.
+- Stage 5a (retrieved 2026-10-04): 2,328 Arabic; 2,328 English; 2,220 Urdu; 1,925 Bengali; 2,314 Hindi. Missing: 0 / 0 / 108 / 403 / 14. Stage 5b not run.

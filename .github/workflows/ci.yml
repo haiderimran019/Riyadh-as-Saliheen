@@ -17,5 +17,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run lint
       - run: npm test
+      - run: npm run data:fetch:hadeethenc -- --languages=ar,en,ur,bn,hi
       - run: npm run build
