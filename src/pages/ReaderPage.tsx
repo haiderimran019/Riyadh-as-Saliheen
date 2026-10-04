@@ -206,7 +206,10 @@ export function ReaderPage() {
         </div>
 
         <div className="reader-toolbar" aria-label="Reader controls">
-          <button className="open-reading-controls" onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}><Type size={17} /> Reading settings</button>
+          <div className="reader-toolbar-head">
+            <div className="reader-tools-caption"><p className="eyebrow">Reading controls</p><span>Language and grading</span></div>
+            <button className="open-reading-controls" aria-label="Open reading display settings" onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}><Type size={17} /> Text settings</button>
+          </div>
           {collection && collection.languages.length > 0 && (
             <label className="language-control">
               <span>Translation</span>
@@ -215,15 +218,15 @@ export function ReaderPage() {
               </select>
             </label>
           )}
-          {collection && language !== 'ar' && <button className="offline-button" onClick={() => void downloadLanguage()}>{offlineStatus || 'Download language'}</button>}
           <label className="trust-control">
-            <span>Trust filter</span>
+            <span>Grade filter</span>
             <select value={trustFilter} onChange={(event) => setTrustFilter(event.target.value as TrustFilter)}>
               <option value="sahih">Sahih only</option>
               <option value="sahih-hasan">Sahih + Hasan</option>
               <option value="all">All</option>
             </select>
           </label>
+          {collection && language !== 'ar' && <button className="offline-button" onClick={() => void downloadLanguage()}>{offlineStatus || 'Save language offline'}</button>}
         </div>
 
         {error && <p className="notice error" role="alert">{error}</p>}

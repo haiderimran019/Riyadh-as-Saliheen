@@ -460,6 +460,74 @@ h2, h3 { text-wrap: balance; }
 .source-status h2 { margin: 0 0 8px; font-family: Georgia, serif; font-size: 1.2rem; font-weight: 550; }
 .source-status p { margin: 0; color: var(--muted); line-height: 1.65; }
 .saved-reference { min-width: 0; overflow-wrap: anywhere; }
+
+/* Purpose-built phone reading layout: bookplate home, compact controls, calm folios. */
+.reader-toolbar-head { display: flex; min-width: 0; align-items: center; justify-content: center; }
+.reader-tools-caption { display: none; }
+@media (max-width: 720px) {
+  .topbar { min-height: 62px; padding-inline: 14px; }
+  .brand { gap: 8px; font-size: .94rem; }
+  .brand-mark { width: 34px; height: 34px; border-radius: 11px; }
+
+  .riyad-home { padding: 24px 14px 38px; }
+  .hero-panel { min-height: 0; padding: 22px 19px 20px; border-radius: 23px; background: radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 47%), var(--surface); }
+  .hero-panel::before { background-size: 16px 16px; opacity: .18; mask-image: linear-gradient(145deg, transparent 28%, #000 100%); }
+  .hero-panel::after { position: absolute; right: 20px; bottom: 0; left: 20px; height: 2px; background: linear-gradient(90deg, transparent, var(--focus), color-mix(in srgb, var(--focus) 10%, var(--accent)), transparent); content: ''; opacity: .8; }
+  .hero-copy { width: 100%; }
+  .hero-copy .eyebrow { max-width: calc(100% - 76px); align-items: flex-start; gap: 7px; font-size: .72rem; line-height: 1.5; }
+  .hero-copy .eyebrow > span { display: none; }
+  .hero-copy h1 { max-width: 15ch; margin: 24px 0 13px; font-size: clamp(1.9rem, 8vw, 2.45rem); line-height: 1.04; letter-spacing: -.04em; }
+  .hero-copy .lede { max-width: 34ch; margin-bottom: 18px; font-size: .98rem; line-height: 1.58; }
+  .hero-seal { top: 16px; right: 16px; display: grid; width: 62px; border-color: color-mix(in srgb, var(--accent) 35%, transparent); opacity: .82; transform: rotate(-7deg); }
+  .hero-seal::before { inset: 5px; }
+  .hero-seal::after { inset: 10px; }
+  .hero-seal span { font-size: 1.15rem; }
+  .hero-seal i { font-size: .72rem; }
+  .hero-actions { gap: 6px; }
+  .hero-actions .primary-action { min-height: 50px; }
+  .hero-actions .text-action { justify-content: flex-start; padding-inline: 2px; font-size: .9rem; }
+  .home-bottomline { margin: 12px 2px 0; color: var(--muted); font-size: .82rem; }
+
+  .reader-page { padding: 22px 14px 100px; }
+  .reader-heading { margin-bottom: 18px; }
+  .reader-heading .back-link { margin-bottom: 14px; }
+  .reader-heading > div { padding-inline-start: 11px; border-inline-start: 2px solid var(--focus); }
+  .reader-heading > div > .eyebrow { margin: 0; letter-spacing: .08em; }
+  .reader-heading h1 { max-width: 26ch; margin: 7px 0 15px; font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; font-size: clamp(1.5rem, 6.2vw, 1.95rem); line-height: 1.1; letter-spacing: -.03em; }
+  .reader-toolbar { position: static; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin: 0 0 20px; padding: 13px; border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border)); border-top: 2px solid color-mix(in srgb, var(--focus) 70%, var(--accent)); border-radius: 19px; background: linear-gradient(145deg, var(--surface), color-mix(in srgb, var(--surface-soft) 70%, var(--surface))); box-shadow: 0 8px 24px rgba(0, 0, 0, .08); }
+  .reader-toolbar-head { grid-column: 1 / -1; justify-content: space-between; gap: 12px; padding: 0 0 10px; border-bottom: 1px solid var(--border); }
+  .reader-tools-caption { display: block; min-width: 0; }
+  .reader-tools-caption .eyebrow { margin: 0; font-size: .72rem; letter-spacing: .08em; }
+  .reader-tools-caption span { display: block; margin-top: 1px; color: var(--muted); font-size: .82rem; line-height: 1.35; }
+  .reader-toolbar-head .open-reading-controls { width: auto; min-height: 42px; flex: 0 0 auto; justify-content: center; padding-inline: 11px; border-radius: 999px; background: var(--surface-soft); font-size: .82rem; }
+  .reader-toolbar .language-control, .reader-toolbar .trust-control { display: flex; min-width: 0; min-height: 0; align-items: stretch; flex-direction: column; gap: 5px; padding: 0; color: var(--muted); font-size: .78rem; }
+  .reader-toolbar .language-control > span, .reader-toolbar .trust-control > span { line-height: 1.3; }
+  .reader-toolbar .language-control select, .reader-toolbar .trust-control select { width: 100%; min-height: 44px; padding: 6px 9px; border-radius: 11px; font-size: .9rem; }
+  .reader-toolbar > .offline-button { grid-column: 1 / -1; width: fit-content; min-height: 38px; justify-content: flex-start; padding-inline: 0; border: 0; background: transparent; color: var(--accent); font-size: .82rem; }
+  .hadith-list { gap: 16px; }
+  .hadith-card { border-color: color-mix(in srgb, var(--accent) 24%, var(--border)); border-radius: 19px; box-shadow: 0 7px 24px rgba(0, 0, 0, .09); }
+  .hadith-meta { position: relative; gap: 8px; padding: 16px 18px; background: linear-gradient(110deg, color-mix(in srgb, var(--accent) 8%, var(--surface)), var(--surface) 58%); }
+  .hadith-meta::before { position: absolute; inset-block: 12px; inset-inline-start: 0; width: 2px; border-radius: 2px; background: var(--focus); content: ''; }
+  .hadith-number { display: inline-flex; align-items: center; gap: 9px; }
+  .hadith-number::before { width: 6px; height: 6px; border-radius: 50%; background: var(--focus); box-shadow: 0 0 0 4px color-mix(in srgb, var(--focus) 14%, transparent); content: ''; }
+  .hadith-meta p { font-size: .86rem; line-height: 1.5; }
+  .arabic-text { padding: 26px 18px 29px; line-height: 1.9; }
+  .translation-block { padding: 21px 18px; }
+  .hadeethenc-commentary { padding-inline: 18px; }
+  .hadeethenc-credit { padding-inline: 18px; }
+  .hadith-footer { gap: 12px; padding: 14px 18px; }
+
+  .floating-nav { width: calc(100% - 28px); min-height: 62px; padding: 5px; background: color-mix(in srgb, var(--surface) 92%, transparent); box-shadow: 0 8px 28px rgba(0, 0, 0, .24); }
+  .floating-nav a, .floating-nav button { min-height: 48px; gap: 1px; padding: 3px 2px; }
+  .app-shell { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 380px) {
+  .riyad-home { padding-inline: 12px; }
+  .hero-panel { padding-inline: 16px; }
+  .reader-page { padding-inline: 12px; }
+  .reader-toolbar { gap: 8px; padding: 11px; }
+  .reader-toolbar .language-control select, .reader-toolbar .trust-control select { padding-inline: 7px; font-size: .85rem; }
+}
 .folder-message { min-height: 1.5em; margin: 8px 0 0; color: var(--muted); font-size: .875rem; }
 .folder-tab { display: inline-flex; flex: none; align-items: center; overflow: hidden; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
 .folder-tab > button:first-child { border: 0; border-radius: 999px 0 0 999px; background: transparent; }
