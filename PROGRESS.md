@@ -7,7 +7,7 @@
 - [x] 5. Feedback flow
 - [x] 6. Placeholder and real data modes
 - [x] 7. Publish preparation and audits
-- [ ] 8. Branding
+- [ ] 8. Branding — blocked: `/assets/brand` was not provided; no substitute artwork created
 - [ ] 9. HadeethEnc stage 5a import
 - [ ] 10. P2 screenshot matrix and Lighthouse
 
