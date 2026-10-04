@@ -1,6 +1,6 @@
 # Progress
 
-## Current milestone: M4 Trust UI — complete
+## Current milestone: M5 Offline and polish — complete
 
 ### Done
 
@@ -42,11 +42,26 @@
 - Added grading, reference, and record-location details in a mobile bottom sheet and persistent desktop context pane.
 - Added a true three-pane desktop reader: chapter browse, reading column, and context.
 
+### M5 done
+
+- Added an installable PWA manifest and Workbox service worker.
+- Precached the app shell and self-hosted Arabic font; fetched chapter and translation JSON is stored in a cache-first on-device cache.
+- Added a deterministic, Arabic-only-capable Hadith of the day.
+- Added share-as-image generation with Arabic, optional credited translation, exact reference, and attributed grade or honest grade fallback.
+- Added a browser install prompt when supported.
+- Added skip navigation, explicit labels, focus treatment, reduced-motion handling, and keyboard-accessible controls.
+- Added route-level code splitting and virtualization for chapters longer than 20 records.
+- Switched Amiri imports to Arabic-only font subsets.
+- Added Vitest coverage for data loading/cache paths and daily hadith selection.
+
 ### Next
 
-- M5 Offline and polish: PWA caching, deterministic daily hadith, share images, install UI, accessibility, and performance.
+- Optional M6 stretch: merge matched narrations and add a text-match-only verification page.
 
 ### Known issues
 
 - Real content is blocked on source/translation licensing and provenance verification.
-- Offline service worker is scheduled for M5.
+- The install prompt depends on browser install eligibility and is intentionally hidden otherwise.
+- Share uses the native Web Share API when file sharing is supported and otherwise downloads the generated image.
+- Lighthouse was not available in this environment, so the 90+ mobile target was optimized toward but not measured.
+- M6 stretch work has not been started.

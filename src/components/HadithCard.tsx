@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { AlertCircle, Bookmark } from 'lucide-react'
+import { AlertCircle, Bookmark, Share2 } from 'lucide-react'
 import { db, type BookmarkFolder } from '../data/db'
 import type { DatasetMetadata, HadithRecord, Translation } from '../types/hadith'
+import { shareHadithImage } from '../utils/shareImage'
 
 type Props = {
   hadith: HadithRecord
@@ -95,6 +96,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
             <Bookmark size={17} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Save'}
           </button>
           <button className="details-button" onClick={onOpenDetails}>Details</button>
+          <button className="share-button" aria-label={`Share hadith ${hadith.number} as an image`} onClick={() => void shareHadithImage(hadith, translation, translationMetadata)}><Share2 size={17} /></button>
         </div>
       </footer>
     </article>

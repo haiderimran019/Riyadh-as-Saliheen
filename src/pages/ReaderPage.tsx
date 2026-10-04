@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, CheckCircle2, Minus, Plus, Type, X } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { HadithCard } from '../components/HadithCard'
+import { VirtualizedHadithList } from '../components/VirtualizedHadithList'
 import { db, getSetting, setSetting } from '../data/db'
 import { loadChapter, loadCollection, loadTranslation } from '../data/loader'
 import type { ArabicChapterDataset, CollectionIndex, HadithRecord, TranslationChapterDataset } from '../types/hadith'
@@ -101,6 +102,20 @@ export function ReaderPage() {
     setContextOpen(true)
   }
 
+  const renderHadith = (hadith: HadithRecord) => (
+    <HadithCard
+      key={hadith.id}
+      hadith={hadith}
+      translation={translation?.translations[hadith.id]}
+      translationMetadata={translation?.metadata}
+      showDiacritics={showDiacritics}
+      arabicSize={arabicSize}
+      collectionId={collectionId}
+      chapterId={chapterId}
+      onOpenDetails={() => openContext(hadith)}
+    />
+  )
+
   return (
     <main className="reader-page page-with-nav three-pane-page">
       <aside className="browse-pane" aria-label="Browse chapters">
@@ -157,19 +172,9 @@ export function ReaderPage() {
           <p className="empty-state">No records match this trust filter. Missing grades are never inferred.</p>
         )}
         <section className="hadith-list" aria-live="polite">
-          {visibleRecords.map((hadith) => (
-            <HadithCard
-              key={hadith.id}
-              hadith={hadith}
-              translation={translation?.translations[hadith.id]}
-              translationMetadata={translation?.metadata}
-              showDiacritics={showDiacritics}
-              arabicSize={arabicSize}
-              collectionId={collectionId}
-              chapterId={chapterId}
-              onOpenDetails={() => openContext(hadith)}
-            />
-          ))}
+          {visibleRecords.length > 20
+            ? <VirtualizedHadithList records={visibleRecords} renderRecord={renderHadith} />
+            : visibleRecords.map(renderHadith)}
         </section>
       </section>
 

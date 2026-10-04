@@ -1,4 +1,4 @@
-import { DATA_ROOT } from '../config'
+import { getDataRoot } from '../config'
 import type {
   ArabicChapterDataset,
   CollectionIndex,
@@ -12,7 +12,7 @@ const cache = new Map<string, unknown>()
 
 async function loadJson<T>(path: string): Promise<T> {
   if (cache.has(path)) return cache.get(path) as T
-  const response = await fetch(`${DATA_ROOT}/${path}`)
+  const response = await fetch(`${getDataRoot()}/${path}`)
   if (!response.ok) throw new Error(`Unable to load data: ${response.status}`)
   const value = (await response.json()) as T
   cache.set(path, value)

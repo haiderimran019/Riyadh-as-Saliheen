@@ -21,6 +21,8 @@ npm test
 npm run build
 ```
 
+The production build includes a Workbox service worker. The app shell is precached; Arabic chapters and optional translation files are cached on-device after first use.
+
 ## Add a collection
 
 Add an Arabic source JSON file under `scripts/source-data/arabic`, list it in `scripts/import-data.mjs`, document its exact provenance and rights in `DATA_SOURCES.md`, then run `npm run data:build`. Arabic is the only required content. The import pipeline writes static collection indexes and Arabic chapter files under `public/data/<collection>`.
@@ -41,4 +43,25 @@ The adapter writes ignored review files under `scripts/source-data/real`. Do not
 
 ## Free deployment
 
-Build with `npm run build` and deploy the generated `dist` directory to Cloudflare Pages or GitHub Pages. The site is entirely static.
+### Cloudflare Pages
+
+- Build command: `npm run build`
+- Output directory: `dist`
+
+### GitHub Pages
+
+For a project site, build with the repository subpath as Vite's base and publish `dist`:
+
+```bash
+npm run build -- --base=/YOUR-REPOSITORY-NAME/
+```
+
+For a user or organization site at the domain root, use the normal `npm run build`. The site is entirely static.
+
+## Privacy and offline behavior
+
+- No accounts, cookies, analytics, or external runtime requests.
+- Fonts are bundled with the app.
+- Bookmarks, folders, progress, and settings stay in IndexedDB on the device.
+- The service worker precaches the app shell and caches only same-origin dataset files as they are read.
+- Removing site data in the browser removes all locally stored user data and offline caches.
