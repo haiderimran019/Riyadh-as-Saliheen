@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-const routes = ['/', '/collection/nawawi-placeholder/chapter/1', '/settings']
+const routes = ['/', '/collection/hadeethenc', '/settings']
 const widths = [320, 390, 1440]
 
 for (const width of widths) {

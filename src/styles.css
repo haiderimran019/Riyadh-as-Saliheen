@@ -78,7 +78,6 @@ h2, h3 { text-wrap: balance; }
 .collection-card h2 { margin: 7px 0; font-family: "Batang", "BatangChe", "Noto Serif KR", Georgia, serif; font-size: 1.65rem; font-weight: 550; }
 .collection-card p { margin: 0; color: var(--muted); line-height: 1.55; }
 .collection-action { display: flex; align-items: center; gap: 16px; }
-.placeholder-badge { flex: none; padding: 7px 11px; border-radius: 999px; background: #f7e4b6; color: #604916; font-size: 0.76rem; font-weight: 750; }
 .notice { padding: 14px; border-radius: 12px; background: var(--surface-soft); }
 .error { color: var(--danger); }
 .content-page, .reader-page { width: min(1040px, 100%); margin: 0 auto; padding: 48px clamp(16px, 5vw, 48px) 100px; }

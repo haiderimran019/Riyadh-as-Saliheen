@@ -2,10 +2,9 @@ export type DatasetMetadata = {
   sourceName: string
   sourceUrl: string
   contributor: string
-  contributorRole: 'editor' | 'translator' | 'placeholder'
+  contributorRole: 'editor' | 'translator'
   license: string
   dateRetrieved: string
-  placeholder: boolean
 }
 
 export type HadeethEncRecord = {
@@ -49,7 +48,6 @@ export type HadithRecord = {
   narrator?: string
   references: HadithReference[]
   topics?: string[]
-  placeholder?: boolean
   title?: string
   attribution?: string
   hadeethEnc?: HadeethEncRecord
@@ -69,7 +67,6 @@ export type CollectionIndex = {
   title: string
   description: string
   languages: string[]
-  placeholder: boolean
   metadata: DatasetMetadata
   chapters: ChapterIndex[]
   categories?: HadeethCategory[]
@@ -91,7 +88,7 @@ export type TranslationChapterDataset = {
 
 export type CollectionsManifest = {
   metadata: DatasetMetadata
-  collections: Array<Pick<CollectionIndex, 'id' | 'title' | 'description' | 'placeholder'> & { index: string }>
+  collections: Array<Pick<CollectionIndex, 'id' | 'title' | 'description'> & { index: string }>
 }
 
 export type SourceCredit = {

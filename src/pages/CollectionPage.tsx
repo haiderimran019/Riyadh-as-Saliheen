@@ -26,7 +26,6 @@ export function CollectionPage() {
           <p className="eyebrow">Collection</p>
           <h1>{collection.title}</h1>
           <p>{collection.description}</p>
-          {collection.placeholder && <span className="placeholder-badge">Placeholder data — not religious content</span>}
           {progress && <Link className="continue-link" to={`/collection/${collectionId}/chapter/${progress.chapterId}#${progress.hadithId}`}>Continue where you left off</Link>}
         </header>
         <section aria-labelledby="chapters-title">

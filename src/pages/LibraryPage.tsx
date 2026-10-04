@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { DATA_MODE } from '../config'
 import { loadCollections } from '../data/loader'
 import type { CollectionsManifest } from '../types/hadith'
 
@@ -19,7 +20,7 @@ export function LibraryPage() {
         <h1>Library</h1>
         <p>Choose a collection, then browse by chapter.</p>
       </header>
-      {error && <p className="notice error">{error}</p>}
+      {error && <p className="notice error">{DATA_MODE === 'placeholder' ? 'This preview build does not include hadith content.' : 'Hadith data could not be loaded. Please try again.'}</p>}
       <div className="collection-grid">
         {manifest?.collections.map((collection) => (
           <Link className="collection-card" to={`/collection/${collection.id}`} key={collection.id}>
@@ -29,7 +30,6 @@ export function LibraryPage() {
               <p>{collection.description}</p>
             </div>
             <div className="collection-action">
-              {collection.placeholder && <span className="placeholder-badge">Placeholder data</span>}
               <ArrowRight aria-hidden="true" />
             </div>
           </Link>

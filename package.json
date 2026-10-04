@@ -9,7 +9,6 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:overflow": "playwright test e2e/overflow.e2e.ts",
-    "data:build": "node scripts/import-data.mjs",
     "data:fetch:hadeethenc": "node scripts/fetch-hadeethenc.mjs"
   },
   "dependencies": {

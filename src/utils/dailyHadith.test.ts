@@ -4,14 +4,13 @@ import { dateKey, selectDailyHadith } from './dailyHadith'
 
 const record = (id: string): HadithRecord => ({
   id,
-  collection: '[PLACEHOLDER collection]',
-  book: '[PLACEHOLDER book]',
+  collection: 'Collection',
+  book: 'Book',
   chapter: '1',
   number: id,
-  arabic: `[PLACEHOLDER Arabic text ${id}]`,
+  arabic: '',
   grades: [],
   references: [],
-  placeholder: true,
 })
 
 describe('daily hadith selection', () => {
@@ -26,7 +25,7 @@ describe('daily hadith selection', () => {
   })
 
   it('works without translations and handles an empty pool', () => {
-    expect(selectDailyHadith([record('1')], new Date())?.arabic).toContain('[PLACEHOLDER')
+    expect(selectDailyHadith([record('1')], new Date())?.id).toBe('1')
     expect(selectDailyHadith([], new Date())).toBeUndefined()
   })
 })

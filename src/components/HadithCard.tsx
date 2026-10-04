@@ -63,7 +63,6 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
           <span className="hadith-number">Hadith {hadith.number}</span>
           <p>{hadith.collection} · {hadith.book} · Chapter {hadith.chapter}</p>
         </div>
-        {hadith.placeholder && <span className="placeholder-badge">Placeholder</span>}
       </header>
 
       <p className="arabic-text" dir="rtl" lang="ar" style={{ fontSize: `${arabicSize}px` }}>{arabic}</p>

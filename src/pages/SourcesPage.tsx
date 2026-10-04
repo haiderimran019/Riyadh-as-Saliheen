@@ -27,7 +27,6 @@ export function SourcesPage() {
           <article className="source-card" key={`${source.kind}-${source.language ?? 'ar'}-${source.metadata.sourceUrl}`}>
             <div className="source-card-header">
               <span className="label">{source.kind === 'arabic' ? 'Arabic dataset' : `${source.language?.toUpperCase()} translation`}</span>
-              {source.metadata.placeholder && <span className="placeholder-badge">Placeholder</span>}
             </div>
             <h2>{source.metadata.sourceName}</h2>
             <dl>

@@ -51,7 +51,7 @@ export default defineConfig(({ mode }) => {
       {
         name: 'copy-local-real-data',
         closeBundle() {
-          if (env.VITE_DATA_MODE !== 'real') return
+          if (env.VITE_DATA_MODE === 'placeholder') return
           const source = resolve('data-local/generated')
           if (!existsSync(source)) throw new Error('Real mode requires data-local/generated. Run npm run data:fetch:hadeethenc first.')
           cpSync(source, resolve('dist/data-local/generated'), { recursive: true })
