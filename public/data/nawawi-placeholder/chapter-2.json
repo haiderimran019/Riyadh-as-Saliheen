@@ -1,0 +1,51 @@
+{
+  "metadata": {
+    "sourceName": "Fake Arabic placeholder dataset",
+    "sourceUrl": "local-placeholder://arabic/nawawi-placeholder",
+    "contributor": "Placeholder only",
+    "contributorRole": "placeholder",
+    "license": "CC0-1.0",
+    "dateRetrieved": "2026-10-04",
+    "placeholder": true
+  },
+  "records": [
+    {
+      "id": "placeholder-3",
+      "collection": "[PLACEHOLDER collection]",
+      "book": "[PLACEHOLDER book]",
+      "chapter": "2",
+      "number": "3",
+      "arabic": "[PLACEHOLDER Arabic text 3]",
+      "grades": [],
+      "references": [
+        {
+          "collection": "[PLACEHOLDER reference]",
+          "number": "3"
+        }
+      ],
+      "topics": [
+        "placeholder"
+      ],
+      "placeholder": true
+    },
+    {
+      "id": "placeholder-4",
+      "collection": "[PLACEHOLDER collection]",
+      "book": "[PLACEHOLDER book]",
+      "chapter": "2",
+      "number": "4",
+      "arabic": "[PLACEHOLDER Arabic text 4]",
+      "grades": [],
+      "references": [
+        {
+          "collection": "[PLACEHOLDER reference]",
+          "number": "4"
+        }
+      ],
+      "topics": [
+        "placeholder"
+      ],
+      "placeholder": true
+    }
+  ]
+}

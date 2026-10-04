@@ -1,0 +1,13 @@
+node_modules
+dist
+.DS_Store
+*.local
+coverage
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+
+# Real religious datasets remain local-only until DATA_SOURCES.md records
+# verified licence and provenance for every file.
+scripts/raw-data/
+scripts/source-data/real/

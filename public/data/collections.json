@@ -1,0 +1,20 @@
+{
+  "metadata": {
+    "sourceName": "Generated collection manifest",
+    "sourceUrl": "local-build://scripts/import-data.mjs",
+    "contributor": "Build system",
+    "contributorRole": "editor",
+    "license": "CC0-1.0",
+    "dateRetrieved": "2026-10-04",
+    "placeholder": true
+  },
+  "collections": [
+    {
+      "id": "nawawi-placeholder",
+      "title": "Forty Hadith of an-Nawawi — PLACEHOLDER DATA",
+      "description": "Demonstration records only. No religious text is included.",
+      "placeholder": true,
+      "index": "nawawi-placeholder/index.json"
+    }
+  ]
+}

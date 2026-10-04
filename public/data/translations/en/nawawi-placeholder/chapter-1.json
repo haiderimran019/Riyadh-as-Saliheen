@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "sourceName": "Fake English placeholder translation",
+    "sourceUrl": "local-placeholder://translations/en/nawawi-placeholder",
+    "contributor": "Placeholder only",
+    "contributorRole": "placeholder",
+    "license": "CC0-1.0",
+    "dateRetrieved": "2026-10-04",
+    "placeholder": true
+  },
+  "translations": {
+    "placeholder-1": {
+      "text": "[PLACEHOLDER translation 1]"
+    },
+    "placeholder-2": {
+      "text": "[PLACEHOLDER translation 2]"
+    }
+  }
+}

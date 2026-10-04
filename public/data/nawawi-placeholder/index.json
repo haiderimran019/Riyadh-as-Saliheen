@@ -1,0 +1,32 @@
+{
+  "id": "nawawi-placeholder",
+  "title": "Forty Hadith of an-Nawawi — PLACEHOLDER DATA",
+  "description": "Demonstration records only. No religious text is included.",
+  "languages": [
+    "en"
+  ],
+  "placeholder": true,
+  "metadata": {
+    "sourceName": "Fake Arabic placeholder dataset",
+    "sourceUrl": "local-placeholder://arabic/nawawi-placeholder",
+    "contributor": "Placeholder only",
+    "contributorRole": "placeholder",
+    "license": "CC0-1.0",
+    "dateRetrieved": "2026-10-04",
+    "placeholder": true
+  },
+  "chapters": [
+    {
+      "id": "1",
+      "title": "[PLACEHOLDER chapter 1]",
+      "file": "chapter-1.json",
+      "count": 2
+    },
+    {
+      "id": "2",
+      "title": "[PLACEHOLDER chapter 2]",
+      "file": "chapter-2.json",
+      "count": 2
+    }
+  ]
+}
