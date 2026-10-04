@@ -57,6 +57,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 750; letter-spacing: -0.02em; }
 .brand-mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; color: white; background: var(--accent); }
 .header-language select { max-width: 10rem; padding: 0 34px 0 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text); }
+.preview-banner { margin: 0; padding: 6px clamp(16px, 5vw, 48px); background: var(--surface-soft); color: var(--muted); font-size: .875rem; text-align: center; }
 .theme-switcher { display: flex; padding: 4px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
 .theme-switcher button { display: grid; place-items: center; width: 36px; height: 32px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); cursor: pointer; }
 .theme-switcher button[data-active='true'] { background: var(--surface-soft); color: var(--text); }

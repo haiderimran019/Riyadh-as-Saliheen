@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { BookOpen, Bookmark, House, Search, Type } from 'lucide-react'
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
-import { APP_NAME } from './config'
+import { APP_NAME, DATA_MODE } from './config'
 import { InstallPrompt } from './components/InstallPrompt'
 import { LanguagePicker } from './components/LanguagePicker'
 import { ReadingControlsSheet } from './components/ReadingControlsSheet'
@@ -31,6 +31,7 @@ export function App() {
         </Link>
         <LanguagePicker />
       </header>
+      {DATA_MODE === 'placeholder' && <p className="preview-banner" role="status">Preview build: content is being added</p>}
 
       <div id="main-content" tabIndex={-1}>
         <Suspense fallback={<div className="route-loading" role="status">Loading…</div>}>

@@ -5,7 +5,7 @@
 - [x] 3. Reading controls and translation details
 - [x] 4. Site footer and policy pages
 - [x] 5. Feedback flow
-- [ ] 6. Placeholder and real data modes
+- [x] 6. Placeholder and real data modes
 - [ ] 7. Publish preparation and audits
 - [ ] 8. Branding
 - [ ] 9. HadeethEnc stage 5a import
