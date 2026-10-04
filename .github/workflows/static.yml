@@ -34,8 +34,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Fetch licensed HadeethEnc data
+        run: npm run data:fetch:hadeethenc -- --languages=ar,en,ur,bn,hi
+
       - name: Build static site
         run: npm run build
+        env:
+          VITE_DATA_MODE: real
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
