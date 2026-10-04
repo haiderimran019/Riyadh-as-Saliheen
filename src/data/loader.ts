@@ -9,15 +9,25 @@ import type {
 } from '../types/hadith'
 import type { SearchableHadith } from '../search'
 
-const cache = new Map<string, unknown>()
+const cache = new Map<string, unknown | Promise<unknown>>()
 
 async function loadJson<T>(path: string): Promise<T> {
   if (cache.has(path)) return cache.get(path) as T
-  const response = await fetch(`${getDataRoot()}/${path}`)
-  if (!response.ok) throw new Error(`Unable to load data: ${response.status}`)
-  const value = (await response.json()) as T
-  cache.set(path, value)
-  return value
+  const pending = fetch(`${getDataRoot()}/${path}`, { signal: AbortSignal.timeout(12_000) })
+    .then((response) => {
+      if (!response.ok) throw new Error(`Unable to load data (${response.status})`)
+      return response.json() as Promise<T>
+    })
+    .then((value) => {
+      cache.set(path, value)
+      return value
+    })
+    .catch((error: unknown) => {
+      cache.delete(path)
+      throw error
+    })
+  cache.set(path, pending)
+  return pending as Promise<T>
 }
 
 export const loadCollections = () => loadJson<CollectionsManifest>('collections.json')

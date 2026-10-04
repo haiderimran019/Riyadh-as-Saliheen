@@ -1,6 +1,6 @@
 import { DEFAULT_COLLECTION } from '../config'
 import { selectDailyIndex } from '../utils/dailyHadith'
-import { loadAllHadith, loadChapter, loadCollection, loadCollections, loadHadithRecord, loadSources, loadTranslation } from './loader'
+import { loadAllHadith, loadChapter, loadCollection, loadCollections, loadSources, loadTranslation } from './loader'
 
 export interface HadithDataAdapter {
   listCollections: typeof loadCollections
@@ -24,12 +24,9 @@ export class HadeethEncJsonAdapter implements HadithDataAdapter {
     const collection = await loadCollection(DEFAULT_COLLECTION)
     const recordIds = collection.recordIds ?? []
     const dailyId = recordIds[selectDailyIndex(recordIds.length, date)]
-    if (!dailyId) {
-      const records = await loadAllHadith()
-      return records[selectDailyIndex(records.length, date)]
-    }
-    const dataset = await loadHadithRecord(collection.id, dailyId)
-    return { ...dataset.record, collectionId: collection.id, chapterId: dataset.record.topics?.[0] ?? collection.chapters[0]?.id ?? '' }
+    const records = await loadAllHadith()
+    const dailyRecord = dailyId ? records.find((record) => record.id === dailyId) : undefined
+    return dailyRecord ?? records[selectDailyIndex(records.length, date)]
   }
 }
 

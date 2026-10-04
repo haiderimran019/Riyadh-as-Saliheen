@@ -50,6 +50,7 @@ export type HadithRecord = {
   topics?: string[]
   title?: string
   attribution?: string
+  sourceName?: string
   hadeethEnc?: HadeethEncRecord
 }
 

@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:overflow": "playwright test e2e/overflow.e2e.ts",
     "data:fetch:hadeethenc": "node scripts/fetch-hadeethenc.mjs",
+    "data:import:riyad": "node scripts/import-islamenc-riyad.mjs",
     "data:validate": "node scripts/validate-data.mjs",
     "typecheck": "tsc -b --pretty false",
     "lint": "node scripts/check-boundaries.mjs",

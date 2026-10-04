@@ -1,6 +1,8 @@
 import { APP_NAME } from '../config'
 import type { DatasetMetadata, HadithRecord, Translation } from '../types/hadith'
 
+const SOURCE_REFERENCE = /^\d+\s*\/\s*\d+\s*[-–—ـ]+\s*/u
+
 function wrapText(context: CanvasRenderingContext2D, text: string, maxWidth: number) {
   const words = text.split(/\s+/)
   const lines: string[] = []
@@ -52,7 +54,7 @@ export async function createShareImage(
   context.textAlign = 'right'
   context.direction = 'rtl'
   context.font = '52px Amiri, serif'
-  let y = drawLines(context, wrapText(context, hadith.arabic, 912), 996, 260, 94) + 36
+  let y = drawLines(context, wrapText(context, hadith.arabic.replace(SOURCE_REFERENCE, ''), 912), 996, 260, 94) + 36
 
   if (translation && translationMetadata) {
     context.strokeStyle = '#dce4df'
@@ -65,10 +67,10 @@ export async function createShareImage(
     context.direction = 'ltr'
     context.fillStyle = '#1d2825'
     context.font = '34px Georgia, serif'
-    y = drawLines(context, wrapText(context, translation.text, 912), 84, y, 52) + 26
+    y = drawLines(context, wrapText(context, translation.text.replace(SOURCE_REFERENCE, ''), 912), 84, y, 52) + 26
     context.fillStyle = '#68746f'
     context.font = '20px system-ui'
-    y = drawLines(context, wrapText(context, `Translation: ${translationMetadata.contributor} · ${translationMetadata.sourceName}`, 912), 84, y, 30) + 20
+    y = drawLines(context, wrapText(context, `Translation source: ${translationMetadata.sourceName}`, 912), 84, y, 30) + 20
   }
 
   context.textAlign = 'left'
@@ -83,7 +85,7 @@ export async function createShareImage(
   context.font = '22px system-ui'
   context.fillText(`Reference: ${hadith.collection}, no. ${hadith.number}`, 84, 1288)
   context.textAlign = 'right'
-  context.fillText('HadeethEnc.com', 996, 1288)
+  context.fillText(hadith.sourceName ?? 'IslamHouse.com · IslamEnc.com', 996, 1288)
 
   return await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Unable to create image')), 'image/png')

@@ -1,17 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FolderPlus, Trash2 } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { db, type Bookmark, type BookmarkFolder } from '../data/db'
-import { hadithRepository } from '../data/HadithRepository'
-import type { SearchableHadith } from '../search'
 
 export function SavedPage() {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
   const [folders, setFolders] = useState<BookmarkFolder[]>([])
-  const [records, setRecords] = useState<SearchableHadith[]>([])
   const [folderName, setFolderName] = useState('')
   const [activeFolder, setActiveFolder] = useState('all')
-  const recordById = useMemo(() => new Map(records.map((record) => [record.id, record])), [records])
+  const [folderMessage, setFolderMessage] = useState('')
 
   const refresh = async () => {
     const [nextBookmarks, nextFolders] = await Promise.all([
@@ -23,16 +19,42 @@ export function SavedPage() {
   }
 
   useEffect(() => {
-    Promise.all([refresh(), hadithRepository.getAllHadith().then(setRecords)]).catch(console.error)
+    void refresh()
   }, [])
 
   const addFolder = async (event: React.FormEvent) => {
     event.preventDefault()
     const name = folderName.trim()
-    if (!name) return
-    await db.folders.add({ id: crypto.randomUUID(), name, createdAt: Date.now() })
-    setFolderName('')
-    await refresh()
+    if (!name) {
+      setFolderMessage('Enter a name for the folder.')
+      return
+    }
+    if (folders.some((folder) => folder.name.toLocaleLowerCase() === name.toLocaleLowerCase())) {
+      setFolderMessage('A folder with that name already exists.')
+      return
+    }
+    try {
+      await db.folders.add({ id: crypto.randomUUID(), name, createdAt: Date.now() })
+      setFolderName('')
+      setFolderMessage(`Folder “${name}” added.`)
+      await refresh()
+    } catch {
+      setFolderMessage('Could not save the folder on this device. Please try again.')
+    }
+  }
+
+  const removeFolder = async (folder: BookmarkFolder) => {
+    try {
+      await db.transaction('rw', db.folders, db.bookmarks, async () => {
+        await db.bookmarks.where('folderId').equals(folder.id).modify({ folderId: undefined })
+        await db.folders.delete(folder.id)
+      })
+      if (activeFolder === folder.id) setActiveFolder('all')
+      setFolderMessage(`Folder “${folder.name}” removed. Its bookmarks are still saved under All.`)
+      await refresh()
+    } catch {
+      setFolderMessage('Could not remove that folder. Please try again.')
+    }
   }
 
   const visible = bookmarks.filter((bookmark) => activeFolder === 'all' || bookmark.folderId === activeFolder)
@@ -44,29 +66,27 @@ export function SavedPage() {
         <h1>Saved</h1>
         <p>Bookmarks, folders, and reading progress never leave your browser.</p>
       </header>
+      <p className="notice">Saved hadith text from an earlier preview is hidden while the Riyad edition is prepared. Your local bookmarks remain on this device.</p>
       <form className="folder-form" onSubmit={addFolder}>
         <input aria-label="New folder name" value={folderName} onChange={(event) => setFolderName(event.target.value)} placeholder="New folder name" />
         <button type="submit"><FolderPlus size={17} /> Add folder</button>
       </form>
+      <p className="folder-message" aria-live="polite">{folderMessage}</p>
       <div className="folder-tabs" aria-label="Bookmark folders">
         <button data-active={activeFolder === 'all'} onClick={() => setActiveFolder('all')}>All</button>
-        {folders.map((folder) => <button data-active={activeFolder === folder.id} key={folder.id} onClick={() => setActiveFolder(folder.id)}>{folder.name}</button>)}
+        {folders.map((folder) => <span className="folder-tab" key={folder.id}>
+          <button data-active={activeFolder === folder.id} onClick={() => setActiveFolder(folder.id)}>{folder.name}</button>
+          <button className="folder-delete" aria-label={`Remove folder ${folder.name}`} title="Remove folder; keep saved items" onClick={() => void removeFolder(folder)}><Trash2 size={15} /></button>
+        </span>)}
       </div>
       <div className="saved-list">
         {visible.length === 0 && <p className="empty-state">No bookmarks here yet.</p>}
-        {visible.map((bookmark) => {
-          const record = recordById.get(bookmark.hadithId)
-          if (!record) return null
-          return (
-            <article className="saved-row" key={bookmark.hadithId}>
-              <Link to={`/collection/${bookmark.collectionId}/chapter/${bookmark.chapterId}#${bookmark.hadithId}`}>
-                <span className="label">Hadith {record.number}</span>
-                <p dir="rtl" lang="ar">{record.arabic}</p>
-              </Link>
-              <button aria-label={`Remove bookmark ${record.number}`} onClick={async () => { await db.bookmarks.delete(bookmark.hadithId); await refresh() }}><Trash2 size={17} /></button>
-            </article>
-          )
-        })}
+        {visible.map((bookmark) => (
+          <article className="saved-row" key={bookmark.hadithId}>
+            <span className="saved-reference">Saved reading · {bookmark.hadithId}</span>
+            <button aria-label={`Remove saved reading ${bookmark.hadithId}`} onClick={async () => { await db.bookmarks.delete(bookmark.hadithId); await refresh() }}><Trash2 size={17} /></button>
+          </article>
+        ))}
       </div>
     </main>
   )

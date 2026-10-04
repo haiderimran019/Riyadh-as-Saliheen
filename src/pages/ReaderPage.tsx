@@ -39,6 +39,8 @@ export function ReaderPage() {
   const [selectedHadith, setSelectedHadith] = useState<HadithRecord | null>(null)
   const [contextOpen, setContextOpen] = useState(false)
   const [error, setError] = useState('')
+  const [chapterLoading, setChapterLoading] = useState(true)
+  const [collectionLoading, setCollectionLoading] = useState(true)
 
   const chapterIndex = useMemo(
     () => collection?.chapters.find((candidate) => candidate.id === chapterId),
@@ -53,6 +55,8 @@ export function ReaderPage() {
 
   useEffect(() => {
     setError('')
+    setCollectionLoading(true)
+    setCollection(null)
     Promise.all([getSetting('showDiacritics', true), getSetting('arabicSizePx', window.matchMedia('(min-width: 721px)').matches ? 34 : 30)]).then(([diacritics, size]) => {
       setShowDiacritics(diacritics)
       setArabicSize(size)
@@ -63,7 +67,8 @@ export function ReaderPage() {
         const available = ['ar', ...value.languages]
         setLanguage(available.includes(preferredLanguage) ? preferredLanguage : available.includes('en') ? 'en' : 'ar')
       })
-      .catch((reason: Error) => setError(reason.message))
+      .catch(() => setError('The reading data is not available in this preview yet.'))
+      .finally(() => setCollectionLoading(false))
   }, [collectionId])
 
   useEffect(() => {
@@ -87,14 +92,23 @@ export function ReaderPage() {
   }, [])
 
   useEffect(() => {
-    if (!chapterIndex) return
+    if (!chapterIndex) {
+      if (!collectionLoading) setChapterLoading(false)
+      return
+    }
+    let active = true
+    setChapterLoading(true)
+    setChapter(null)
     hadithRepository.getChapter(collectionId, chapterIndex.file)
       .then((value) => {
+        if (!active) return
         setChapter(value)
         setSelectedHadith(value.records[0] ?? null)
       })
-      .catch((reason: Error) => setError(reason.message))
-  }, [chapterIndex, collectionId])
+      .catch(() => { if (active) setError('This chapter could not be loaded. Check your connection and try again.') })
+      .finally(() => { if (active) setChapterLoading(false) })
+    return () => { active = false }
+  }, [chapterIndex, collectionId, collectionLoading])
 
   useEffect(() => {
     if (!chapterIndex || !language || language === 'ar') {
@@ -187,7 +201,7 @@ export function ReaderPage() {
           <Link className="back-link mobile-reader-back" to={`/collection/${collectionId}`}><ArrowLeft size={17} /> All chapters</Link>
           <div>
             <p className="eyebrow">Chapter {chapterId}</p>
-            <h1>{chapterIndex?.title ?? 'Loading chapter…'}</h1>
+            <h1>{chapterIndex?.title ?? (collectionLoading ? 'Opening the collection…' : 'Arabic text coming soon')}</h1>
           </div>
         </div>
 
@@ -197,7 +211,7 @@ export function ReaderPage() {
             <label className="language-control">
               <span>Translation</span>
               <select value={language} onChange={(event) => { setLanguage(event.target.value); void setSetting('language', event.target.value) }}>
-                {['ar', ...collection.languages].map((code) => <option key={code} value={code}>{collection.languageNames?.[code] ?? code.toUpperCase()} · {collection.languageCounts?.[code] ?? chapter?.records.length ?? 0}</option>)}
+                {['ar', ...collection.languages].map((code) => <option key={code} value={code}>{collection.languageNames?.[code] ?? code.toUpperCase()}</option>)}
               </select>
             </label>
           )}
@@ -212,7 +226,8 @@ export function ReaderPage() {
           </label>
         </div>
 
-        {error && <p className="notice error">{error}</p>}
+        {error && <p className="notice error" role="alert">{error}</p>}
+        {chapterLoading && <div className="reader-loading" role="status"><span className="loading-dot" /> Preparing this chapter…</div>}
         {visibleRecords.length === 0 && chapter && (
           <p className="empty-state">No records match this trust filter. Missing grades are never inferred.</p>
         )}

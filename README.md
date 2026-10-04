@@ -1,17 +1,17 @@
 # Hadith Reader
 
-A free, ad-free, offline-capable hadith reading PWA. The app is static and has no backend, accounts, cookies, or analytics. It makes no third-party runtime requests except an optional feedback submission.
+A free, ad-free, offline-capable Riyad as-Salihin reading PWA. The app is static and has no backend, accounts, cookies, or analytics. It makes no third-party runtime requests except an optional feedback submission.
 
 Bookmarks, bookmark folders, reading progress, themes, and reader settings are stored only in the browser with IndexedDB.
 
-Hadith text, translations, grades, and commentary are supplied by HadeethEnc.com and displayed unmodified. See `DATA_SOURCES.md` and `NOTICE` for source and reuse details.
+The Arabic collection and English translation are supplied by IslamHouse.com / IslamEnc.com and displayed as published. See `DATA_SOURCES.md` and `NOTICE` for source and reuse details.
 
 ## Run locally
 
 ```bash
 npm install
-npm run data:fetch:hadeethenc -- --languages=ar,en,ur,bn,hi
-npm run dev
+npm run data:import:riyad -- --languages=ar,en
+VITE_DATA_MODE=real npm run dev
 ```
 
 ## Build and test
@@ -27,34 +27,35 @@ The production build includes a Workbox service worker. The app shell is precach
 
 ## Data modes
 
-`VITE_DATA_MODE=real` is the default. The app reads generated data from ignored `data-local/generated`; fetch it before running or building locally. `VITE_DATA_MODE=placeholder` shows an empty preview shell and never substitutes sample religious text.
+The default mode is `placeholder`, which shows an empty preview shell and never substitutes sample religious text. Import Riyad data into the ignored `data-local/generated` directory, then set `VITE_DATA_MODE=real` to read it locally or build it into a temporary static output.
 
 Fetch the authorized stage 5a languages with at most two delayed, retrying requests at a time:
 
 ```bash
-npm run data:fetch:hadeethenc -- --languages=ar,en,ur,bn,hi
+npm run data:import:riyad -- --languages=ar,en
 ```
 
-The fetch is resumable from cached raw responses. Use the same `--languages` flag for a later stage; stage 5b is not part of the current pass.
+The import is resumable from cached raw pages. The reader bundles Arabic and English files into the build output; those files are generated locally and never committed.
 
 ## Deploy
 
 ### Cloudflare Pages
 
-- Build command: `npm run data:fetch:hadeethenc -- --languages=ar,en,ur,bn,hi && npm run build`
+- Build command: `npm run data:import:riyad -- --languages=ar,en && VITE_DATA_MODE=real npm run build`
 - Output directory: `dist`
 - Environment: fetch approved data in the build job; for feedback, set `VITE_FEEDBACK_ENDPOINT` and `VITE_FEEDBACK_KEY` and ensure the endpoint host appears in `public/_headers` under `connect-src`.
 - The tracked `wrangler.toml`, `public/_redirects`, and `public/_headers` provide the Pages output directory, SPA fallback, CSP, and security headers.
 
 ### GitHub Pages
 
-For a project site, set Vite's `base` to the repository subpath and publish `dist`:
+For this project site, import the approved corpus and build with the repository subpath before publishing `dist`:
 
 ```bash
-npm run build -- --base=/hadith-reader/
+npm run data:import:riyad -- --languages=ar,en
+VITE_DATA_MODE=real VITE_BASE_PATH=/Riyadh-as-Saliheen/ npm run build
 ```
 
-For a user or organization site at the domain root, use the normal `npm run build`. The site is entirely static.
+For a user or organization site at the domain root, use `VITE_BASE_PATH=/`. The site is entirely static.
 
 GitHub Pages does not apply `public/_headers`; set equivalent headers at a proxy or custom domain if those controls are required. The CI workflow validates, tests, and builds without deploying. For a manual GitHub Pages release, publish `dist` and keep the generated `404.html` fallback; no deployment is performed by this repository.
 

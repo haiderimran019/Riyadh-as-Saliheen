@@ -1,43 +1,19 @@
-import { useEffect, useState } from 'react'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { hadithRepository } from '../data/HadithRepository'
-import type { SourceCredit } from '../types/hadith'
 import { CAUTION_TEXT } from '../components/SiteFooter'
 
 export function SourcesPage() {
-  const [sources, setSources] = useState<SourceCredit[]>([])
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    hadithRepository.getSources().then((value) => setSources(value.sources)).catch((reason: Error) => setError(reason.message))
-  }, [])
-
   return (
     <main className="content-page narrow page-with-nav">
       <Link className="back-link" to="/"><ArrowLeft size={17} /> Library</Link>
       <header className="page-heading">
         <p className="eyebrow">Transparency</p>
         <h1>Sources & credits</h1>
-        <p>Every Arabic dataset and translation is credited separately. Placeholder entries below contain no real religious content.</p>
+        <p>Every reading must keep its text, translation, and license attached to the source that supplied it.</p>
       </header>
-      {error && <p className="notice error">{error}</p>}
-      <div className="source-list">
-        {sources.map((source) => (
-          <article className="source-card" key={`${source.kind}-${source.language ?? 'ar'}-${source.metadata.sourceUrl}`}>
-            <div className="source-card-header">
-              <span className="label">{source.kind === 'arabic' ? 'Arabic dataset' : `${source.language?.toUpperCase()} translation`}</span>
-            </div>
-            <h2>{source.metadata.sourceName}</h2>
-            <dl>
-              <div><dt>{source.metadata.contributorRole}</dt><dd>{source.metadata.contributor}</dd></div>
-              <div><dt>Licence</dt><dd>{source.metadata.license}</dd></div>
-              <div><dt>Date retrieved</dt><dd>{source.metadata.dateRetrieved}</dd></div>
-            </dl>
-            <span className="source-link">Source record <ExternalLink size={15} /></span>
-          </article>
-        ))}
-      </div>
+      <section className="source-status"><h2>Riyad as-Salihin · Arabic</h2><p>Arabic text and original chapter order are sourced from IslamHouse.com / IslamEnc.com. The app preserves the source wording and reference numbering; only the page layout is reflowed for reading.</p></section>
+      <section className="source-status"><h2>English translation</h2><p>The published English text is from IslamHouse.com / IslamEnc.com and is paired by the source's hadith reference. Some narrations may not have an English entry; those remain Arabic-only and are never filled with generated text.</p></section>
+      <section className="source-status"><h2>Reuse terms</h2><p>The IslamHouse API Hub content policy permits use in apps and offline when text is preserved and the source is clearly credited. Code is MIT; the source content follows IslamHouse's content policy and is not covered by the code licence.</p></section>
       <section className="source-caution"><h2>Important caution</h2><p>{CAUTION_TEXT}</p></section>
     </main>
   )

@@ -3,7 +3,7 @@ Code and content
 
 The MIT License in LICENSE applies only to the application code.
 
-Hadith texts, translations, grades, explanations, lessons, source metadata,
-and other content are not covered by the MIT License. HadeethEnc content is
-provided by HadeethEnc.com and remains subject to HadeethEnc's terms. It must
-be shown unmodified and with clear publisher and source credit.
+Hadith text and translations are not covered by the MIT License. The Riyad
+as-Salihin edition in this app is supplied by IslamHouse.com / IslamEnc.com
+and follows their content reuse policy. Source text is shown as published and
+must retain clear publisher and source attribution. See DATA_SOURCES.md.

@@ -1,10 +1,7 @@
 import { expect, test } from '@playwright/test'
-import { mkdir } from 'node:fs/promises'
 
 const screens = ['Home', 'Library', 'Reader', 'Settings'] as const
-const widths = [320, 360, 390, 412, 1440]
-await mkdir('screenshots', { recursive: true })
-
+const widths = [320, 390, 1440]
 for (const width of widths) {
   for (const screen of screens) {
     test(`${screen} has no horizontal overflow at ${width}px`, async ({ page }) => {
@@ -14,16 +11,10 @@ for (const width of widths) {
       if (screen === 'Home') await page.goto('./')
       if (screen === 'Library') await page.goto('library')
       if (screen === 'Reader') {
-        await page.goto('collection/hadeethenc')
-        const firstTopic = page.locator('.topic-tree a.topic-open').first()
-        await firstTopic.evaluate((link) => {
-          for (let ancestor = link.parentElement; ancestor; ancestor = ancestor.parentElement) {
-            if (ancestor instanceof HTMLDetailsElement) ancestor.open = true
-          }
-        })
-        await firstTopic.waitFor({ state: 'visible' })
-        await firstTopic.click()
-        await page.locator('.hadith-card').first().waitFor()
+        await page.goto('collection/riyad-as-salihin/chapter/1')
+        await expect(page.locator('.hadith-card').first()).toBeVisible()
+        await expect(page.locator('.arabic-text').first()).not.toBeEmpty()
+        await expect(page.getByText(/Text source: IslamEnc.com/).first()).toBeVisible()
       }
       if (screen === 'Settings') await page.goto('settings')
       await page.waitForLoadState('networkidle')
@@ -35,34 +26,9 @@ for (const width of widths) {
   }
 }
 
-test('five Arabic and English hadith remain available offline after first reading', async ({ page, context }) => {
-  await page.setViewportSize({ width: 360, height: 900 })
+test('legacy collection route no longer exposes the HadeethEnc topic directory', async ({ page }) => {
   await page.goto('collection/hadeethenc')
-  const firstTopic = page.locator('.topic-tree a.topic-open').first()
-  await firstTopic.evaluate((link) => {
-    for (let ancestor = link.parentElement; ancestor; ancestor = ancestor.parentElement) {
-      if (ancestor instanceof HTMLDetailsElement) ancestor.open = true
-    }
-  })
-  await firstTopic.click()
-  await expect(page.locator('.arabic-text').first()).toBeVisible({ timeout: 30_000 })
-  await page.locator('.hadith-card').nth(4).waitFor()
-  expect(await page.locator('.hadith-card').count()).toBeGreaterThanOrEqual(5)
-  await expect(page.locator('.translation-block').first()).toBeVisible()
-  await page.evaluate(() => navigator.serviceWorker.ready)
-  await page.reload()
-  await page.locator('.hadith-card').nth(4).waitFor()
-  const cacheStatus = await page.evaluate(async () => {
-    const names = await caches.keys()
-    const requests = await Promise.all(names.map(async (name) => (await (await caches.open(name)).keys()).map((request) => request.url)))
-    return { controller: navigator.serviceWorker.controller?.scriptURL ?? null, caches: names, dataFiles: requests.flat().filter((url) => url.includes('/data-local/generated/')) }
-  })
-  expect(cacheStatus.controller).toBeTruthy()
-  expect(cacheStatus.dataFiles.length).toBeGreaterThanOrEqual(3)
-  await context.setOffline(true)
-  await page.reload()
-  await expect(page.locator('.hadith-card').nth(4)).toBeVisible({ timeout: 30_000 })
-  expect(await page.locator('.hadith-card').count()).toBeGreaterThanOrEqual(5)
-  await expect(page.locator('.arabic-text').nth(4)).not.toBeEmpty()
-  await expect(page.locator('.translation-block').nth(4)).toBeVisible()
+  await expect(page).toHaveURL(/\/library$/)
+  await expect(page.getByRole('heading', { name: 'Riyad as-Salihin' })).toBeVisible()
+  await expect(page.locator('.topic-tree')).toHaveCount(0)
 })

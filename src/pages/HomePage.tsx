@@ -1,39 +1,23 @@
-import { useEffect, useState } from 'react'
+import { ArrowDownRight, BookOpen } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { hadithRepository } from '../data/HadithRepository'
-import { SHOW_FEEDBACK } from '../config'
+import { DATA_MODE, SHOW_FEEDBACK } from '../config'
 
 export function HomePage() {
-  const [error, setError] = useState('')
-  const [daily, setDaily] = useState<Awaited<ReturnType<typeof hadithRepository.getDailyHadith>>>()
-
-  useEffect(() => {
-    hadithRepository.getDailyHadith(new Date()).then(setDaily).catch((reason: Error) => setError(reason.message))
-  }, [])
-
   return (
-    <main className="welcome page-with-nav">
-      <p className="eyebrow">Private by design · Works offline</p>
-      <h1>A quiet place to read and reflect.</h1>
-      <p className="lede">Browse carefully sourced collections without accounts, ads, analytics, or tracking.</p>
-      {error && <p className="notice error">{error}</p>}
-      {daily && (
-        <section className="daily-card" aria-labelledby="daily-title">
-          <div>
-            <span className="label">Hadith of the day</span>
-            <h2 id="daily-title">Today’s reading</h2>
+    <main className="welcome page-with-nav riyad-home">
+      <section className="hero-panel" aria-labelledby="home-title">
+        <div className="hero-copy">
+          <p className="eyebrow">رياض الصالحين <span>·</span> The gardens of the righteous</p>
+          <h1 id="home-title">Riyad as-Salihin, one hadith at a time.</h1>
+          <p className="lede">Read the Arabic text with an English translation, chapter by chapter, in a quiet reader built for this collection.</p>
+          <div className="hero-actions">
+            <Link className="primary-action" to={DATA_MODE === 'real' ? '/collection/riyad-as-salihin/chapter/1' : '/library'}><BookOpen size={18} /> Read the collection <ArrowDownRight size={17} /></Link>
+            <Link className="text-action" to="/sources">About the text and sources</Link>
           </div>
-          <p dir="rtl" lang="ar">{daily.arabic}</p>
-          <footer>
-            <span>{daily.collection} · no. {daily.number}</span>
-            <span>Hadith text and grades: HadeethEnc.com</span>
-            <span>{daily.grades.length > 0 ? daily.grades.map((grade) => `${grade.grade} · ${grade.grader}`).join('; ') : 'Grade not available'}</span>
-            <Link to={`/collection/${daily.collectionId}/chapter/${daily.chapterId}#${daily.id}`}>Open reading</Link>
-          </footer>
-        </section>
-      )}
-      <Link className="continue-link" to="/library">Browse the library</Link>
-      {SHOW_FEEDBACK && <Link className="home-feedback" to="/feedback">Send feedback</Link>}
+        </div>
+        <div className="hero-seal" aria-hidden="true"><span>رياض</span><i>الصالحين</i></div>
+      </section>
+      <div className="home-bottomline"><span>No accounts. No ads. No tracking.</span>{SHOW_FEEDBACK && <Link className="home-feedback" to="/feedback">Send feedback</Link>}</div>
     </main>
   )
 }
