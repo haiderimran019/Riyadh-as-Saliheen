@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react'
-import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { loadAllHadith, loadCollections } from '../data/loader'
+import { loadAllHadith } from '../data/loader'
 import { selectDailyHadith } from '../utils/dailyHadith'
-import type { CollectionsManifest } from '../types/hadith'
 
 export function HomePage() {
-  const [manifest, setManifest] = useState<CollectionsManifest | null>(null)
   const [error, setError] = useState('')
   const [daily, setDaily] = useState<Awaited<ReturnType<typeof loadAllHadith>>[number] | undefined>()
 
   useEffect(() => {
-    loadCollections().then(setManifest).catch((reason: Error) => setError(reason.message))
-    loadAllHadith().then((records) => setDaily(selectDailyHadith(records, new Date()))).catch(() => undefined)
+    loadAllHadith().then((records) => setDaily(selectDailyHadith(records, new Date()))).catch((reason: Error) => setError(reason.message))
   }, [])
 
   return (
@@ -35,21 +31,7 @@ export function HomePage() {
           </footer>
         </section>
       )}
-      <div className="collection-grid">
-        {manifest?.collections.map((collection) => (
-          <Link className="collection-card" to={`/collection/${collection.id}`} key={collection.id}>
-            <div>
-              <span className="label">Collection</span>
-              <h2>{collection.title}</h2>
-              <p>{collection.description}</p>
-            </div>
-            <div className="collection-action">
-              {collection.placeholder && <span className="placeholder-badge">Placeholder data</span>}
-              <ArrowRight aria-hidden="true" />
-            </div>
-          </Link>
-        ))}
-      </div>
+      <Link className="continue-link" to="/library">Browse the library</Link>
     </main>
   )
 }

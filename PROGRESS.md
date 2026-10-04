@@ -1,7 +1,7 @@
 # Progress
 
 - [x] 1. Typography and anti-cramping
-- [ ] 2. Floating bottom navigation
+- [x] 2. Floating bottom navigation
 - [ ] 3. Reading controls and translation details
 - [ ] 4. Site footer and policy pages
 - [ ] 5. Feedback flow
