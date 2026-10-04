@@ -6,6 +6,7 @@ import type {
   SourcesManifest,
   TranslationChapterDataset,
 } from '../types/hadith'
+import type { SearchableHadith } from '../search'
 
 const cache = new Map<string, unknown>()
 
@@ -29,6 +30,18 @@ export const loadChapter = (collectionId: string, file: string) =>
 
 export const loadTranslation = (language: string, collectionId: string, file: string) =>
   loadJson<TranslationChapterDataset>(`translations/${language}/${collectionId}/${file}`)
+
+export async function loadAllHadith(): Promise<SearchableHadith[]> {
+  const manifest = await loadCollections()
+  const collections = await Promise.all(manifest.collections.map(({ id }) => loadCollection(id)))
+  const chapters = await Promise.all(collections.flatMap((collection) =>
+    collection.chapters.map(async (chapter) => {
+      const dataset = await loadChapter(collection.id, chapter.file)
+      return dataset.records.map((record) => ({ ...record, collectionId: collection.id, chapterId: chapter.id }))
+    }),
+  ))
+  return chapters.flat()
+}
 
 export function clearDataCache() {
   cache.clear()

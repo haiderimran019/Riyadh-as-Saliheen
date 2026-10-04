@@ -2,15 +2,18 @@ import { useEffect, useState } from 'react'
 import { ArrowLeft, ChevronRight } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { loadCollection } from '../data/loader'
+import { db, type ReadingProgress } from '../data/db'
 import type { CollectionIndex } from '../types/hadith'
 
 export function CollectionPage() {
   const { collectionId = '' } = useParams()
   const [collection, setCollection] = useState<CollectionIndex | null>(null)
   const [error, setError] = useState('')
+  const [progress, setProgress] = useState<ReadingProgress | null>(null)
 
   useEffect(() => {
     loadCollection(collectionId).then(setCollection).catch((reason: Error) => setError(reason.message))
+    db.progress.get(collectionId).then((value) => setProgress(value ?? null))
   }, [collectionId])
 
   return (
@@ -23,6 +26,7 @@ export function CollectionPage() {
           <h1>{collection.title}</h1>
           <p>{collection.description}</p>
           {collection.placeholder && <span className="placeholder-badge">Placeholder data — not religious content</span>}
+          {progress && <Link className="continue-link" to={`/collection/${collectionId}/chapter/${progress.chapterId}#${progress.hadithId}`}>Continue where you left off</Link>}
         </header>
         <section aria-labelledby="chapters-title">
           <div className="section-title">

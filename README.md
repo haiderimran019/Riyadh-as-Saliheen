@@ -2,6 +2,8 @@
 
 A private, ad-free, offline-capable hadith reading PWA. The app is static and has no backend, accounts, cookies, analytics, or runtime third-party requests.
 
+Bookmarks, bookmark folders, reading progress, themes, and reader settings are stored only in the browser with IndexedDB.
+
 > **Content status:** this repository currently contains fake placeholder records only. See `DATA_SOURCES.md` before adding or publishing real religious content.
 
 ## Run locally

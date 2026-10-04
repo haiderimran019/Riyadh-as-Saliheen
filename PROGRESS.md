@@ -1,6 +1,6 @@
 # Progress
 
-## Current milestone: M2 Reader — complete
+## Current milestone: M3 Search and saving — complete
 
 ### Done
 
@@ -24,9 +24,19 @@
 - Added a Sources & credits page generated from dataset metadata.
 - Displayed collection, book, chapter, number, and either attributed grades or “Grade not available” on every card.
 
+### M3 done
+
+- Added MiniSearch client-side search that works from Arabic records alone.
+- Added Arabic normalization for tashkeel, tatweel, alef, ya, ta marbuta, waw-hamza, and ya-hamza variants.
+- Added IndexedDB bookmarks with optional on-device folders.
+- Added intersection-based last-read position and a resume link on the collection page.
+- Persisted reader text size, tashkeel, and theme settings on-device.
+- Added settings, search, and saved routes with mobile navigation.
+- Added Vitest coverage for Arabic search normalization.
+
 ### Next
 
-- M3 Search and saving: Arabic-normalized search, bookmarks and folders, last-read position, and settings.
+- M4 Trust UI: explained grade badges, trust filters, grading/reference details, and desktop three-pane layout.
 
 ### Known issues
 
