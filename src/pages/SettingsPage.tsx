@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getSetting, setSetting } from '../data/db'
+import { SHOW_FEEDBACK } from '../config'
 
 export function SettingsPage() {
   const [showDiacritics, setShowDiacritics] = useState(true)
@@ -30,6 +31,7 @@ export function SettingsPage() {
           <span><strong>Sources and credits</strong><small>Review every Arabic dataset and translation independently.</small></span>
           <Link to="/sources">View</Link>
         </div>
+        {SHOW_FEEDBACK && <div className="setting-row"><span><strong>Feedback</strong><small>Report a mistake, bug, or suggestion.</small></span><Link to="/feedback">Send feedback</Link></div>}
       </div>
     </main>
   )

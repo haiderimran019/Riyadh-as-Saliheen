@@ -6,6 +6,7 @@ import { InstallPrompt } from './components/InstallPrompt'
 import { LanguagePicker } from './components/LanguagePicker'
 import { ReadingControlsSheet } from './components/ReadingControlsSheet'
 import { SiteFooter } from './components/SiteFooter'
+import { FeedbackModal } from './components/FeedbackModal'
 
 const CollectionPage = lazy(() => import('./pages/CollectionPage').then((module) => ({ default: module.CollectionPage })))
 const AboutPage = lazy(() => import('./pages/AboutPage').then((module) => ({ default: module.AboutPage })))
@@ -54,6 +55,7 @@ export function App() {
 
       <InstallPrompt />
       <ReadingControlsSheet />
+      <FeedbackModal />
 
       <nav className="floating-nav" aria-label="Primary navigation">
         <NavLink to="/" end aria-label="Home"><House size={20} /><span>Home</span></NavLink>

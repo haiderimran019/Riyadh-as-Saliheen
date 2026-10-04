@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { db, type BookmarkFolder } from '../data/db'
 import type { DatasetMetadata, HadithRecord, Translation } from '../types/hadith'
 import { shareHadithImage } from '../utils/shareImage'
+import { SHOW_FEEDBACK } from '../config'
 
 type Props = {
   hadith: HadithRecord
@@ -75,7 +76,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
               <p><strong>Language:</strong> English</p>
               <p><strong>Translation:</strong> HadeethEnc.com</p>
               <p>Not reviewed by this app's team.</p>
-              <p><Link to="/sources">Sources</Link> · <Link to={`/feedback?type=mistake&hadith=${encodeURIComponent(hadith.id)}`}>Report an error</Link></p>
+              <p><Link to="/sources">Sources</Link>{SHOW_FEEDBACK && <> · <Link to={`/feedback?type=mistake&hadith=${encodeURIComponent(hadith.id)}`}>Report an error</Link></>}</p>
             </div>
           </details>
         </section>

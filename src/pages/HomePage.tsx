@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { loadAllHadith } from '../data/loader'
 import { selectDailyHadith } from '../utils/dailyHadith'
+import { SHOW_FEEDBACK } from '../config'
 
 export function HomePage() {
   const [error, setError] = useState('')
@@ -32,6 +33,7 @@ export function HomePage() {
         </section>
       )}
       <Link className="continue-link" to="/library">Browse the library</Link>
+      {SHOW_FEEDBACK && <Link className="home-feedback" to="/feedback">Send feedback</Link>}
     </main>
   )
 }
