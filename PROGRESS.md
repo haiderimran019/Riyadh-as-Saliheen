@@ -1,6 +1,6 @@
 # Progress
 
-## Current milestone: M3 Search and saving — complete
+## Current milestone: M4 Trust UI — complete
 
 ### Done
 
@@ -34,9 +34,17 @@
 - Added settings, search, and saved routes with mobile navigation.
 - Added Vitest coverage for Arabic search normalization.
 
+### M4 done
+
+- Added icon, text, and semantic styling hooks for grade badges; grade labels never rely on colour alone.
+- Added plain-language grade explanations attributed to the named grader and an honest missing-grade explanation.
+- Added Sahih-only, Sahih+Hasan, and All trust filters. Records without grades appear only under All.
+- Added grading, reference, and record-location details in a mobile bottom sheet and persistent desktop context pane.
+- Added a true three-pane desktop reader: chapter browse, reading column, and context.
+
 ### Next
 
-- M4 Trust UI: explained grade badges, trust filters, grading/reference details, and desktop three-pane layout.
+- M5 Offline and polish: PWA caching, deterministic daily hadith, share images, install UI, accessibility, and performance.
 
 ### Known issues
 

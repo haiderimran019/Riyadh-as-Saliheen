@@ -11,6 +11,7 @@ type Props = {
   arabicSize: number
   collectionId: string
   chapterId: string
+  onOpenDetails: () => void
 }
 
 const ARABIC_DIACRITICS = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g
@@ -19,7 +20,7 @@ export function stripArabicDiacritics(value: string) {
   return value.replace(ARABIC_DIACRITICS, '')
 }
 
-export function HadithCard({ hadith, translation, translationMetadata, showDiacritics, arabicSize, collectionId, chapterId }: Props) {
+export function HadithCard({ hadith, translation, translationMetadata, showDiacritics, arabicSize, collectionId, chapterId, onOpenDetails }: Props) {
   const [saved, setSaved] = useState(false)
   const [folderId, setFolderId] = useState('')
   const [folders, setFolders] = useState<BookmarkFolder[]>([])
@@ -75,11 +76,11 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
       <footer className="hadith-footer">
         <div className="trust-summary">
           {hadith.grades.length > 0 ? hadith.grades.map((grade) => (
-            <span className="grade neutral" key={`${grade.grader}-${grade.grade}`}>
+            <button className={`grade grade-button grade-${grade.grade.toLocaleLowerCase().replace(/[^a-z]+/g, '-')}`} key={`${grade.grader}-${grade.grade}`} onClick={onOpenDetails}>
               <AlertCircle size={15} /> {grade.grade} · graded by {grade.grader}
-            </span>
+            </button>
           )) : (
-            <span className="grade unavailable"><AlertCircle size={15} /> Grade not available</span>
+            <button className="grade grade-button unavailable" onClick={onOpenDetails}><AlertCircle size={15} /> Grade not available</button>
           )}
           <span className="reference">Reference: {hadith.collection}, no. {hadith.number}</span>
         </div>
@@ -93,6 +94,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
           <button className="bookmark-button" aria-pressed={saved} onClick={toggleBookmark}>
             <Bookmark size={17} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Save'}
           </button>
+          <button className="details-button" onClick={onOpenDetails}>Details</button>
         </div>
       </footer>
     </article>
