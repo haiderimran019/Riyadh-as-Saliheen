@@ -4,6 +4,7 @@ import { Link, NavLink, Route, Routes } from 'react-router-dom'
 import { APP_NAME } from './config'
 import { InstallPrompt } from './components/InstallPrompt'
 import { LanguagePicker } from './components/LanguagePicker'
+import { ReadingControlsSheet } from './components/ReadingControlsSheet'
 
 const CollectionPage = lazy(() => import('./pages/CollectionPage').then((module) => ({ default: module.CollectionPage })))
 const HomePage = lazy(() => import('./pages/HomePage').then((module) => ({ default: module.HomePage })))
@@ -43,13 +44,14 @@ export function App() {
       </div>
 
       <InstallPrompt />
+      <ReadingControlsSheet />
 
       <nav className="floating-nav" aria-label="Primary navigation">
         <NavLink to="/" end aria-label="Home"><House size={20} /><span>Home</span></NavLink>
         <NavLink to="/library" aria-label="Library"><BookOpen size={20} /><span>Library</span></NavLink>
         <NavLink to="/search"><Search size={20} /><span>Search</span></NavLink>
         <NavLink to="/saved"><Bookmark size={20} /><span>Saved</span></NavLink>
-        <NavLink to="/settings" aria-label="Reading settings"><Type size={20} /><span>Reading settings</span></NavLink>
+        <button type="button" aria-label="Reading settings" onClick={() => window.dispatchEvent(new Event('open-reading-settings'))}><Type size={20} /><span>Reading settings</span></button>
       </nav>
     </div>
   )

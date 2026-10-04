@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, CheckCircle2, Minus, Plus, Type, X } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Type, X } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { HadithCard } from '../components/HadithCard'
+import type { ReadingPreferences } from '../components/ReadingControlsSheet'
 import { VirtualizedHadithList } from '../components/VirtualizedHadithList'
-import { db, getSetting, setSetting } from '../data/db'
+import { db, getSetting } from '../data/db'
 import { loadChapter, loadCollection, loadTranslation } from '../data/loader'
 import type { ArabicChapterDataset, CollectionIndex, HadithRecord, TranslationChapterDataset } from '../types/hadith'
 
@@ -30,7 +31,7 @@ export function ReaderPage() {
   const [translation, setTranslation] = useState<TranslationChapterDataset | null>(null)
   const [language, setLanguage] = useState('')
   const [showDiacritics, setShowDiacritics] = useState(true)
-  const [arabicSize, setArabicSize] = useState(2.2)
+  const [arabicSize, setArabicSize] = useState(34)
   const [trustFilter, setTrustFilter] = useState<TrustFilter>('all')
   const [selectedHadith, setSelectedHadith] = useState<HadithRecord | null>(null)
   const [contextOpen, setContextOpen] = useState(false)
@@ -49,7 +50,7 @@ export function ReaderPage() {
 
   useEffect(() => {
     setError('')
-    Promise.all([getSetting('showDiacritics', true), getSetting('arabicSize', 2.2)]).then(([diacritics, size]) => {
+    Promise.all([getSetting('showDiacritics', true), getSetting('arabicSizePx', window.matchMedia('(min-width: 721px)').matches ? 34 : 30)]).then(([diacritics, size]) => {
       setShowDiacritics(diacritics)
       setArabicSize(size)
     })
@@ -60,6 +61,16 @@ export function ReaderPage() {
       })
       .catch((reason: Error) => setError(reason.message))
   }, [collectionId])
+
+  useEffect(() => {
+    const update = (event: Event) => {
+      const preferences = (event as CustomEvent<ReadingPreferences>).detail
+      setShowDiacritics(preferences.showDiacritics)
+      setArabicSize(preferences.arabicSize)
+    }
+    window.addEventListener('reading-preferences-change', update)
+    return () => window.removeEventListener('reading-preferences-change', update)
+  }, [])
 
   useEffect(() => {
     if (!chapterIndex) return
@@ -140,15 +151,7 @@ export function ReaderPage() {
         </div>
 
         <div className="reader-toolbar" aria-label="Reader controls">
-          <label className="toggle-control">
-            <input type="checkbox" checked={showDiacritics} onChange={(event) => { setShowDiacritics(event.target.checked); void setSetting('showDiacritics', event.target.checked) }} />
-            <span>Tashkeel</span>
-          </label>
-          <div className="font-control" aria-label="Arabic font size">
-            <Type size={17} aria-hidden="true" />
-            <button aria-label="Decrease Arabic font size" onClick={() => setArabicSize((value) => { const next = Math.max(1.6, value - 0.2); void setSetting('arabicSize', next); return next })}><Minus size={16} /></button>
-            <button aria-label="Increase Arabic font size" onClick={() => setArabicSize((value) => { const next = Math.min(3.4, value + 0.2); void setSetting('arabicSize', next); return next })}><Plus size={16} /></button>
-          </div>
+          <button className="open-reading-controls" onClick={() => window.dispatchEvent(new Event('open-reading-settings'))}><Type size={17} /> Reading settings</button>
           {collection && collection.languages.length > 0 && (
             <label className="language-control">
               <span>Translation</span>

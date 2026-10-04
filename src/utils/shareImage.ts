@@ -82,6 +82,8 @@ export async function createShareImage(
   context.fillStyle = '#68746f'
   context.font = '22px system-ui'
   context.fillText(`Reference: ${hadith.collection}, no. ${hadith.number}`, 84, 1288)
+  context.textAlign = 'right'
+  context.fillText('HadeethEnc.com', 996, 1288)
 
   return await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Unable to create image')), 'image/png')

@@ -117,8 +117,15 @@ h2, h3 { text-wrap: balance; }
 .hadith-meta p { margin: 5px 0 0; color: var(--muted); font-size: .82rem; }
 .arabic-text { margin: 0; padding: 42px clamp(26px, 7vw, 60px); font-family: Amiri, serif; font-weight: 400; line-height: 2; text-align: right; overflow-wrap: anywhere; }
 .translation-block { padding: 28px clamp(26px, 7vw, 60px); border-top: 1px solid var(--border); background: var(--surface-soft); }
-.translation-block p { max-width: 68ch; margin: 0 0 18px; font-family: "Batang", "BatangChe", "Noto Serif KR", Georgia, serif; font-size: 1.08rem; line-height: 1.8; }
+.translation-block > p { max-width: 68ch; margin: 0 0 18px; font-family: "Batang", "BatangChe", "Noto Serif KR", Georgia, serif; font-size: var(--translation-size, 17px); line-height: 1.8; }
 .translation-block small { display: block; color: var(--muted); line-height: 1.5; }
+.translation-about { position: relative; font-size: .875rem; }
+.translation-about summary { display: inline-flex; min-height: 44px; align-items: center; gap: 7px; color: var(--accent); font-weight: 750; cursor: pointer; }
+.translation-about div { max-width: 30rem; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+.translation-about div p { margin: 0 0 8px; }
+.translation-about div p:last-child { margin-bottom: 0; }
+.translation-about a { color: var(--accent); }
+.hadeethenc-credit { margin: 0; padding: 12px 26px; border-top: 1px solid var(--border); color: var(--muted); font-size: .875rem; }
 .hadith-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 26px; border-top: 1px solid var(--border); }
 .trust-summary { display: flex; align-items: flex-start; flex-direction: column; gap: 7px; }
 .grade { display: inline-flex; align-items: center; gap: 7px; font-size: .8rem; font-weight: 750; }
@@ -190,10 +197,30 @@ h2, h3 { text-wrap: balance; }
 .source-link { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-size: .82rem; font-weight: 750; }
 .floating-nav { position: fixed; z-index: 40; right: 0; bottom: calc(12px + env(safe-area-inset-bottom)); left: 0; display: grid; grid-template-columns: repeat(5, 1fr); width: min(92vw, 640px); min-height: 64px; margin: auto; padding: 6px; border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent); border-radius: 999px; background: rgba(247, 248, 245, .84); box-shadow: 0 12px 36px rgba(18, 45, 38, .18); backdrop-filter: blur(20px) saturate(1.4); }
 :root[data-theme='dark'] .floating-nav { background: rgba(17, 41, 35, .88); }
-.floating-nav a { display: flex; min-width: 0; min-height: 50px; align-items: center; justify-content: center; flex-direction: column; gap: 2px; padding: 4px 6px; border-radius: 999px; color: var(--muted); font-size: .72rem; font-weight: 750; line-height: 1.15; text-align: center; text-decoration: none; }
-.floating-nav a.active { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent-strong); }
+.floating-nav a, .floating-nav button { display: flex; min-width: 0; min-height: 50px; align-items: center; justify-content: center; flex-direction: column; gap: 2px; padding: 4px 6px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font-size: .72rem; font-weight: 750; line-height: 1.15; text-align: center; text-decoration: none; cursor: pointer; }
+.floating-nav a.active, .floating-nav button[aria-expanded='true'] { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent-strong); }
 .floating-nav span { max-width: 10ch; }
 .app-shell { padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
+.reading-sheet-backdrop { position: fixed; inset: 0; z-index: 60; width: 100%; height: 100%; border: 0; background: rgba(10, 18, 15, .46); }
+.reading-sheet { position: fixed; z-index: 61; right: 20px; bottom: calc(88px + env(safe-area-inset-bottom)); width: min(420px, calc(100% - 40px)); max-height: calc(100vh - 120px); overflow-y: auto; padding: 22px; border: 1px solid var(--border); border-radius: 22px; background: var(--surface); box-shadow: 0 24px 70px rgba(0, 0, 0, .25); }
+.reading-sheet > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.reading-sheet h2 { margin: 4px 0 18px; font-family: "Batang", "BatangChe", "Noto Serif KR", Georgia, serif; font-size: 1.65rem; }
+.icon-button { display: grid; width: 44px; min-width: 44px; place-items: center; border: 0; border-radius: 12px; background: var(--surface-soft); color: var(--text); cursor: pointer; }
+.range-setting { display: grid; gap: 8px; margin: 16px 0; }
+.range-setting > span { display: flex; justify-content: space-between; gap: 16px; font-size: .9rem; }
+.range-setting output { color: var(--muted); }
+.range-setting input { width: 100%; accent-color: var(--accent); }
+.theme-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 18px 0; padding: 0; border: 0; }
+.theme-options legend { margin-bottom: 8px; font-size: .9rem; font-weight: 750; }
+.theme-options label { display: flex; min-height: 44px; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--border); border-radius: 10px; text-transform: capitalize; }
+.theme-options input { min-height: 0; accent-color: var(--accent); }
+.switch-setting { display: flex; min-height: 58px; align-items: center; justify-content: space-between; gap: 18px; }
+.switch-setting small { display: block; color: var(--muted); }
+.switch-setting input { width: 22px; accent-color: var(--accent); }
+.reading-preview { margin: 18px 0; padding: 16px; border-radius: 14px; background: var(--surface-soft); }
+.reading-preview p { margin: 0; }
+.reading-preview p:first-child { font-family: Amiri, serif; line-height: 1.8; }
+.reset-button, .open-reading-controls { display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--accent); font-weight: 750; cursor: pointer; }
 .install-prompt { position: fixed; z-index: 15; right: 22px; bottom: 22px; display: inline-flex; align-items: center; gap: 8px; padding: 12px 16px; border: 0; border-radius: 12px; background: var(--accent); color: white; box-shadow: var(--shadow); font-weight: 800; cursor: pointer; }
 .route-loading { display: grid; place-items: center; min-height: 45vh; color: var(--muted); }
 @media (max-width: 720px) {
@@ -209,6 +236,7 @@ h2, h3 { text-wrap: balance; }
   .hadith-meta, .hadith-footer { align-items: flex-start; flex-direction: column; }
   .source-card dl { grid-template-columns: 1fr; }
   .install-prompt { right: 12px; bottom: 88px; }
+  .reading-sheet { right: 0; bottom: 0; left: 0; width: 100%; max-height: min(86vh, 720px); padding-bottom: calc(24px + env(safe-area-inset-bottom)); border-radius: 24px 24px 0 0; }
 }
 @media (max-width: 359px) { .floating-nav span { display: none; } }
 @media (prefers-reduced-transparency: reduce) { .floating-nav { background: var(--surface); backdrop-filter: none; } }

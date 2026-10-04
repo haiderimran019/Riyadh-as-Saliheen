@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { AlertCircle, Bookmark, Share2 } from 'lucide-react'
+import { AlertCircle, Bookmark, Info, Share2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { db, type BookmarkFolder } from '../data/db'
 import type { DatasetMetadata, HadithRecord, Translation } from '../types/hadith'
 import { shareHadithImage } from '../utils/shareImage'
@@ -63,16 +64,24 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
         {hadith.placeholder && <span className="placeholder-badge">Placeholder</span>}
       </header>
 
-      <p className="arabic-text" dir="rtl" lang="ar" style={{ fontSize: `${arabicSize}rem` }}>{arabic}</p>
+      <p className="arabic-text" dir="rtl" lang="ar" style={{ fontSize: `${arabicSize}px` }}>{arabic}</p>
 
       {translation && translationMetadata && (
         <section className="translation-block" lang="en">
           <p>{translation.text}</p>
-          <small>
-            Translation credit: {translationMetadata.sourceName} · {translationMetadata.contributorRole}: {translationMetadata.contributor} · {translationMetadata.license}
-          </small>
+          <details className="translation-about">
+            <summary><Info size={16} /> About this translation</summary>
+            <div>
+              <p><strong>Language:</strong> English</p>
+              <p><strong>Translation:</strong> HadeethEnc.com</p>
+              <p>Not reviewed by this app's team.</p>
+              <p><Link to="/sources">Sources</Link> · <Link to={`/feedback?type=mistake&hadith=${encodeURIComponent(hadith.id)}`}>Report an error</Link></p>
+            </div>
+          </details>
         </section>
       )}
+
+      <p className="hadeethenc-credit">Hadith text, translation and grade source: HadeethEnc.com</p>
 
       <footer className="hadith-footer">
         <div className="trust-summary">
