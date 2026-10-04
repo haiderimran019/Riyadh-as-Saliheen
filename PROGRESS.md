@@ -5,6 +5,7 @@
 - [x] Per-script fonts, reading controls, attribution, feedback flow, footer, and policy pages.
 - [x] Responsive and offline browser checks; 360 px screenshots saved under ignored `/screenshots`.
 - [x] Publish preparation; CI tests/builds but does not deploy.
+- [ ] Public repository/push — blocked: `haiderimran019/hadith-reader` does not exist yet; GitHub browser is signed out. Create an empty public repo, then push a clean snapshot only.
 - [x] Riyad as-Salihin licensing reviewed; excluded pending clear English redistribution rights.
 - [ ] Branding polish — blocked: `/assets/brand` was not present; existing icon retained. Lighthouse targets not measured.
 - [ ] Full screenshot matrix and Lighthouse 90/95 goals — skipped; quick overflow matrix was run instead.
