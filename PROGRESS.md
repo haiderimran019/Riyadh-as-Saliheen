@@ -3,7 +3,7 @@
 - [x] 1. Typography and anti-cramping
 - [x] 2. Floating bottom navigation
 - [x] 3. Reading controls and translation details
-- [ ] 4. Site footer and policy pages
+- [x] 4. Site footer and policy pages
 - [ ] 5. Feedback flow
 - [ ] 6. Placeholder and real data modes
 - [ ] 7. Publish preparation and audits

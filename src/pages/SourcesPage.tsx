@@ -3,6 +3,7 @@ import { ArrowLeft, ExternalLink } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { loadSources } from '../data/loader'
 import type { SourceCredit } from '../types/hadith'
+import { CAUTION_TEXT } from '../components/SiteFooter'
 
 export function SourcesPage() {
   const [sources, setSources] = useState<SourceCredit[]>([])
@@ -38,6 +39,7 @@ export function SourcesPage() {
           </article>
         ))}
       </div>
+      <section className="source-caution"><h2>Important caution</h2><p>{CAUTION_TEXT}</p></section>
     </main>
   )
 }

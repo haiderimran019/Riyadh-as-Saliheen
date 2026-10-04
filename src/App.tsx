@@ -5,8 +5,10 @@ import { APP_NAME } from './config'
 import { InstallPrompt } from './components/InstallPrompt'
 import { LanguagePicker } from './components/LanguagePicker'
 import { ReadingControlsSheet } from './components/ReadingControlsSheet'
+import { SiteFooter } from './components/SiteFooter'
 
 const CollectionPage = lazy(() => import('./pages/CollectionPage').then((module) => ({ default: module.CollectionPage })))
+const AboutPage = lazy(() => import('./pages/AboutPage').then((module) => ({ default: module.AboutPage })))
 const HomePage = lazy(() => import('./pages/HomePage').then((module) => ({ default: module.HomePage })))
 const LibraryPage = lazy(() => import('./pages/LibraryPage').then((module) => ({ default: module.LibraryPage })))
 const ReaderPage = lazy(() => import('./pages/ReaderPage').then((module) => ({ default: module.ReaderPage })))
@@ -14,6 +16,8 @@ const SavedPage = lazy(() => import('./pages/SavedPage').then((module) => ({ def
 const SearchPage = lazy(() => import('./pages/SearchPage').then((module) => ({ default: module.SearchPage })))
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then((module) => ({ default: module.SettingsPage })))
 const SourcesPage = lazy(() => import('./pages/SourcesPage').then((module) => ({ default: module.SourcesPage })))
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage').then((module) => ({ default: module.PrivacyPage })))
+const TermsPage = lazy(() => import('./pages/TermsPage').then((module) => ({ default: module.TermsPage })))
 
 export function App() {
   return (
@@ -38,10 +42,15 @@ export function App() {
             <Route path="/saved" element={<SavedPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/sources" element={<SourcesPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route path="*" element={<HomePage />} />
           </Routes>
         </Suspense>
       </div>
+
+      <SiteFooter />
 
       <InstallPrompt />
       <ReadingControlsSheet />
