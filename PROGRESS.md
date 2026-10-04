@@ -1,6 +1,6 @@
 # Progress
 
-## Current milestone: M1 Foundation — complete
+## Current milestone: M2 Reader — complete
 
 ### Done
 
@@ -15,9 +15,18 @@
 - Documented the candidate dataset and unresolved translation licensing.
 - Added only conspicuously fake placeholder content. No real hadith text or metadata is shipped.
 
+### M2 done
+
+- Added collection, chapter, and chapter-reader routes.
+- Added Arabic-first cards with RTL direction, self-hosted Amiri, generous line height, a tashkeel toggle, and font-size controls.
+- Translations load from independent per-language chapter files and disappear cleanly when unavailable.
+- Displayed translation provenance and licence next to every visible translation.
+- Added a Sources & credits page generated from dataset metadata.
+- Displayed collection, book, chapter, number, and either attributed grades or “Grade not available” on every card.
+
 ### Next
 
-- M2 Reader: collection, chapter, and hadith reading views; typography and reader controls.
+- M3 Search and saving: Arabic-normalized search, bookmarks and folders, last-read position, and settings.
 
 ### Known issues
 

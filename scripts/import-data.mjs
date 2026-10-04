@@ -25,6 +25,7 @@ const translationSources = await Promise.all(
 )
 
 const collections = []
+const sources = []
 for (const sourceFile of sourceFiles) {
   const source = JSON.parse(await readFile(join(sourceDirectory, sourceFile), 'utf8'))
   const collectionDirectory = join(outputDirectory, source.id)
@@ -64,6 +65,7 @@ for (const sourceFile of sourceFiles) {
     placeholder: Boolean(source.metadata.placeholder),
     index: `${source.id}/index.json`,
   })
+  sources.push({ collection: source.id, kind: 'arabic', metadata: source.metadata })
 }
 
 for (const source of translationSources) {
@@ -77,6 +79,7 @@ for (const source of translationSources) {
       `${JSON.stringify({ metadata: source.metadata, translations }, null, 2)}\n`,
     )
   }
+  sources.push({ collection: source.collection, kind: 'translation', language: source.language, metadata: source.metadata })
 }
 
 const manifestMetadata = {
@@ -89,4 +92,5 @@ const manifestMetadata = {
   placeholder: true,
 }
 await writeFile(join(outputDirectory, 'collections.json'), `${JSON.stringify({ metadata: manifestMetadata, collections }, null, 2)}\n`)
+await writeFile(join(outputDirectory, 'sources.json'), `${JSON.stringify({ metadata: manifestMetadata, sources }, null, 2)}\n`)
 console.log(`Built ${collections.length} collection index(es) in public/data.`)

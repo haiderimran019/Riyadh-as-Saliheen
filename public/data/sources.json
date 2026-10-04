@@ -1,0 +1,40 @@
+{
+  "metadata": {
+    "sourceName": "Generated collection manifest",
+    "sourceUrl": "local-build://scripts/import-data.mjs",
+    "contributor": "Build system",
+    "contributorRole": "editor",
+    "license": "CC0-1.0",
+    "dateRetrieved": "2026-10-04",
+    "placeholder": true
+  },
+  "sources": [
+    {
+      "collection": "nawawi-placeholder",
+      "kind": "arabic",
+      "metadata": {
+        "sourceName": "Fake Arabic placeholder dataset",
+        "sourceUrl": "local-placeholder://arabic/nawawi-placeholder",
+        "contributor": "Placeholder only",
+        "contributorRole": "placeholder",
+        "license": "CC0-1.0",
+        "dateRetrieved": "2026-10-04",
+        "placeholder": true
+      }
+    },
+    {
+      "collection": "nawawi-placeholder",
+      "kind": "translation",
+      "language": "en",
+      "metadata": {
+        "sourceName": "Fake English placeholder translation",
+        "sourceUrl": "local-placeholder://translations/en/nawawi-placeholder",
+        "contributor": "Placeholder only",
+        "contributorRole": "placeholder",
+        "license": "CC0-1.0",
+        "dateRetrieved": "2026-10-04",
+        "placeholder": true
+      }
+    }
+  ]
+}

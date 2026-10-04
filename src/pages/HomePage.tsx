@@ -1,0 +1,38 @@
+import { useEffect, useState } from 'react'
+import { ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { loadCollections } from '../data/loader'
+import type { CollectionsManifest } from '../types/hadith'
+
+export function HomePage() {
+  const [manifest, setManifest] = useState<CollectionsManifest | null>(null)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    loadCollections().then(setManifest).catch((reason: Error) => setError(reason.message))
+  }, [])
+
+  return (
+    <main className="welcome page-with-nav">
+      <p className="eyebrow">Private by design · Works offline</p>
+      <h1>A quiet place to read and reflect.</h1>
+      <p className="lede">Browse carefully sourced collections without accounts, ads, analytics, or tracking.</p>
+      {error && <p className="notice error">{error}</p>}
+      <div className="collection-grid">
+        {manifest?.collections.map((collection) => (
+          <Link className="collection-card" to={`/collection/${collection.id}`} key={collection.id}>
+            <div>
+              <span className="label">Collection</span>
+              <h2>{collection.title}</h2>
+              <p>{collection.description}</p>
+            </div>
+            <div className="collection-action">
+              {collection.placeholder && <span className="placeholder-badge">Placeholder data</span>}
+              <ArrowRight aria-hidden="true" />
+            </div>
+          </Link>
+        ))}
+      </div>
+    </main>
+  )
+}

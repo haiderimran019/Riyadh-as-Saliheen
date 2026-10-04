@@ -66,3 +66,15 @@ export type CollectionsManifest = {
   metadata: DatasetMetadata
   collections: Array<Pick<CollectionIndex, 'id' | 'title' | 'description' | 'placeholder'> & { index: string }>
 }
+
+export type SourceCredit = {
+  collection: string
+  kind: 'arabic' | 'translation'
+  language?: string
+  metadata: DatasetMetadata
+}
+
+export type SourcesManifest = {
+  metadata: DatasetMetadata
+  sources: SourceCredit[]
+}

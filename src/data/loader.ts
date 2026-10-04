@@ -3,6 +3,7 @@ import type {
   ArabicChapterDataset,
   CollectionIndex,
   CollectionsManifest,
+  SourcesManifest,
   TranslationChapterDataset,
 } from '../types/hadith'
 
@@ -18,6 +19,7 @@ async function loadJson<T>(path: string): Promise<T> {
 }
 
 export const loadCollections = () => loadJson<CollectionsManifest>('collections.json')
+export const loadSources = () => loadJson<SourcesManifest>('sources.json')
 
 export const loadCollection = (collectionId: string) =>
   loadJson<CollectionIndex>(`${collectionId}/index.json`)
