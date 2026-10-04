@@ -17,7 +17,9 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       VitePWA({
-        registerType: 'prompt',
+        // Activate new app shells immediately so installed clients do not stay
+        // on an older placeholder build waiting for a prompt they may miss.
+        registerType: 'autoUpdate',
         includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
         manifest: {
           name: APP_NAME,
@@ -36,6 +38,7 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           clientsClaim: true,
+          skipWaiting: true,
           navigateFallback: `${base}index.html`,
           globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
           runtimeCaching: [
