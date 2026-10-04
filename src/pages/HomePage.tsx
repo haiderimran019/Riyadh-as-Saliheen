@@ -24,7 +24,7 @@ export function HomePage() {
       {daily && (
         <section className="daily-card" aria-labelledby="daily-title">
           <div>
-            <span className="label">Hadith of the day · deterministic, not personalized</span>
+            <span className="label">Hadith of the day</span>
             <h2 id="daily-title">Today’s reading</h2>
           </div>
           <p dir="rtl" lang="ar">{daily.arabic}</p>
