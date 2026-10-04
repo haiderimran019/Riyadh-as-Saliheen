@@ -37,9 +37,8 @@ export function App() {
         </Suspense>
       </div>
 
-      <SiteFooter />
-
       <InstallPrompt />
+      <SiteFooter />
       <ReadingControlsSheet />
       <FeedbackModal />
       <UpdatePrompt />

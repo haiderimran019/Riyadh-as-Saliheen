@@ -67,7 +67,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
       <header className="hadith-meta">
         <div>
           <span className="hadith-number">Hadith {hadith.number}</span>
-          <p>{hadith.collection} · {hadith.book} · Chapter {hadith.chapter}</p>
+          <p>{hadith.collection}{hadith.book === hadith.collection ? '' : ` · ${hadith.book}`} · Chapter {hadith.chapter}</p>
         </div>
       </header>
 

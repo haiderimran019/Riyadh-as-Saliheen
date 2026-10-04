@@ -267,7 +267,7 @@ h2, h3 { text-wrap: balance; }
 .topic-tree a:hover { background: var(--surface-soft); }
 .topic-tree a span, .topic-label span { color: var(--muted); font-size: .875rem; }
 .topic-tree .topic-open { justify-content: flex-start; margin-left: 18px; color: var(--accent); font-size: .875rem; font-weight: 750; }
-.install-prompt { position: fixed; z-index: 15; right: 22px; bottom: 22px; display: inline-flex; align-items: center; gap: 8px; padding: 12px 16px; border: 0; border-radius: 12px; background: var(--accent); color: white; box-shadow: var(--shadow); font-weight: 800; cursor: pointer; }
+.install-prompt { position: relative; display: flex; width: fit-content; max-width: calc(100% - 32px); min-height: 44px; align-items: center; justify-content: center; gap: 8px; margin: 16px auto 0; padding: 9px 14px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--accent-strong); font-size: .9rem; font-weight: 750; cursor: pointer; }
 .route-loading { display: grid; place-items: center; min-height: 45vh; color: var(--muted); }
 .site-footer { width: min(1120px, 100%); margin: 48px auto 0; padding: 40px clamp(16px, 5vw, 48px) calc(112px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); color: var(--muted); font-size: .875rem; }
 .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
@@ -303,13 +303,18 @@ h2, h3 { text-wrap: balance; }
   .brand { font-size: .9rem; }
   .collection-card { align-items: flex-start; flex-direction: column; }
   .collection-action { width: 100%; justify-content: space-between; }
-  .reader-heading { grid-template-columns: 1fr; }
-  .reader-heading .back-link { margin-bottom: 30px; }
-  .reader-toolbar { align-items: stretch; flex-wrap: wrap; width: 100%; top: 6px; }
+  .content-page, .reader-page { padding: 28px 16px 82px; }
+  .reader-heading { grid-template-columns: 1fr; margin-bottom: 20px; }
+  .reader-heading .back-link { margin: 0 0 18px; }
+  .reader-heading h1 { max-width: 24ch; margin: 6px 0 16px; font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif; font-size: clamp(1.65rem, 7vw, 2.25rem); line-height: 1.12; letter-spacing: -.025em; }
+  .reader-toolbar { position: static; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; justify-content: stretch; width: 100%; margin: 0 0 22px; padding: 12px; gap: 10px; }
+  .reader-toolbar .open-reading-controls, .reader-toolbar .offline-button { grid-column: 1 / -1; width: 100%; justify-content: center; }
+  .reader-toolbar .language-control, .reader-toolbar .trust-control { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); flex: initial; min-width: 0; gap: 6px; padding: 0; font-size: .8rem; }
+  .reader-toolbar .language-control select, .reader-toolbar .trust-control select { width: 100%; min-height: 44px; padding: 6px; }
   .font-control { border-left: 0; border-right: 0; }
   .hadith-meta, .hadith-footer { align-items: flex-start; flex-direction: column; }
   .source-card dl { grid-template-columns: 1fr; }
-  .install-prompt { right: 12px; bottom: 88px; }
+  .install-prompt { margin-top: 12px; }
   .reading-sheet { right: 0; bottom: 0; left: 0; width: 100%; max-height: min(86vh, 720px); padding-bottom: calc(24px + env(safe-area-inset-bottom)); border-radius: 24px 24px 0 0; }
   .footer-grid { grid-template-columns: 1fr; gap: 18px; }
   .footer-actions { align-items: flex-start; flex-direction: column; gap: 6px; }
@@ -442,8 +447,7 @@ h2, h3 { text-wrap: balance; }
 @media (max-width: 380px) {
   .language-name { display: none; }
   .home-bottomline { align-items: flex-start; flex-direction: column; }
-  .reader-toolbar .open-reading-controls { flex: 1 1 100%; justify-content: center; }
-  .reader-toolbar .language-control, .reader-toolbar .trust-control { flex-basis: 100%; justify-content: space-between; }
+  .reader-toolbar .language-control, .reader-toolbar .trust-control { grid-template-columns: 1fr; }
 }
 .site-footer { width: min(1040px, calc(100% - 32px)); margin: 28px auto 0; padding: 16px clamp(16px, 3vw, 28px) calc(94px + env(safe-area-inset-bottom)); border: 1px solid var(--border); border-radius: 18px 18px 0 0; background: var(--surface); color: var(--muted); font-size: .875rem; }
 .footer-links { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 22px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
