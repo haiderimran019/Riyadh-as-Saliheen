@@ -8,7 +8,24 @@ export type DatasetMetadata = {
   placeholder: boolean
 }
 
-export type Translation = { text: string }
+export type HadeethEncRecord = {
+  id: string
+  title: string
+  hadeeth: string
+  hadeeth_ar: string
+  hadeeth_intro?: string
+  attribution?: string
+  grade?: string
+  grade_ar?: string
+  explanation?: string
+  hints?: string[]
+  words_meanings?: unknown[]
+  categories?: string[]
+  translations?: string[]
+  [key: string]: unknown
+}
+
+export type Translation = { text: string; raw?: HadeethEncRecord }
 
 export type HadithGrade = {
   grader: string
@@ -33,7 +50,12 @@ export type HadithRecord = {
   references: HadithReference[]
   topics?: string[]
   placeholder?: boolean
+  title?: string
+  attribution?: string
+  hadeethEnc?: HadeethEncRecord
 }
+
+export type HadeethCategory = { id: string; title: string; hadeeths_count: string; parent_id: string | null }
 
 export type ChapterIndex = {
   id: string
@@ -50,6 +72,11 @@ export type CollectionIndex = {
   placeholder: boolean
   metadata: DatasetMetadata
   chapters: ChapterIndex[]
+  categories?: HadeethCategory[]
+  roots?: string[]
+  languageCounts?: Record<string, number>
+  languageNames?: Record<string, string>
+  allFile?: string
 }
 
 export type ArabicChapterDataset = {

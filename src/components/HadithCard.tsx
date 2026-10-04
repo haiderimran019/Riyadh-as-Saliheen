@@ -14,6 +14,7 @@ type Props = {
   arabicSize: number
   collectionId: string
   chapterId: string
+  language: string
   onOpenDetails: () => void
 }
 
@@ -23,7 +24,7 @@ export function stripArabicDiacritics(value: string) {
   return value.replace(ARABIC_DIACRITICS, '')
 }
 
-export function HadithCard({ hadith, translation, translationMetadata, showDiacritics, arabicSize, collectionId, chapterId, onOpenDetails }: Props) {
+export function HadithCard({ hadith, translation, translationMetadata, showDiacritics, arabicSize, collectionId, chapterId, language, onOpenDetails }: Props) {
   const [saved, setSaved] = useState(false)
   const [folderId, setFolderId] = useState('')
   const [folders, setFolders] = useState<BookmarkFolder[]>([])
@@ -68,12 +69,12 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
       <p className="arabic-text" dir="rtl" lang="ar" style={{ fontSize: `${arabicSize}px` }}>{arabic}</p>
 
       {translation && translationMetadata && (
-        <section className="translation-block" lang="en">
+        <section className="translation-block" lang={language} dir={language === 'ur' ? 'rtl' : 'auto'}>
           <p>{translation.text}</p>
           <details className="translation-about">
             <summary><Info size={16} /> About this translation</summary>
             <div>
-              <p><strong>Language:</strong> English</p>
+              <p><strong>Language:</strong> {language.toUpperCase()}</p>
               <p><strong>Translation:</strong> HadeethEnc.com</p>
               <p>Not reviewed by this app's team.</p>
               <p><Link to="/sources">Sources</Link>{SHOW_FEEDBACK && <> · <Link to={`/feedback?type=mistake&hadith=${encodeURIComponent(hadith.id)}`}>Report an error</Link></>}</p>
@@ -82,13 +83,20 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
         </section>
       )}
 
+      {translation?.raw && (translation.raw.explanation || (translation.raw.hints?.length ?? 0) > 0) && (
+        <div className="hadeethenc-commentary">
+          {translation.raw.explanation && <details><summary>Explanation · HadeethEnc</summary><p>{translation.raw.explanation}</p></details>}
+          {(translation.raw.hints?.length ?? 0) > 0 && <details><summary>Key lessons · HadeethEnc</summary><ul>{translation.raw.hints?.map((hint, index) => <li key={index}>{hint}</li>)}</ul></details>}
+        </div>
+      )}
+
       <p className="hadeethenc-credit">Hadith text, translation and grade source: HadeethEnc.com</p>
 
       <footer className="hadith-footer">
         <div className="trust-summary">
-          {hadith.grades.length > 0 ? hadith.grades.map((grade) => (
+          {(translation?.raw?.grade ? [{ grader: 'HadeethEnc', grade: translation.raw.grade }] : hadith.grades).length > 0 ? (translation?.raw?.grade ? [{ grader: 'HadeethEnc', grade: translation.raw.grade }] : hadith.grades).map((grade) => (
             <button className={`grade grade-button grade-${grade.grade.toLocaleLowerCase().replace(/[^a-z]+/g, '-')}`} key={`${grade.grader}-${grade.grade}`} onClick={onOpenDetails}>
-              <AlertCircle size={15} /> {grade.grade} · graded by {grade.grader}
+              <AlertCircle size={15} /> {grade.grade} · per HadeethEnc
             </button>
           )) : (
             <button className="grade grade-button unavailable" onClick={onOpenDetails}><AlertCircle size={15} /> Grade not available</button>

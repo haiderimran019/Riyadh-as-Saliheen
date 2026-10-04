@@ -10,7 +10,7 @@
     "test": "vitest run",
     "test:overflow": "playwright test e2e/overflow.e2e.ts",
     "data:build": "node scripts/import-data.mjs",
-    "data:adapt:fawaz": "node scripts/adapters/fawazahmed0.mjs"
+    "data:fetch:hadeethenc": "node scripts/fetch-hadeethenc.mjs"
   },
   "dependencies": {
     "@fontsource/amiri": "^5.2.6",

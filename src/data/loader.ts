@@ -35,7 +35,7 @@ export async function loadAllHadith(): Promise<SearchableHadith[]> {
   const manifest = await loadCollections()
   const collections = await Promise.all(manifest.collections.map(({ id }) => loadCollection(id)))
   const chapters = await Promise.all(collections.flatMap((collection) =>
-    collection.chapters.map(async (chapter) => {
+    collection.allFile ? [loadChapter(collection.id, collection.allFile).then((dataset) => dataset.records.map((record) => ({ ...record, collectionId: collection.id, chapterId: record.topics?.[0] ?? collection.chapters[0]?.id ?? '' })))] : collection.chapters.map(async (chapter) => {
       const dataset = await loadChapter(collection.id, chapter.file)
       return dataset.records.map((record) => ({ ...record, collectionId: collection.id, chapterId: chapter.id }))
     }),

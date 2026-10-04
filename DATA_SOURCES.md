@@ -13,18 +13,12 @@ The app currently ships **no real hadith content**. Every Arabic record and tran
 
 The Arabic placeholder file and the English placeholder file each carry their own metadata block. Generated chapter files preserve that block.
 
-## Candidate source under review
+## Real content source
 
-- Repository: `fawazahmed0/hadith-api`
-- Repository license: The Unlicense
-- Repository URL: https://github.com/fawazahmed0/hadith-api
-- Candidate collections: Forty Hadith of an-Nawawi, then Riyad as-Salihin
-- Status: **not imported**
-- Licensing concern: the repository-level license is permissive, but that does not by itself prove that each included translation was relicensed by its translator or original publisher. English translation provenance and rights are not sufficiently clear for this app yet.
-- Runtime policy: if approved content is imported later, it will be copied into `public/data`; the app will never fetch from this or any other third-party service at runtime.
+Stage 5a uses the official HadeethEnc API at `https://hadeethenc.com/api/v1` for Arabic, English, Urdu, Bengali, and Hindi. It was retrieved on 2026-10-04. Raw responses and generated real data remain in the ignored `data-local` directory and are never committed.
 
-Before real content is added, record the exact source file and revision, retrieval date, translator, grader for each grade, applicable license, and any attribution requirements here.
+HadeethEnc's stated reuse terms require that content is not modified, added to, or deleted from, and that HadeethEnc.com is clearly credited as publisher and source. The importer caches every response and preserves each complete API record alongside the normalized fields used by the interface.
 
-## Import quarantine
+The local stage report records exact hadith counts, byte sizes, missing translations, and every distinct grade label with its count, separated by language. English returned 26 distinct grade labels; Arabic returned 46; Urdu returned 27; Bengali returned 24; Hindi returned 26. Grade labels are shown exactly as received and identified as “per HadeethEnc.”
 
-`scripts/adapters/fawazahmed0.mjs` converts downloaded editions into the app's Arabic-first staging format. Its output is written to `scripts/source-data/real/`, which is ignored by Git. Raw downloads belong in `scripts/raw-data/`, also ignored. The adapter deliberately emits `[REQUIRED ...]` metadata fields; a file must not be moved into the tracked source list until every field is verified and this document is updated.
+The app fetches no HadeethEnc data at runtime. A real-mode build copies the already retrieved local dataset into the static output. The fetch script supports later language stages through `--languages=code,code`; stage 5b was not run.

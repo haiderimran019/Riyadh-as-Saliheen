@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import { loadCollection } from '../data/loader'
 import { db, type ReadingProgress } from '../data/db'
 import type { CollectionIndex } from '../types/hadith'
+import { TopicTree } from '../components/TopicTree'
 
 export function CollectionPage() {
   const { collectionId = '' } = useParams()
@@ -33,7 +34,7 @@ export function CollectionPage() {
             <h2 id="chapters-title">Chapters</h2>
             <span>{collection.chapters.length} chapters</span>
           </div>
-          <div className="chapter-list">
+          {collection.categories && collection.roots ? <TopicTree collectionId={collection.id} categories={collection.categories} chapters={collection.chapters} roots={collection.roots} /> : <div className="chapter-list">
             {collection.chapters.map((chapter) => (
               <Link className="chapter-row" key={chapter.id} to={`/collection/${collection.id}/chapter/${chapter.id}`}>
                 <span className="chapter-index">{chapter.id.padStart(2, '0')}</span>
@@ -41,7 +42,7 @@ export function CollectionPage() {
                 <ChevronRight aria-hidden="true" />
               </Link>
             ))}
-          </div>
+          </div>}
         </section>
       </>}
     </main>

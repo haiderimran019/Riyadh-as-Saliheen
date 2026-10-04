@@ -1,9 +1,13 @@
-import { defineConfig } from 'vite'
+import { cpSync, existsSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import { APP_NAME } from './src/config'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  return {
   plugins: [
     react(),
     VitePWA({
@@ -28,7 +32,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.pathname.includes('/data/'),
+            urlPattern: ({ url }) => url.pathname.includes('/data/') || url.pathname.includes('/data-local/'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'hadith-chapters-v1',
@@ -39,5 +43,15 @@ export default defineConfig({
         ],
       },
     }),
+    {
+      name: 'copy-local-real-data',
+      closeBundle() {
+        if (env.VITE_DATA_MODE !== 'real') return
+        const source = resolve('data-local/generated')
+        if (!existsSync(source)) throw new Error('Real mode requires data-local/generated. Run npm run data:fetch:hadeethenc first.')
+        cpSync(source, resolve('dist/data-local/generated'), { recursive: true })
+      },
+    },
   ],
+  }
 })

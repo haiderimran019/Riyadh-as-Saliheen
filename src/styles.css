@@ -126,6 +126,11 @@ h2, h3 { text-wrap: balance; }
 .translation-about div p { margin: 0 0 8px; }
 .translation-about div p:last-child { margin-bottom: 0; }
 .translation-about a { color: var(--accent); }
+.hadeethenc-commentary { padding: 0 clamp(26px, 7vw, 60px) 24px; background: var(--surface-soft); }
+.hadeethenc-commentary details { border-top: 1px solid var(--border); }
+.hadeethenc-commentary summary { min-height: 48px; padding: 12px 0; color: var(--accent); font-weight: 750; cursor: pointer; }
+.hadeethenc-commentary p, .hadeethenc-commentary ul { max-width: 68ch; margin: 0; padding-bottom: 18px; line-height: 1.75; }
+.hadeethenc-commentary ul { padding-left: 22px; }
 .hadeethenc-credit { margin: 0; padding: 12px 26px; border-top: 1px solid var(--border); color: var(--muted); font-size: .875rem; }
 .hadith-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 26px; border-top: 1px solid var(--border); }
 .trust-summary { display: flex; align-items: flex-start; flex-direction: column; gap: 7px; }
@@ -187,6 +192,7 @@ h2, h3 { text-wrap: balance; }
 .setting-row small { margin-top: 5px; color: var(--muted); line-height: 1.45; }
 .setting-row > input[type='checkbox'] { width: 20px; height: 20px; accent-color: var(--accent); }
 .setting-row a { color: var(--accent); font-weight: 750; }
+.settings-action { padding: 0 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--accent); font-weight: 750; cursor: pointer; }
 .source-list { display: grid; gap: 14px; }
 .source-card { padding: 24px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); }
 .source-card-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
@@ -222,6 +228,18 @@ h2, h3 { text-wrap: balance; }
 .reading-preview p { margin: 0; }
 .reading-preview p:first-child { font-family: Amiri, serif; line-height: 1.8; }
 .reset-button, .open-reading-controls { display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--accent); font-weight: 750; cursor: pointer; }
+.offline-button { padding: 0 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--accent); font-size: .8rem; font-weight: 750; cursor: pointer; }
+.topic-tree, .topic-tree ul { margin: 0; padding: 0; list-style: none; }
+.topic-tree { overflow: hidden; border: 1px solid var(--border); border-radius: 20px; background: var(--surface); }
+.topic-tree ul { margin-left: 18px; border-left: 1px solid var(--border); }
+.topic-tree li { border-top: 1px solid var(--border); }
+.topic-tree > li:first-child { border-top: 0; }
+.topic-tree summary { cursor: pointer; }
+.topic-tree summary::marker { color: var(--accent); }
+.topic-tree a, .topic-label { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 18px; padding: 10px 16px; color: var(--text); text-decoration: none; }
+.topic-tree a:hover { background: var(--surface-soft); }
+.topic-tree a span, .topic-label span { color: var(--muted); font-size: .8rem; }
+.topic-tree .topic-open { justify-content: flex-start; margin-left: 18px; color: var(--accent); font-size: .875rem; font-weight: 750; }
 .install-prompt { position: fixed; z-index: 15; right: 22px; bottom: 22px; display: inline-flex; align-items: center; gap: 8px; padding: 12px 16px; border: 0; border-radius: 12px; background: var(--accent); color: white; box-shadow: var(--shadow); font-weight: 800; cursor: pointer; }
 .route-loading { display: grid; place-items: center; min-height: 45vh; color: var(--muted); }
 .site-footer { width: min(1120px, 100%); margin: 48px auto 0; padding: 40px clamp(16px, 5vw, 48px) calc(112px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); color: var(--muted); font-size: .875rem; }

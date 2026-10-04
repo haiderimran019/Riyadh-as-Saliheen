@@ -4,7 +4,8 @@ import { Link, useParams } from 'react-router-dom'
 import { HadithCard } from '../components/HadithCard'
 import type { ReadingPreferences } from '../components/ReadingControlsSheet'
 import { VirtualizedHadithList } from '../components/VirtualizedHadithList'
-import { db, getSetting } from '../data/db'
+import { db, getSetting, setSetting } from '../data/db'
+import { getDataRoot } from '../config'
 import { loadChapter, loadCollection, loadTranslation } from '../data/loader'
 import type { ArabicChapterDataset, CollectionIndex, HadithRecord, TranslationChapterDataset } from '../types/hadith'
 
@@ -29,7 +30,8 @@ export function ReaderPage() {
   const [collection, setCollection] = useState<CollectionIndex | null>(null)
   const [chapter, setChapter] = useState<ArabicChapterDataset | null>(null)
   const [translation, setTranslation] = useState<TranslationChapterDataset | null>(null)
-  const [language, setLanguage] = useState('')
+  const [language, setLanguage] = useState('en')
+  const [offlineStatus, setOfflineStatus] = useState('')
   const [showDiacritics, setShowDiacritics] = useState(true)
   const [arabicSize, setArabicSize] = useState(34)
   const [trustFilter, setTrustFilter] = useState<TrustFilter>('all')
@@ -54,13 +56,24 @@ export function ReaderPage() {
       setShowDiacritics(diacritics)
       setArabicSize(size)
     })
-    loadCollection(collectionId)
-      .then((value) => {
+    Promise.all([loadCollection(collectionId), getSetting('language', 'en')])
+      .then(([value, preferredLanguage]) => {
         setCollection(value)
-        setLanguage(value.languages[0] ?? '')
+        const available = ['ar', ...value.languages]
+        setLanguage(available.includes(preferredLanguage) ? preferredLanguage : available.includes('en') ? 'en' : 'ar')
       })
       .catch((reason: Error) => setError(reason.message))
   }, [collectionId])
+
+  useEffect(() => {
+    const update = (event: Event) => {
+      const preferred = (event as CustomEvent<string>).detail
+      const available = ['ar', ...(collection?.languages ?? [])]
+      setLanguage(available.includes(preferred) ? preferred : available.includes('en') ? 'en' : 'ar')
+    }
+    window.addEventListener('app-language-change', update)
+    return () => window.removeEventListener('app-language-change', update)
+  }, [collection])
 
   useEffect(() => {
     const update = (event: Event) => {
@@ -83,7 +96,7 @@ export function ReaderPage() {
   }, [chapterIndex, collectionId])
 
   useEffect(() => {
-    if (!chapterIndex || !language) {
+    if (!chapterIndex || !language || language === 'ar') {
       setTranslation(null)
       return
     }
@@ -113,6 +126,22 @@ export function ReaderPage() {
     setContextOpen(true)
   }
 
+  const downloadLanguage = async () => {
+    if (!collection || language === 'ar') return
+    setOfflineStatus('Downloading…')
+    try {
+      for (let index = 0; index < collection.chapters.length; index += 6) {
+        await Promise.all(collection.chapters.slice(index, index + 6).map((chapterItem) => fetch(`${getDataRoot()}/translations/${language}/${collectionId}/${chapterItem.file}`).then((response) => {
+          if (!response.ok) throw new Error(String(response.status))
+          return response.arrayBuffer()
+        })))
+      }
+      setOfflineStatus('Available offline')
+    } catch {
+      setOfflineStatus('Download failed')
+    }
+  }
+
   const renderHadith = (hadith: HadithRecord) => (
     <HadithCard
       key={hadith.id}
@@ -123,6 +152,7 @@ export function ReaderPage() {
       arabicSize={arabicSize}
       collectionId={collectionId}
       chapterId={chapterId}
+      language={language}
       onOpenDetails={() => openContext(hadith)}
     />
   )
@@ -155,11 +185,12 @@ export function ReaderPage() {
           {collection && collection.languages.length > 0 && (
             <label className="language-control">
               <span>Translation</span>
-              <select value={language} onChange={(event) => setLanguage(event.target.value)}>
-                {collection.languages.map((code) => <option key={code} value={code}>{code.toUpperCase()}</option>)}
+              <select value={language} onChange={(event) => { setLanguage(event.target.value); void setSetting('language', event.target.value) }}>
+                {['ar', ...collection.languages].map((code) => <option key={code} value={code}>{collection.languageNames?.[code] ?? code.toUpperCase()} · {collection.languageCounts?.[code] ?? chapter?.records.length ?? 0}</option>)}
               </select>
             </label>
           )}
+          {collection && language !== 'ar' && <button className="offline-button" onClick={() => void downloadLanguage()}>{offlineStatus || 'Download language'}</button>}
           <label className="trust-control">
             <span>Trust filter</span>
             <select value={trustFilter} onChange={(event) => setTrustFilter(event.target.value as TrustFilter)}>

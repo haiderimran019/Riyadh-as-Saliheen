@@ -24,6 +24,9 @@ export function FeedbackModal() {
 
   useEffect(() => {
     if (!open) return
+    setType(params.get('type') === 'mistake' ? 'Mistake in hadith or translation' : 'Suggestion')
+    setStatus('idle')
+    setError('')
     messageRef.current?.focus()
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') { close(); return }
@@ -37,7 +40,7 @@ export function FeedbackModal() {
     }
     document.addEventListener('keydown', handleKey)
     return () => document.removeEventListener('keydown', handleKey)
-  }, [open])
+  }, [open, params])
 
   if (!open) return null
 

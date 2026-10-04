@@ -27,6 +27,14 @@ The production build includes a Workbox service worker. The app shell is precach
 
 `VITE_DATA_MODE=placeholder` is the default and reads only the tracked fake records. Real imported data stays under the ignored `data-local` directory and is selected with `VITE_DATA_MODE=real`.
 
+Fetch the authorized stage 5a languages with at most two delayed, retrying requests at a time:
+
+```bash
+npm run data:fetch:hadeethenc -- --languages=ar,en,ur,bn,hi
+```
+
+The fetch is resumable from cached raw responses. Use the same `--languages` flag for a later stage; stage 5b is not part of the current pass.
+
 ### Add a translation
 
 Add a separate file under `scripts/source-data/translations/<language>`. Its metadata block must name the source, exact URL, translator, licence, and retrieval date. List the file in `translationFiles` in `scripts/import-data.mjs`, then run `npm run data:build`. Generated translations live independently at `public/data/translations/<language>/<collection>/<chapter>.json`; adding or removing one never changes the Arabic dataset.
