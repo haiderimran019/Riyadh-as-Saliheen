@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, CheckCircle2, Search, Type, X } from 'lucide-react'
+import { ArrowLeft, Search, Type } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { HadithCard } from '../components/HadithCard'
 import type { ReadingPreferences } from '../components/ReadingControlsSheet'
@@ -18,13 +18,6 @@ const gradeCategory = (grade: string) => {
   return 'other'
 }
 
-const gradeExplanation = (grade: string) => {
-  const category = gradeCategory(grade)
-  if (category === 'sahih') return 'The named grader classified this report as sound under their methodology.'
-  if (category === 'hasan') return 'The named grader classified this report as good under their methodology.'
-  return 'This is the exact label recorded by the source. Consult that source for the grader’s methodology.'
-}
-
 export function ReaderPage() {
   const { collectionId = '', chapterId = '' } = useParams()
   const [collection, setCollection] = useState<CollectionIndex | null>(null)
@@ -35,8 +28,6 @@ export function ReaderPage() {
   const [showDiacritics, setShowDiacritics] = useState(true)
   const [arabicSize, setArabicSize] = useState(38)
   const [trustFilter, setTrustFilter] = useState<TrustFilter>('all')
-  const [selectedHadith, setSelectedHadith] = useState<HadithRecord | null>(null)
-  const [contextOpen, setContextOpen] = useState(false)
   const [error, setError] = useState('')
   const [chapterLoading, setChapterLoading] = useState(true)
   const [collectionLoading, setCollectionLoading] = useState(true)
@@ -105,7 +96,6 @@ export function ReaderPage() {
       .then((value) => {
         if (!active) return
         setChapter(value)
-        setSelectedHadith(value.records[0] ?? null)
       })
       .catch(() => { if (active) setError('This chapter could not be loaded. Check your connection and try again.') })
       .finally(() => { if (active) setChapterLoading(false) })
@@ -143,7 +133,6 @@ export function ReaderPage() {
       const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
       if (!visible) return
       const record = chapter.records.find((candidate) => candidate.id === visible.target.id)
-      if (record) setSelectedHadith(record)
       void db.progress.put({ collectionId, chapterId, hadithId: visible.target.id, updatedAt: Date.now() })
     }, { threshold: [0.55, 0.8] })
     targets.forEach((target) => observer.observe(target))
@@ -151,11 +140,6 @@ export function ReaderPage() {
     hashTarget?.scrollIntoView({ block: 'start' })
     return () => observer.disconnect()
   }, [chapter, chapterId, collectionId, visibleRecords])
-
-  const openContext = (hadith: HadithRecord) => {
-    setSelectedHadith(hadith)
-    setContextOpen(true)
-  }
 
   const downloadLanguage = async () => {
     if (!collection || language === 'ar') return
@@ -184,12 +168,11 @@ export function ReaderPage() {
       collectionId={collectionId}
       chapterId={chapterId}
       language={translation?.translations[hadith.id]?.language ?? language}
-      onOpenDetails={() => openContext(hadith)}
     />
   )
 
   return (
-    <main className="reader-page page-with-nav three-pane-page">
+    <main className="reader-page page-with-nav two-pane-page">
       <aside className="browse-pane" aria-label="Browse chapters">
         <Link className="back-link" to={`/collection/${collectionId}`}><ArrowLeft size={17} /> Collection</Link>
         <p className="pane-label">Chapters</p>
@@ -214,14 +197,6 @@ export function ReaderPage() {
 
         <div className="reader-toolbar" aria-label="Reader controls">
           <div className="reader-toolbar-head"><button className="open-reading-controls" aria-label="Open reading display settings" onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}><Type size={17} /> Display</button></div>
-          {collection && collection.languages.length > 0 && (
-            <label className="language-control">
-              <span>Translation</span>
-              <select value={language} onChange={(event) => { setLanguage(event.target.value); void setSetting('language', event.target.value); dispatchAppEvent(APP_EVENTS.languageChange, event.target.value) }}>
-                {['ar', ...collection.languages].map((code) => <option key={code} value={code}>{collection.languageNames?.[code] ?? code.toUpperCase()}</option>)}
-              </select>
-            </label>
-          )}
           {hasGrades && <label className="trust-control">
             <span>Grade filter</span>
             <select value={trustFilter} onChange={(event) => setTrustFilter(event.target.value as TrustFilter)}>
@@ -243,41 +218,6 @@ export function ReaderPage() {
         </section>
       </section>
 
-      <aside className={`context-pane ${contextOpen ? 'open' : ''}`} aria-label="Hadith grading and references">
-        <button className="context-close" onClick={() => setContextOpen(false)} aria-label="Close details"><X size={19} /></button>
-        <p className="pane-label">Context</p>
-        {selectedHadith ? (
-          <div className="context-content">
-            <span className="context-number">Hadith {selectedHadith.number}</span>
-            <section>
-              <h2>Grading</h2>
-              {selectedHadith.grades.length > 0 ? selectedHadith.grades.map((grade) => (
-                <div className={`grade-detail ${gradeCategory(grade.grade)}`} key={`${grade.grader}-${grade.grade}`}>
-                  <strong><CheckCircle2 size={17} /> {grade.grade}</strong>
-                  <span>Graded by {grade.grader}</span>
-                  <p>{grade.note ?? gradeExplanation(grade.grade)}</p>
-                </div>
-              )) : (
-                <div className="grade-detail unavailable">
-                  <strong>Grade not available</strong>
-                  <p>The imported record does not contain a grade or grader. The app does not infer one.</p>
-                </div>
-              )}
-            </section>
-            <section>
-              <h2>References</h2>
-              {selectedHadith.references.length > 0 ? selectedHadith.references.map((reference) => (
-                <p className="context-reference" key={`${reference.collection}-${reference.number}`}>{reference.collection}<strong>No. {reference.number}</strong></p>
-              )) : <p className="context-muted">References not available.</p>}
-            </section>
-            <section>
-              <h2>Record location</h2>
-              <p className="context-muted">{selectedHadith.collection}<br />{selectedHadith.book}<br />Chapter {selectedHadith.chapter}</p>
-            </section>
-          </div>
-        ) : <p className="context-muted">Select a hadith to see its details.</p>}
-      </aside>
-      {contextOpen && <button className="sheet-backdrop" aria-label="Close details" onClick={() => setContextOpen(false)} />}
     </main>
   )
 }

@@ -3,7 +3,6 @@ import { BookOpen } from 'lucide-react'
 import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import { APP_NAME, DATA_MODE } from './config'
 import { InstallPrompt } from './components/InstallPrompt'
-import { LanguagePicker } from './components/LanguagePicker'
 import { ReadingControlsSheet } from './components/ReadingControlsSheet'
 import { SiteFooter } from './components/SiteFooter'
 import { FeedbackModal } from './components/FeedbackModal'
@@ -22,7 +21,6 @@ export function App() {
           <span className="brand-mark" aria-hidden="true"><img src={`${import.meta.env.BASE_URL}icons/icon.svg`} alt="" /></span>
           <span className="brand-copy"><strong>{APP_NAME}</strong><small>رياض الصالحين</small></span>
         </Link>
-        <LanguagePicker />
       </header>
       {DATA_MODE === 'placeholder' && <p className="preview-banner" role="status">Preview build: content is being added</p>}
 

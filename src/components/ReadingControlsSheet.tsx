@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { RotateCcw, X } from 'lucide-react'
+import { Coffee, Monitor, Moon, RotateCcw, Sun, X } from 'lucide-react'
 import { getSetting, setSetting } from '../data/db'
 import { APP_EVENTS, dispatchAppEvent } from '../core/appEvents'
 
@@ -89,7 +89,9 @@ export function ReadingControlsSheet() {
         </header>
         <label className="range-setting"><span><strong>Arabic size</strong><output>{preferences.arabicSize}px</output></span><input type="range" min="20" max="56" value={preferences.arabicSize} onChange={(event) => update('arabicSize', Number(event.target.value))} /></label>
         <label className="range-setting"><span><strong>Translation size</strong><output>{preferences.translationSize}px</output></span><input type="range" min="14" max="28" value={preferences.translationSize} onChange={(event) => update('translationSize', Number(event.target.value))} /></label>
-        <fieldset className="theme-options"><legend>Theme</legend>{(['system', 'light', 'dark', 'sepia'] as const).map((theme) => <label key={theme}><input type="radio" name="reader-theme" checked={preferences.theme === theme} onChange={() => update('theme', theme)} /> {theme}</label>)}</fieldset>
+        <fieldset className="theme-options"><legend>Theme</legend><div className="theme-buttons">{([
+          ['system', 'System', Monitor], ['light', 'Light', Sun], ['dark', 'Dark', Moon], ['sepia', 'Sepia', Coffee],
+        ] as const).map(([theme, label, Icon]) => <button type="button" key={theme} className="theme-choice" aria-label={`${label} theme`} title={`${label} theme`} aria-pressed={preferences.theme === theme} onClick={() => update('theme', theme)}><Icon size={20} aria-hidden="true" /></button>)}</div></fieldset>
         <label className="switch-setting"><span><strong>Diacritics</strong><small>Show Arabic tashkeel where provided.</small></span><input type="checkbox" checked={preferences.showDiacritics} onChange={(event) => update('showDiacritics', event.target.checked)} /></label>
         <div className="reading-preview" aria-label="Live reading preview"><p dir="rtl" lang="ar" style={{ fontSize: preferences.arabicSize }}>نص عربي للمعاينة</p><p style={{ fontSize: preferences.translationSize }}>Translation preview</p></div>
         <button className="reset-button" onClick={reset}><RotateCcw size={17} /> Reset</button>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { SHOW_FEEDBACK } from '../config'
 import { APP_EVENTS, dispatchAppEvent } from '../core/appEvents'
+import { LanguagePicker } from '../components/LanguagePicker'
 
 export function SettingsPage() {
   return (
@@ -11,6 +12,7 @@ export function SettingsPage() {
       </header>
       <div className="settings-list">
         <div className="setting-row"><span><strong>Reading display</strong><small>Arabic and translation size, theme, and diacritics.</small></span><button className="settings-action" onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}>Open</button></div>
+        <div className="setting-row setting-language-row"><span><strong>Translation language</strong><small>Choose Arabic or English for the reader.</small></span><LanguagePicker /></div>
         <div className="setting-row">
           <span><strong>Sources and credits</strong><small>Review every Arabic dataset and translation independently.</small></span>
           <Link to="/sources">View</Link>

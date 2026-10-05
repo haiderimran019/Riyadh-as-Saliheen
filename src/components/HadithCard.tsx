@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AlertCircle, Bookmark, Copy, Info, Share2 } from 'lucide-react'
+import { Bookmark, Copy, Info, Share2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { db, type BookmarkFolder } from '../data/db'
 import type { DatasetMetadata, HadithRecord, Translation } from '../types/hadith'
@@ -15,7 +15,6 @@ type Props = {
   collectionId: string
   chapterId: string
   language: string
-  onOpenDetails: () => void
 }
 
 const ARABIC_DIACRITICS = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g
@@ -24,7 +23,7 @@ export function stripArabicDiacritics(value: string) {
   return value.replace(ARABIC_DIACRITICS, '')
 }
 
-export function HadithCard({ hadith, translation, translationMetadata, showDiacritics, arabicSize, collectionId, chapterId, language, onOpenDetails }: Props) {
+export function HadithCard({ hadith, translation, translationMetadata, showDiacritics, arabicSize, collectionId, chapterId, language }: Props) {
   const [saved, setSaved] = useState(false)
   const [folderId, setFolderId] = useState('')
   const [folders, setFolders] = useState<BookmarkFolder[]>([])
@@ -103,13 +102,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
 
       <footer className="hadith-footer">
         <div className="trust-summary">
-          {hadith.grades.length > 0 ? hadith.grades.map((grade) => (
-            <button className={`grade grade-button grade-${grade.grade.toLocaleLowerCase().replace(/[^a-z]+/g, '-')}`} key={`${grade.grader}-${grade.grade}`} onClick={onOpenDetails}>
-              <AlertCircle size={15} /> {grade.grade} · per {grade.grader}
-            </button>
-          )) : (
-            <button className="grade grade-button unavailable" onClick={onOpenDetails}><AlertCircle size={15} /> Grade not available</button>
-          )}
+          {hadith.grades.map((grade) => <span className={`grade grade-${grade.grade.toLocaleLowerCase().replace(/[^a-z]+/g, '-')}`} key={`${grade.grader}-${grade.grade}`}>{grade.grade} <small>· per {grade.grader}</small></span>)}
           <span className="reference">Reference: {hadith.collection}, no. {hadith.number}</span>
         </div>
         <div className="save-controls">
@@ -119,7 +112,6 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
               {folders.map((folder) => <option key={folder.id} value={folder.id}>{folder.name}</option>)}
             </select>
           )}
-          <button className="details-button" onClick={onOpenDetails}>Reference & details</button>
         </div>
       </footer>
     </article>
