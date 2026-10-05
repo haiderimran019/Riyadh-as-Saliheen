@@ -5,5 +5,5 @@
 - [x] In-app reading, Arabic/English toggle, bilingual search, chapter finder, saved folders and deep links, offline-capable PWA.
 - [x] Source credit retained; real/raw data remains in ignored `data-local` and is generated during the Pages workflow.
 - [x] Local release checks: 10 unit tests, 25 browser tests including 320/390/1440px overflow and reader flows.
-- [ ] Verify the GitHub Pages workflow and live site after pushing `main`.
+- [x] GitHub Pages deployment and public mobile reader verified with real Arabic and English data.
 - [ ] Full Lighthouse and screenshot matrix deferred.

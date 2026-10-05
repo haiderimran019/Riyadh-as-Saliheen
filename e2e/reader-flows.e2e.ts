@@ -5,6 +5,7 @@ test.use({ viewport: { width: 390, height: 844 } })
 test('reader language, bookmark, folder, and return link work on mobile', async ({ page }) => {
   await page.goto('collection/riyad-as-salihin/chapter/1')
   await expect(page.locator('.hadith-card').first()).toBeVisible()
+  await expect(page.getByText('Grade filter')).toHaveCount(0)
   expect(await page.locator('.reader-toolbar .language-control select').evaluate((element) => element.getBoundingClientRect().width)).toBeGreaterThan(120)
   await expect(page.locator('.translation-block').first()).toBeVisible()
   await page.getByRole('combobox', { name: 'Translation language' }).selectOption('ar')

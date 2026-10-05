@@ -51,6 +51,9 @@ export function ReaderPage() {
     const categories = hadith.grades.map((grade) => gradeCategory(grade.grade))
     return trustFilter === 'sahih' ? categories.includes('sahih') : categories.some((value) => value === 'sahih' || value === 'hasan')
   }), [chapter, trustFilter])
+  const hasGrades = chapter?.records.some((record) => record.grades.length > 0) ?? false
+
+  useEffect(() => { if (chapter && !hasGrades) setTrustFilter('all') }, [chapter, hasGrades])
 
   useEffect(() => {
     setError('')
@@ -219,14 +222,14 @@ export function ReaderPage() {
               </select>
             </label>
           )}
-          <label className="trust-control">
+          {hasGrades && <label className="trust-control">
             <span>Grade filter</span>
             <select value={trustFilter} onChange={(event) => setTrustFilter(event.target.value as TrustFilter)}>
               <option value="sahih">Sahih only</option>
               <option value="sahih-hasan">Sahih + Hasan</option>
               <option value="all">All</option>
             </select>
-          </label>
+          </label>}
           {collection && language !== 'ar' && <button className="offline-button" onClick={() => void downloadLanguage()}>{offlineStatus || 'Offline text'}</button>}
         </div>
 

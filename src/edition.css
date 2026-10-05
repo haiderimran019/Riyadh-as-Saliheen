@@ -249,6 +249,9 @@ button, input, select, textarea { font-family: inherit; }
   .reader-toolbar .language-control select, .reader-toolbar .trust-control select { width: 100%; min-height: 39px; padding: 5px 20px 5px 8px; border-radius: 7px; font-size: .8rem; }
   .reader-toolbar .open-reading-controls { min-height: 36px; padding: 0 10px; border-radius: 7px; font-size: .76rem; }
   .reader-toolbar .offline-button { grid-column: 2; grid-row: 2; justify-self: end; width: auto; min-height: 36px; padding: 0 4px; font-size: .7rem; }
+  .reader-toolbar:not(:has(.trust-control)) .language-control { grid-column: 1 / -1; grid-row: 1; }
+  .reader-toolbar:not(:has(.trust-control)) .reader-toolbar-head { grid-column: 1; grid-row: 2; }
+  .reader-toolbar:not(:has(.trust-control)) .offline-button { grid-column: 2; grid-row: 2; }
   .hadith-list { display: block; }
   .hadith-card { margin: 0; border: 0; border-top: 1px solid var(--border); border-radius: 0; background: transparent; box-shadow: none; }
   .hadith-meta { gap: 5px; padding: 10px 17px; border: 0; background: transparent; }
