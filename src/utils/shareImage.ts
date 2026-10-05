@@ -1,8 +1,6 @@
 import { APP_NAME } from '../config'
 import type { DatasetMetadata, HadithRecord, Translation } from '../types/hadith'
 
-const SOURCE_REFERENCE = /^\d+\s*\/\s*\d+\s*[-–—ـ]+\s*/u
-
 function wrapText(context: CanvasRenderingContext2D, text: string, maxWidth: number) {
   const words = text.split(/\s+/)
   const lines: string[] = []
@@ -37,27 +35,27 @@ export async function createShareImage(
   const context = canvas.getContext('2d')
   if (!context) throw new Error('Canvas is unavailable')
 
-  context.fillStyle = '#f7f8f5'
+  context.fillStyle = '#111916'
   context.fillRect(0, 0, canvas.width, canvas.height)
-  context.fillStyle = '#315c52'
+  context.fillStyle = '#a9d0bd'
   context.fillRect(0, 0, canvas.width, 22)
-  context.fillStyle = '#1d2825'
+  context.fillStyle = '#f1f4ed'
   context.textAlign = 'left'
   context.direction = 'ltr'
-  context.font = '700 34px system-ui'
+  context.font = '700 34px Manrope Variable, system-ui'
   context.fillText(APP_NAME, 84, 104)
-  context.fillStyle = '#68746f'
+  context.fillStyle = '#b0beb5'
   context.font = '600 25px system-ui'
   context.fillText(`Hadith ${hadith.number} · ${hadith.book} · Chapter ${hadith.chapter}`, 84, 152)
 
-  context.fillStyle = '#1d2825'
+  context.fillStyle = '#f1f4ed'
   context.textAlign = 'right'
   context.direction = 'rtl'
   context.font = '52px Amiri, serif'
-  let y = drawLines(context, wrapText(context, hadith.arabic.replace(SOURCE_REFERENCE, ''), 912), 996, 260, 94) + 36
+  let y = drawLines(context, wrapText(context, hadith.arabic, 912), 996, 260, 94) + 36
 
   if (translation && translationMetadata) {
-    context.strokeStyle = '#dce4df'
+    context.strokeStyle = '#34433a'
     context.beginPath()
     context.moveTo(84, y)
     context.lineTo(996, y)
@@ -65,23 +63,23 @@ export async function createShareImage(
     y += 55
     context.textAlign = 'left'
     context.direction = 'ltr'
-    context.fillStyle = '#1d2825'
-    context.font = '34px Georgia, serif'
-    y = drawLines(context, wrapText(context, translation.text.replace(SOURCE_REFERENCE, ''), 912), 84, y, 52) + 26
-    context.fillStyle = '#68746f'
+    context.fillStyle = '#f1f4ed'
+    context.font = '34px Manrope Variable, system-ui'
+    y = drawLines(context, wrapText(context, translation.text, 912), 84, y, 52) + 26
+    context.fillStyle = '#b0beb5'
     context.font = '20px system-ui'
     y = drawLines(context, wrapText(context, `Translation source: ${translationMetadata.sourceName}`, 912), 84, y, 30) + 20
   }
 
   context.textAlign = 'left'
   context.direction = 'ltr'
-  context.fillStyle = '#315c52'
+  context.fillStyle = '#a9d0bd'
   context.font = '700 24px system-ui'
   const grade = hadith.grades.length > 0
     ? hadith.grades.map((item) => `${item.grade} · graded by ${item.grader}`).join('; ')
     : 'Grade not available'
   context.fillText(grade, 84, 1238)
-  context.fillStyle = '#68746f'
+  context.fillStyle = '#b0beb5'
   context.font = '22px system-ui'
   context.fillText(`Reference: ${hadith.collection}, no. ${hadith.number}`, 84, 1288)
   context.textAlign = 'right'

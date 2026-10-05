@@ -156,6 +156,7 @@ for (const record of englishRecords) {
 if (chapters.size < 300) throw new Error(`Only found ${chapters.size} chapters; refusing to emit incomplete data.`)
 const chapterIndexes = []
 const allRecords = []
+const allTranslations = {}
 let arabicCount = 0
 let englishCount = 0
 let missingEnglish = 0
@@ -183,6 +184,7 @@ for (const chapter of [...chapters.values()].filter((item) => item.records.size 
   })
   allRecords.push(...outputRecords)
   const translations = Object.fromEntries(records.filter((record) => record.translations.en).map((record) => [record.id, record.translations.en]))
+  Object.assign(allTranslations, translations)
   await mkdir(join(outputRoot, 'riyad-as-salihin', 'chapters'), { recursive: true })
   await writeFile(join(outputRoot, 'riyad-as-salihin', file), JSON.stringify({ metadata, records: outputRecords }))
   if (languages.includes('en')) {
@@ -210,6 +212,7 @@ const collection = {
 }
 if (new Set(allRecordIds).size !== allRecordIds.length) throw new Error('Duplicate source hadith IDs found across chapter pages.')
 await writeFile(join(outputRoot, 'riyad-as-salihin', 'all.json'), JSON.stringify({ metadata, records: allRecords }))
+if (languages.includes('en')) await writeFile(join(outputRoot, 'translations', 'en', 'riyad-as-salihin', 'all.json'), JSON.stringify({ metadata, translations: allTranslations }))
 await writeFile(join(outputRoot, 'riyad-as-salihin', 'index.json'), JSON.stringify(collection, null, 0))
 await writeFile(join(outputRoot, 'collections.json'), JSON.stringify({ metadata, collections: [{ id: collection.id, title: collection.title, description: collection.description, index: `${collection.id}/index.json` }] }, null, 0))
 await writeFile(join(outputRoot, 'sources.json'), JSON.stringify({ metadata, sources: [{ collection: collection.id, kind: 'arabic', metadata }, ...(languages.includes('en') ? [{ collection: collection.id, kind: 'translation', language: 'en', metadata }] : [])] }, null, 0))

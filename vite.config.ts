@@ -20,20 +20,21 @@ export default defineConfig(({ mode }) => {
         // Activate new app shells immediately so installed clients do not stay
         // on an older placeholder build waiting for a prompt they may miss.
         registerType: 'autoUpdate',
-        includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
+        includeAssets: ['icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/icon-maskable-512.png'],
         manifest: {
           name: APP_NAME,
           short_name: APP_NAME,
           description: 'A private, offline-capable hadith reader.',
-          theme_color: '#315c52',
-          background_color: '#f7f8f5',
+          theme_color: '#111916',
+          background_color: '#111916',
           display: 'standalone',
           // 2. Align PWA URLs with base path
           start_url: base,
           scope: base,
           icons: [
             { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-            { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+            { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+            { src: 'icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
           ],
         },
         workbox: {

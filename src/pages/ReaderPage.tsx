@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, CheckCircle2, Type, X } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Search, Type, X } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { HadithCard } from '../components/HadithCard'
 import type { ReadingPreferences } from '../components/ReadingControlsSheet'
-import { VirtualizedHadithList } from '../components/VirtualizedHadithList'
 import { db, getSetting, setSetting } from '../data/db'
 import { getDataRoot } from '../config'
 import { hadithRepository } from '../data/HadithRepository'
@@ -34,7 +33,7 @@ export function ReaderPage() {
   const [language, setLanguage] = useState('en')
   const [offlineStatus, setOfflineStatus] = useState('')
   const [showDiacritics, setShowDiacritics] = useState(true)
-  const [arabicSize, setArabicSize] = useState(34)
+  const [arabicSize, setArabicSize] = useState(38)
   const [trustFilter, setTrustFilter] = useState<TrustFilter>('all')
   const [selectedHadith, setSelectedHadith] = useState<HadithRecord | null>(null)
   const [contextOpen, setContextOpen] = useState(false)
@@ -57,7 +56,7 @@ export function ReaderPage() {
     setError('')
     setCollectionLoading(true)
     setCollection(null)
-    Promise.all([getSetting('showDiacritics', true), getSetting('arabicSizePx', window.matchMedia('(min-width: 721px)').matches ? 34 : 30)]).then(([diacritics, size]) => {
+    Promise.all([getSetting('showDiacritics', true), getSetting('arabicSizePx', window.matchMedia('(min-width: 721px)').matches ? 38 : 34)]).then(([diacritics, size]) => {
       setShowDiacritics(diacritics)
       setArabicSize(size)
     })
@@ -115,19 +114,23 @@ export function ReaderPage() {
       setTranslation(null)
       return
     }
+    let active = true
+    setTranslation(null)
     hadithRepository.getTranslation(language, collectionId, chapterIndex.file)
       .then(async (selected) => {
+        if (!active) return
         const selectedTranslations = Object.fromEntries(Object.entries(selected.translations).map(([id, value]) => [id, { ...value, language }]))
         const missingIds = (chapter?.records ?? []).filter((record) => !selected.translations[record.id]).map((record) => record.id)
         if (language === 'en' || missingIds.length === 0) {
-          setTranslation({ ...selected, translations: selectedTranslations })
+          if (active) setTranslation({ ...selected, translations: selectedTranslations })
           return
         }
         const english = await hadithRepository.getTranslation('en', collectionId, chapterIndex.file).catch(() => null)
         const englishFallbacks = Object.fromEntries(Object.entries(english?.translations ?? {}).filter(([id]) => missingIds.includes(id)).map(([id, value]) => [id, { ...value, language: 'en' }]))
-        setTranslation({ ...selected, translations: { ...englishFallbacks, ...selectedTranslations } })
+        if (active) setTranslation({ ...selected, translations: { ...englishFallbacks, ...selectedTranslations } })
       })
-      .catch(() => setTranslation(null))
+      .catch(() => { if (active) setTranslation(null) })
+    return () => { active = false }
   }, [chapter, chapterIndex, collectionId, language])
 
   useEffect(() => {
@@ -141,7 +144,7 @@ export function ReaderPage() {
       void db.progress.put({ collectionId, chapterId, hadithId: visible.target.id, updatedAt: Date.now() })
     }, { threshold: [0.55, 0.8] })
     targets.forEach((target) => observer.observe(target))
-    const hashTarget = window.location.hash ? document.querySelector(window.location.hash) : null
+    const hashTarget = window.location.hash ? document.getElementById(decodeURIComponent(window.location.hash.slice(1))) : null
     hashTarget?.scrollIntoView({ block: 'start' })
     return () => observer.disconnect()
   }, [chapter, chapterId, collectionId, visibleRecords])
@@ -198,22 +201,20 @@ export function ReaderPage() {
 
       <section className="read-pane">
         <div className="reader-heading">
-          <Link className="back-link mobile-reader-back" to={`/collection/${collectionId}`}><ArrowLeft size={17} /> All chapters</Link>
+          <div className="reader-crumbs"><Link className="back-link mobile-reader-back" to={`/collection/${collectionId}`}><ArrowLeft size={17} /> All chapters</Link><Link className="reader-search-link" to="/search"><Search size={17} /> Search</Link></div>
           <div>
-            <p className="eyebrow">Chapter {chapterId}</p>
-            <h1>{chapterIndex?.title ?? (collectionLoading ? 'Opening the collection…' : 'Arabic text coming soon')}</h1>
+            <p className="eyebrow">Riyad as-Salihin / Chapter {chapterId}</p>
+            <h1>{chapterIndex?.title.replace(/^\d+\s*[-–—]\s*/, '') ?? (collectionLoading ? 'Opening the collection…' : 'Chapter unavailable')}</h1>
+            <span className="reader-chapter-count">{chapterIndex?.count ?? 0} hadith · Arabic with English translation</span>
           </div>
         </div>
 
         <div className="reader-toolbar" aria-label="Reader controls">
-          <div className="reader-toolbar-head">
-            <div className="reader-tools-caption"><p className="eyebrow">Reading controls</p><span>Language and grading</span></div>
-            <button className="open-reading-controls" aria-label="Open reading display settings" onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}><Type size={17} /> Text settings</button>
-          </div>
+          <div className="reader-toolbar-head"><button className="open-reading-controls" aria-label="Open reading display settings" onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}><Type size={17} /> Display</button></div>
           {collection && collection.languages.length > 0 && (
             <label className="language-control">
               <span>Translation</span>
-              <select value={language} onChange={(event) => { setLanguage(event.target.value); void setSetting('language', event.target.value) }}>
+              <select value={language} onChange={(event) => { setLanguage(event.target.value); void setSetting('language', event.target.value); dispatchAppEvent(APP_EVENTS.languageChange, event.target.value) }}>
                 {['ar', ...collection.languages].map((code) => <option key={code} value={code}>{collection.languageNames?.[code] ?? code.toUpperCase()}</option>)}
               </select>
             </label>
@@ -226,7 +227,7 @@ export function ReaderPage() {
               <option value="all">All</option>
             </select>
           </label>
-          {collection && language !== 'ar' && <button className="offline-button" onClick={() => void downloadLanguage()}>{offlineStatus || 'Save language offline'}</button>}
+          {collection && language !== 'ar' && <button className="offline-button" onClick={() => void downloadLanguage()}>{offlineStatus || 'Offline text'}</button>}
         </div>
 
         {error && <p className="notice error" role="alert">{error}</p>}
@@ -235,9 +236,7 @@ export function ReaderPage() {
           <p className="empty-state">No records match this trust filter. Missing grades are never inferred.</p>
         )}
         <section className="hadith-list" aria-live="polite">
-          {visibleRecords.length > 20
-            ? <VirtualizedHadithList records={visibleRecords} renderRecord={renderHadith} />
-            : visibleRecords.map(renderHadith)}
+          {visibleRecords.map(renderHadith)}
         </section>
       </section>
 

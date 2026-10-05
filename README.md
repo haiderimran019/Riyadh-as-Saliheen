@@ -48,7 +48,7 @@ The import is resumable from cached raw pages. The reader bundles Arabic and Eng
 
 ### GitHub Pages
 
-For this project site, import the approved corpus and build with the repository subpath before publishing `dist`:
+Pushing `main` runs `.github/workflows/static.yml`, which imports the approved corpus, builds with the repository subpath, and deploys `dist` to the existing Pages site. To reproduce that build locally:
 
 ```bash
 npm run data:import:riyad -- --languages=ar,en
@@ -57,7 +57,7 @@ VITE_DATA_MODE=real VITE_BASE_PATH=/Riyadh-as-Saliheen/ npm run build
 
 For a user or organization site at the domain root, use `VITE_BASE_PATH=/`. The site is entirely static.
 
-GitHub Pages does not apply `public/_headers`; set equivalent headers at a proxy or custom domain if those controls are required. The CI workflow validates, tests, and builds without deploying. For a manual GitHub Pages release, publish `dist` and keep the generated `404.html` fallback; no deployment is performed by this repository.
+GitHub Pages does not apply `public/_headers`; set equivalent headers at a proxy or custom domain if those controls are required. The separate CI workflow validates, tests, and builds without deploying. The Pages workflow publishes only after a push to `main` or a manual workflow dispatch.
 
 ## Privacy and offline behavior
 

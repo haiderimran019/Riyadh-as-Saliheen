@@ -1,8 +1,9 @@
 # Progress
 
-- [x] Local production build contains the Riyad collection; no reading links leave the app.
-- [x] Arabic edition imported to ignored `data-local`: 1,892 narrations, 364 browsable chapters.
-- [x] English source paired by global hadith number: 1,873 translations; 19 Arabic-only records remain.
-- [x] Data validation, unit tests, real-data build, and 13 desktop/mobile browser checks pass.
-- [ ] P2 screenshot matrix and Lighthouse audit skipped; this preview is not pushed or deployed.
-- [ ] Awaiting user review before any GitHub push.
+- [x] Riyad as-Salihin Arabic and English: 364 chapters, 1,892 Arabic hadith, 1,873 English translations; 19 Arabic-only.
+- [x] Mobile-first dark redesign, original logo/icons, self-hosted Manrope/Newsreader/Amiri fonts, responsive desktop layout.
+- [x] In-app reading, Arabic/English toggle, bilingual search, chapter finder, saved folders and deep links, offline-capable PWA.
+- [x] Source credit retained; real/raw data remains in ignored `data-local` and is generated during the Pages workflow.
+- [x] Local release checks: 10 unit tests, 25 browser tests including 320/390/1440px overflow and reader flows.
+- [ ] Verify the GitHub Pages workflow and live site after pushing `main`.
+- [ ] Full Lighthouse and screenshot matrix deferred.

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { clearDataCache, loadChapter, loadTranslation } from './loader'
+import { clearDataCache, loadAllHadith, loadChapter, loadTranslation } from './loader'
 
 afterEach(() => {
   clearDataCache()
@@ -39,5 +39,13 @@ describe('data loader', () => {
     const second = loadChapter('test-collection', 'chapter-1.json')
     await expect(Promise.all([first, second])).resolves.toEqual([dataset, dataset])
     expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('routes records in an all-file index to their own chapter', async () => {
+    const collection = { id: 'riyad', allFile: 'all.json', chapters: [{ id: '1' }, { id: '2' }] }
+    const dataset = { metadata: { sourceName: 'test' }, records: [{ id: '2-1', chapter: '2', arabic: 'text' }] }
+    const fetchMock = vi.fn().mockImplementation((url: string) => Promise.resolve(new Response(JSON.stringify(url.endsWith('collections.json') ? { collections: [{ id: 'riyad' }] } : url.endsWith('index.json') ? collection : dataset), { status: 200 })))
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(loadAllHadith()).resolves.toEqual([expect.objectContaining({ id: '2-1', chapterId: '2' })])
   })
 })

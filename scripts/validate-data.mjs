@@ -81,4 +81,9 @@ for (const chapter of index.chapters) {
 if (seenIds.size !== index.recordIds.length || index.recordIds.some((id) => !seenIds.has(id))) throw new Error('Collection index record IDs do not match its chapter files.')
 const all = await loadJson(join(dataRoot, index.id, index.allFile), chapterSchema, 'All Riyad records')
 if (all.records.length !== recordCount) throw new Error('All-records file count mismatch.')
+if (index.languages.includes('en')) {
+  const allEnglish = await loadJson(join(dataRoot, 'translations', 'en', index.id, 'all.json'), translationsSchema, 'All English translations')
+  if (Object.keys(allEnglish.translations).length !== translationCount) throw new Error('English search index count mismatch.')
+  if (Object.keys(allEnglish.translations).some((id) => !seenIds.has(id))) throw new Error('English search index contains an unknown hadith ID.')
+}
 console.log(`Validated IslamHouse/IslamEnc Riyad: ${recordCount} Arabic narrations, ${translationCount} English translations across ${index.chapters.length} chapters.`)

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AlertCircle, Bookmark, Info, Share2 } from 'lucide-react'
+import { AlertCircle, Bookmark, Copy, Info, Share2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { db, type BookmarkFolder } from '../data/db'
 import type { DatasetMetadata, HadithRecord, Translation } from '../types/hadith'
@@ -20,12 +20,6 @@ type Props = {
 
 const ARABIC_DIACRITICS = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g
 const LANGUAGE_NAMES: Record<string, string> = { en: 'English', ar: 'Arabic', ur: 'Urdu', bn: 'Bengali', hi: 'Hindi' }
-const SOURCE_REFERENCE = /^\d+\s*\/\s*\d+\s*[-–—ـ]+\s*/u
-
-function displaySourceText(value: string) {
-  return value.replace(SOURCE_REFERENCE, '')
-}
-
 export function stripArabicDiacritics(value: string) {
   return value.replace(ARABIC_DIACRITICS, '')
 }
@@ -34,6 +28,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
   const [saved, setSaved] = useState(false)
   const [folderId, setFolderId] = useState('')
   const [folders, setFolders] = useState<BookmarkFolder[]>([])
+  const [copied, setCopied] = useState(false)
   const arabic = showDiacritics ? hadith.arabic : stripArabicDiacritics(hadith.arabic)
 
   useEffect(() => {
@@ -62,20 +57,34 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
     setFolderId(nextFolderId)
   }
 
+  const copyReading = async () => {
+    try {
+      await navigator.clipboard.writeText(`${hadith.arabic}${translation ? `\n\n${translation.text}` : ''}\n\nRiyad as-Salihin ${hadith.number} · ${hadith.sourceName ?? 'IslamHouse.com / IslamEnc.com'}`)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2200)
+    } catch { setCopied(false) }
+  }
+
   return (
     <article className="hadith-card" id={hadith.id}>
       <header className="hadith-meta">
         <div>
           <span className="hadith-number">Hadith {hadith.number}</span>
-          <p>{hadith.collection}{hadith.book === hadith.collection ? '' : ` · ${hadith.book}`} · Chapter {hadith.chapter}</p>
+          <p>Riyad as-Salihin · Chapter {hadith.chapter}</p>
+        </div>
+        <div className="hadith-quick-actions">
+          <button type="button" aria-label={saved ? `Remove hadith ${hadith.number} from saved` : `Save hadith ${hadith.number}`} aria-pressed={saved} onClick={() => void toggleBookmark()}><Bookmark size={20} fill={saved ? 'currentColor' : 'none'} /></button>
+          <button type="button" aria-label={copied ? 'Copied' : `Copy hadith ${hadith.number}`} onClick={() => void copyReading()}><Copy size={19} /></button>
+          <button type="button" aria-label={`Share hadith ${hadith.number} as an image`} onClick={() => void shareHadithImage(hadith, translation, translationMetadata)}><Share2 size={19} /></button>
         </div>
       </header>
 
-      <p className="arabic-text" dir="rtl" lang="ar" style={{ fontSize: `${arabicSize}px` }}>{displaySourceText(arabic)}</p>
+      <p className="arabic-text" dir="rtl" lang="ar" style={{ fontSize: `${arabicSize}px` }}>{arabic}</p>
 
       {translation && translationMetadata && (
         <section className="translation-block" lang={language} dir={language === 'ur' ? 'rtl' : 'auto'}>
-          <p>{displaySourceText(translation.text)}</p>
+          <span className="translation-label">{LANGUAGE_NAMES[language] ?? language.toUpperCase()} translation</span>
+          <p>{translation.text}</p>
           <details className="translation-about">
             <summary><Info size={16} /> About this translation</summary>
             <div>
@@ -110,11 +119,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
               {folders.map((folder) => <option key={folder.id} value={folder.id}>{folder.name}</option>)}
             </select>
           )}
-          <button className="bookmark-button" aria-pressed={saved} onClick={toggleBookmark}>
-            <Bookmark size={17} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Save'}
-          </button>
-          <button className="details-button" onClick={onOpenDetails}>Details</button>
-          <button className="share-button" aria-label={`Share hadith ${hadith.number} as an image`} onClick={() => void shareHadithImage(hadith, translation, translationMetadata)}><Share2 size={17} /></button>
+          <button className="details-button" onClick={onOpenDetails}>Reference & details</button>
         </div>
       </footer>
     </article>

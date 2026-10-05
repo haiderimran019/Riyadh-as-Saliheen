@@ -10,11 +10,11 @@ export type ReadingPreferences = {
   theme: 'light' | 'dark' | 'sepia' | 'system'
 }
 
-const getDefaultArabicSize = () => window.matchMedia('(min-width: 721px)').matches ? 34 : 30
+const getDefaultArabicSize = () => window.matchMedia('(min-width: 721px)').matches ? 38 : 34
 
 export function ReadingControlsSheet() {
   const [open, setOpen] = useState(false)
-  const [preferences, setPreferences] = useState<ReadingPreferences>({ arabicSize: 30, translationSize: 17, showDiacritics: true, theme: 'system' })
+  const [preferences, setPreferences] = useState<ReadingPreferences>({ arabicSize: 34, translationSize: 17, showDiacritics: true, theme: 'dark' })
   const closeRef = useRef<HTMLButtonElement>(null)
   const dialogRef = useRef<HTMLElement>(null)
   const returnFocusRef = useRef<HTMLElement | null>(null)
@@ -24,7 +24,7 @@ export function ReadingControlsSheet() {
       getSetting('arabicSizePx', getDefaultArabicSize()),
       getSetting('translationSizePx', 17),
       getSetting('showDiacritics', true),
-      getSetting<ReadingPreferences['theme']>('theme', 'system'),
+      getSetting<ReadingPreferences['theme']>('theme', 'dark'),
     ]).then(([arabicSize, translationSize, showDiacritics, theme]) => setPreferences({ arabicSize, translationSize, showDiacritics, theme }))
     const show = () => setOpen(true)
     window.addEventListener(APP_EVENTS.openReadingSettings, show)
@@ -69,7 +69,7 @@ export function ReadingControlsSheet() {
   }
 
   const reset = () => {
-    const defaults: ReadingPreferences = { arabicSize: getDefaultArabicSize(), translationSize: 17, showDiacritics: true, theme: 'system' }
+    const defaults: ReadingPreferences = { arabicSize: getDefaultArabicSize(), translationSize: 17, showDiacritics: true, theme: 'dark' }
     setPreferences(defaults)
     void Promise.all([
       setSetting('arabicSizePx', defaults.arabicSize), setSetting('translationSizePx', defaults.translationSize),

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FolderPlus, Trash2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { db, type Bookmark, type BookmarkFolder } from '../data/db'
 
 export function SavedPage() {
@@ -66,7 +67,6 @@ export function SavedPage() {
         <h1>Saved</h1>
         <p>Bookmarks, folders, and reading progress never leave your browser.</p>
       </header>
-      <p className="notice">Saved hadith text from an earlier preview is hidden while the Riyad edition is prepared. Your local bookmarks remain on this device.</p>
       <form className="folder-form" onSubmit={addFolder}>
         <input aria-label="New folder name" value={folderName} onChange={(event) => setFolderName(event.target.value)} placeholder="New folder name" />
         <button type="submit"><FolderPlus size={17} /> Add folder</button>
@@ -80,10 +80,10 @@ export function SavedPage() {
         </span>)}
       </div>
       <div className="saved-list">
-        {visible.length === 0 && <p className="empty-state">No bookmarks here yet.</p>}
+        {visible.length === 0 && <p className="empty-state">No saved hadith here yet. Use the bookmark action while reading to add one.</p>}
         {visible.map((bookmark) => (
           <article className="saved-row" key={bookmark.hadithId}>
-            <span className="saved-reference">Saved reading · {bookmark.hadithId}</span>
+            <Link className="saved-reference" to={`/collection/${bookmark.collectionId}/chapter/${bookmark.chapterId}#${bookmark.hadithId}`}><strong>Hadith {bookmark.hadithId.split('-')[0]}</strong><small>Chapter {bookmark.chapterId} · Open reading</small></Link>
             <button aria-label={`Remove saved reading ${bookmark.hadithId}`} onClick={async () => { await db.bookmarks.delete(bookmark.hadithId); await refresh() }}><Trash2 size={17} /></button>
           </article>
         ))}

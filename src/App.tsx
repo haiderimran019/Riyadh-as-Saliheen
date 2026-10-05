@@ -19,8 +19,8 @@ export function App() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <header className="topbar">
         <Link className="brand" to="/" aria-label={`${APP_NAME} home`}>
-          <span className="brand-mark" aria-hidden="true"><BookOpen size={20} /></span>
-          {APP_NAME}
+          <span className="brand-mark" aria-hidden="true"><img src={`${import.meta.env.BASE_URL}icons/icon.svg`} alt="" /></span>
+          <span className="brand-copy"><strong>{APP_NAME}</strong><small>رياض الصالحين</small></span>
         </Link>
         <LanguagePicker />
       </header>
