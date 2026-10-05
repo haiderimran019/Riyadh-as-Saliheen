@@ -1,3 +1,6 @@
-name = "hadith-reader"
-pages_build_output_dir = "./dist"
+name = "riyadh-as-saliheen"
 compatibility_date = "2026-10-04"
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"
