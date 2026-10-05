@@ -202,9 +202,7 @@ button, input, select, textarea { font-family: inherit; }
 :root[data-theme='dark'] .floating-nav, :root[data-theme='system'] .floating-nav { background: color-mix(in srgb, var(--surface) 92%, transparent); }
 .floating-nav a, .floating-nav button { color: var(--muted); font-size: .875rem; font-weight: 750; }
 .floating-nav a.active, .floating-nav button[aria-expanded='true'] { background: var(--surface-soft); color: var(--accent); }
-.app-shell:has(.reader-page) { padding-bottom: 0; }
-.app-shell:has(.reader-page) .floating-nav { display: none; }
-.app-shell:has(.reader-page) .site-footer { padding-bottom: 30px; }
+.app-shell:has(.reader-page) .site-footer { padding-bottom: calc(94px + env(safe-area-inset-bottom)); }
 .install-prompt { position: static; display: flex; width: fit-content; max-width: calc(100% - 36px); min-height: 44px; margin: 0 auto 18px; padding: 7px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--accent); font-size: .8rem; }
 
 /* Compact theme controls: icons stay readable and all four targets remain tappable. */
@@ -354,7 +352,6 @@ h1, h2, h3,
 .daily-card { position: relative; isolation: isolate; overflow: hidden; margin: clamp(22px, 4vw, 38px) auto 0; padding: clamp(20px, 4vw, 34px); border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border)); border-radius: 22px; background: linear-gradient(145deg, color-mix(in srgb, var(--surface) 95%, #d1b472 5%), var(--surface-soft)); box-shadow: 0 16px 40px rgba(0, 15, 11, .14), inset 0 1px rgba(255,255,255,.045); }
 .daily-card::after { position: absolute; z-index: -1; top: -70px; inset-inline-end: -50px; width: 210px; aspect-ratio: 1; border: 1px solid color-mix(in srgb, var(--accent) 13%, transparent); border-radius: 50%; box-shadow: 0 0 0 16px color-mix(in srgb, var(--accent) 3%, transparent), 0 0 0 36px color-mix(in srgb, var(--accent) 2%, transparent); content: ''; pointer-events: none; }
 .daily-card .eyebrow { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--accent); }
-.daily-arabic { margin: 22px auto 18px; color: var(--text); font-family: 'Amiri', serif; font-size: clamp(1.65rem, 5vw, 2.35rem); line-height: 2; text-align: center; }
 .daily-translation { max-width: 66ch; margin: 0 auto 18px; color: var(--text); font-size: clamp(1rem, 2.2vw, 1.12rem); line-height: 1.85; }
 .daily-missing-translation { color: var(--muted); line-height: 2; }
 .daily-card-footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 18px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: .875rem; line-height: 1.65; }
@@ -376,7 +373,7 @@ html[lang='ur'] .home-intro, html[lang='ur'] .page-heading > p, html[lang='ur'] 
 html[lang='ur'] .home-hero h1, html[lang='ur'] .page-heading h1, html[lang='ur'] .page-heading h2 { font-family: 'Noto Nastaliq Urdu', serif; font-size: clamp(1.9rem, 6vw, 3.6rem); line-height: 1.9; }
 html[lang='ur'] .floating-nav { direction: rtl; }
 html[lang='ur'] .daily-card-footer { direction: rtl; }
-@media (max-width: 720px) { .daily-card { border-radius: 18px; } .daily-arabic { margin-block: 16px 12px; } .daily-card-footer { align-items: flex-start; flex-direction: column; gap: 8px; } }
+@media (max-width: 720px) { .daily-card-footer { align-items: flex-start; flex-direction: column; gap: 8px; } }
 @media (prefers-reduced-motion: reduce) { .bismillah-splash { animation: none; } }
 
 /* Shared product-wide standards: visible focus, minimum hit area, calm depth. */
@@ -388,6 +385,7 @@ html[lang='ur'] .home-hero-art { right: auto; left: 17px; }
 .home-link-card { border-radius: 16px; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
 .home-link-card:hover { transform: translateY(-2px); box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent), 0 6px 12px rgba(0,0,0,.1), 0 18px 34px rgba(0,0,0,.12); }
 .library-feature { box-shadow: inset 0 1px 0 color-mix(in srgb, white 7%, transparent), var(--shadow); }
+
 .hadith-card {
   overflow: hidden;
   border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
@@ -464,4 +462,43 @@ html[lang='ur'] .home-hero-art { right: auto; left: 17px; }
   .translation-block { padding: 0 18px 16px; border-top: 0; border-radius: 0 0 16px 16px; background: color-mix(in srgb, var(--surface-soft) 18%, transparent); }
   .translation-label { padding-top: 16px; }
   .setting-row { padding: 17px 18px; }
+}
+
+/* Platform adaptation shared by the entire iPhone/iPad experience. */
+:root { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: calc(76px + env(safe-area-inset-top)); }
+html:not([lang='ur']) body { font-family: inherit; }
+button, input, select, textarea { font-family: inherit; }
+:root[data-theme='light'], :root[data-theme='sepia'] { color-scheme: light; }
+:root[data-theme='dark'] { color-scheme: dark; }
+@media (prefers-color-scheme: dark) { :root[data-theme='system'] { color-scheme: dark; } }
+@media (prefers-color-scheme: light) { :root[data-theme='system'] { color-scheme: light; } }
+@media (max-width: 720px) {
+  .topbar { min-height: calc(64px + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); }
+  input:not([type='checkbox']):not([type='radio']):not([type='range']), select, textarea { font-size: max(16px, 1em); }
+}
+@media (hover: none) and (pointer: coarse) {
+  .header-settings, .home-actions a, .reader-toolbar button, .hadith-quick-actions button,
+  .save-controls button, .saved-row > button, .folder-tabs button { min-width: 44px; min-height: 44px; }
+}
+@supports (height: 100dvh) {
+  .reading-sheet, .feedback-modal, .context-pane { max-height: min(86dvh, 760px); }
+}
+@media (min-width: 721px) and (max-width: 1099px) {
+  .riyad-home { width: min(100%, 880px); }
+  .reader-page, .content-page { width: min(100%, 900px); }
+  .daily-card { padding: clamp(24px, 4vw, 34px); }
+}
+
+/* A deliberate scripture scale overrides the older generic paragraph rule. */
+.daily-card > .daily-arabic { max-width: 62ch; margin: 22px auto 18px; color: var(--text); font-family: 'Amiri', 'Geeza Pro', -apple-system, BlinkMacSystemFont, serif; font-size: clamp(1.35rem, 3.5vw, 1.9rem); font-weight: 400; line-height: 1.9; text-align: center; text-wrap: pretty; }
+.daily-card > .daily-translation { max-width: 66ch; margin: 0 auto 18px; font-size: clamp(1rem, 1.7vw, 1.125rem); line-height: 1.75; }
+.daily-card > .daily-missing-translation { font-size: 1rem; line-height: 1.75; }
+@media (max-width: 720px) {
+  .daily-card { border-radius: 18px; padding: 20px; }
+  .daily-card > .daily-arabic { margin-block: 16px 12px; font-size: clamp(1.3rem, 5.8vw, 1.5rem); line-height: 1.85; }
+  .daily-card > .daily-translation { font-size: 1rem; line-height: 1.7; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-link-card:hover, .theme-choice:hover { transform: none; }
 }

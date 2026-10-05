@@ -1,6 +1,8 @@
 import type { HadithRecord } from '../types/hadith'
 import type { DailyQuranDataset } from '../types/hadith'
 
+const DAILY_ROTATION_MS = 6 * 60 * 60 * 1000
+
 export function dateKey(date: Date) {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -14,8 +16,9 @@ export function selectDailyHadith<T extends HadithRecord>(records: T[], date: Da
 }
 
 export function selectDailyIndex(length: number, date: Date) {
-  const seed = [...dateKey(date)].reduce((total, character) => ((total * 31) + character.charCodeAt(0)) >>> 0, 0)
-  return length > 0 ? seed % length : -1
+  if (length <= 0) return -1
+  const window = Math.floor(date.getTime() / DAILY_ROTATION_MS)
+  return ((window % length) + length) % length
 }
 
 export function selectDailyAyah(dataset: DailyQuranDataset, date: Date) {

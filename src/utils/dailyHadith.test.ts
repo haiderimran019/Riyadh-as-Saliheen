@@ -24,6 +24,14 @@ describe('daily hadith selection', () => {
     expect(selectDailyHadith(records, date)?.id).toBe(selectDailyHadith(records, date)?.id)
   })
 
+  it('rotates to the next selection on each six-hour UTC boundary', () => {
+    const records = [record('1'), record('2'), record('3')]
+    const before = new Date('2026-10-05T05:59:59.999Z')
+    const after = new Date('2026-10-05T06:00:00.000Z')
+    expect(selectDailyHadith(records, before)?.id).not.toBe(selectDailyHadith(records, after)?.id)
+    expect(selectDailyHadith(records, new Date('2026-10-05T11:59:59.999Z'))?.id).toBe(selectDailyHadith(records, after)?.id)
+  })
+
   it('works without translations and handles an empty pool', () => {
     expect(selectDailyHadith([record('1')], new Date())?.id).toBe('1')
     expect(selectDailyHadith([], new Date())).toBeUndefined()
@@ -35,5 +43,12 @@ describe('daily hadith selection', () => {
     const date = new Date(2026, 9, 5)
     expect(selectDailyAyah(dataset, date)).toEqual(selectDailyAyah(dataset, new Date(2026, 9, 5)))
     expect(ayahs).toContainEqual(selectDailyAyah(dataset, date))
+  })
+
+  it('rotates the offline ayah selection every six hours', () => {
+    const ayahs = [{ sura: 1, aya: 1 }, { sura: 2, aya: 286 }, { sura: 13, aya: 28 }]
+    const dataset = { ayahs } as never
+    expect(selectDailyAyah(dataset, new Date('2026-10-05T05:59:59.999Z')))
+      .not.toEqual(selectDailyAyah(dataset, new Date('2026-10-05T06:00:00.000Z')))
   })
 })

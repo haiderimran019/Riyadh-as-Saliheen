@@ -1,6 +1,6 @@
 # Interface standards
 
-These standards apply to every screen and shared component in this reader. They translate the supplied design references into a consistent responsive web interface; they are not a blanket instruction for unrelated applications.
+These standards apply across every screen and shared component in this reader. For iPhone and iPad, use Apple Human Interface Guidelines as the platform reference while preserving this app's reading-first identity. These are project-wide standards, not a blanket instruction for unrelated applications.
 
 ## Product rules
 
@@ -18,6 +18,9 @@ These standards apply to every screen and shared component in this reader. They 
 - Let layout adapt to available width: single-column reading on narrow viewports, restrained line lengths, and expanded multi-column layouts only when there is room.
 - Preserve safe-area padding, prevent horizontal overflow, and provide at least 44px touch targets with visible keyboard focus.
 - Keep body and reading text comfortably legible, honor browser zoom and reduced-motion settings, and never rely on color alone to convey state.
+- Prefer the platform system font for interface controls, preserve the editorial display face for headings, and use a bundled script-aware Arabic face for consistent Quranic text.
+- Respect iOS safe areas and viewport text scaling; avoid input text below 16px to prevent Safari focus zoom, and retain 44px touch targets for common controls.
+- Keep tab navigation stable across top-level sections; use adaptive single-column reading on iPhone and restrained content widths on iPad.
 - English is left-to-right; Urdu is right-to-left with a bundled Nastaliq font. Arabic source text remains right-to-left in both modes. Test mixed-script text and screen-reader labels in both languages.
 
 ## Quality gate
@@ -28,3 +31,4 @@ For user-visible changes, run type checks, lint, unit tests, the real-data build
 
 - The supplied iOS/iPadOS design guide and UI/UX guides (provided for this project).
 - [Nine UI/UX design principles](https://www.eleken.co/blog-posts/9-ui-ux-design-principles-to-make-customers-get-chills-from-your-product), especially user needs, plain language, hierarchy, simplicity, consistency, feedback, control, and accessibility.
+- [Apple Human Interface Guidelines: Layout](https://developer.apple.com/design/human-interface-guidelines/layout), [Tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars), [Typography](https://developer.apple.com/design/human-interface-guidelines/typography), and [Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility).

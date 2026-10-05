@@ -10,6 +10,7 @@ import { selectDailyAyah } from '../utils/dailyHadith'
 import { useI18n } from '../i18n'
 
 export function HomePage() {
+  const [dailyMoment, setDailyMoment] = useState(() => new Date())
   const [collection, setCollection] = useState<CollectionIndex | null>(null)
   const [progress, setProgress] = useState<ReadingProgress | null>(null)
   const [dailyHadith, setDailyHadith] = useState<Awaited<ReturnType<typeof hadithRepository.getDailyHadith>> | null>(null)
@@ -18,10 +19,21 @@ export function HomePage() {
   const { language, t } = useI18n()
 
   useEffect(() => {
+    const refresh = () => setDailyMoment(new Date())
+    const untilNextWindow = 6 * 60 * 60 * 1000 - (Date.now() % (6 * 60 * 60 * 1000)) + 100
+    const timer = window.setTimeout(refresh, untilNextWindow)
+    document.addEventListener('visibilitychange', refresh)
+    return () => {
+      window.clearTimeout(timer)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [dailyMoment])
+
+  useEffect(() => {
     if (DATA_MODE !== 'real') return
     void hadithRepository.getCollection(DEFAULT_COLLECTION).then(async (value) => {
       setCollection(value)
-      const record = await hadithRepository.getDailyHadith(new Date())
+      const record = await hadithRepository.getDailyHadith(dailyMoment)
       setDailyHadith(record ?? null)
       if (record && language === 'en') {
         const chapter = value.chapters.find((item) => item.id === record.chapterId)
@@ -30,7 +42,7 @@ export function HomePage() {
     }).catch(() => undefined)
     void db.progress.get(DEFAULT_COLLECTION).then((value) => setProgress(value ?? null))
     void loadDailyQuran().then(setQuran).catch(() => undefined)
-  }, [language])
+  }, [dailyMoment, language])
 
   const firstChapter = collection?.chapters[0]
   const readUrl = progress
@@ -60,7 +72,7 @@ export function HomePage() {
         </div>
       </section>
       {dailyHadith && <section className="daily-card daily-hadith" aria-labelledby="daily-hadith-title"><p className="eyebrow"><Sparkles size={14} /> {t('Hadith of the day')}</p><p className="daily-arabic" lang="ar" dir="rtl">{dailyHadith.arabic}</p>{language === 'en' && dailyTranslation?.translations[dailyHadith.id] && <p className="daily-translation">{dailyTranslation.translations[dailyHadith.id].text}</p>}{language === 'en' && !dailyTranslation?.translations[dailyHadith.id] && <p className="daily-missing-translation">{t('English translation is not available for this narration; the Arabic text above is from the source edition.')}</p>}{language === 'ur' && <p className="daily-missing-translation" lang="ur">{t('The Urdu translation for this collection is not available yet. The Arabic source text is shown.')}</p>}<div className="daily-card-footer"><span id="daily-hadith-title">Riyad as-Salihin · {t('Hadith')} {dailyHadith.number} · IslamEnc.com</span><Link to={`/collection/${DEFAULT_COLLECTION}/chapter/${dailyHadith.chapterId}#${dailyHadith.id}`}>{t('Read hadith')} <ArrowRight size={16} /></Link></div></section>}
-      {quran && quran.ayahs.length > 0 && (() => { const ayah = selectDailyAyah(quran, new Date()); const localized = ayah.translations[language]; return <section className="daily-card daily-ayah" aria-labelledby="daily-ayah-title"><p className="eyebrow"><Sparkles size={14} /> {t('Ayah of the day')}</p><p className="daily-arabic" lang="ar" dir="rtl">{ayah.arabic_text}</p><p className="daily-translation" lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'}>{localized.translation}</p>{localized.footnotes && <details className="daily-footnotes"><summary>{t('Translation notes')}</summary><p lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'}>{localized.footnotes}</p></details>}<div className="daily-card-footer"><span id="daily-ayah-title">{t('Qur’an')} · {ayah.sura}:{ayah.aya}</span><span>QuranEnc.com · {quran.translations[language].title} · v{quran.translations[language].version}</span></div></section> })()}
+      {quran && quran.ayahs.length > 0 && (() => { const ayah = selectDailyAyah(quran, dailyMoment); const localized = ayah.translations[language]; return <section className="daily-card daily-ayah" aria-labelledby="daily-ayah-title"><p className="eyebrow"><Sparkles size={14} /> {t('Ayah of the day')}</p><p className="daily-arabic" lang="ar" dir="rtl">{ayah.arabic_text}</p><p className="daily-translation" lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'}>{localized.translation}</p>{localized.footnotes && <details className="daily-footnotes"><summary>{t('Translation notes')}</summary><p lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'}>{localized.footnotes}</p></details>}<div className="daily-card-footer"><span id="daily-ayah-title">{t('Qur’an')} · {ayah.sura}:{ayah.aya}</span><span>QuranEnc.com · {quran.translations[language].title} · v{quran.translations[language].version}</span></div></section> })()}
       <div className="home-bottomline"><span>{t('No account. No ads. No tracking.')}</span><span><Link to="/sources">{t('Text & sources')}</Link>{SHOW_FEEDBACK && <> · <Link to="/feedback">{t('Feedback')}</Link></>}</span></div>
     </main>
   )

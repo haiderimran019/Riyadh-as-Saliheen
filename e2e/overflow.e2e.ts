@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 const screens = ['Home', 'Library', 'Chapters', 'Reader', 'Search', 'Saved', 'Settings'] as const
-const widths = [320, 390, 1440]
+const widths = [320, 390, 768, 1024, 1440]
 for (const width of widths) {
   for (const screen of screens) {
     test(`${screen} has no horizontal overflow at ${width}px`, async ({ page }) => {
@@ -16,6 +16,7 @@ for (const width of widths) {
         await expect(page.locator('.hadith-card').first()).toBeVisible()
         await expect(page.locator('.arabic-text').first()).not.toBeEmpty()
         await expect(page.getByText(/Text source: IslamEnc.com/).first()).toBeVisible()
+        await expect(page.locator('.floating-nav')).toBeVisible()
       }
       if (screen === 'Settings') await page.goto('settings')
       if (screen === 'Search') await page.goto('search')
@@ -28,6 +29,26 @@ for (const width of widths) {
     })
   }
 }
+
+test('daily scripture uses a restrained Arabic scale on iPhone and iPad widths', async ({ page }) => {
+  await page.goto('./')
+  await expect(page.locator('.daily-hadith .daily-arabic')).toBeVisible()
+  await expect(page.locator('.daily-ayah .daily-arabic')).toBeVisible()
+
+  for (const [width, maxArabic] of [[390, 25], [768, 32]] as const) {
+    await page.setViewportSize({ width, height: 900 })
+    for (const selector of ['.daily-hadith .daily-arabic', '.daily-ayah .daily-arabic']) {
+      const style = await page.locator(selector).evaluate((element) => ({
+        size: Number.parseFloat(getComputedStyle(element).fontSize),
+        font: getComputedStyle(element).fontFamily,
+      }))
+      expect(style.size).toBeLessThanOrEqual(maxArabic)
+      expect(style.font).toContain('Amiri')
+    }
+    const translationSize = await page.locator('.daily-ayah .daily-translation').evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize))
+    expect(translationSize).toBeLessThanOrEqual(18)
+  }
+})
 
 test('legacy collection route no longer exposes the HadeethEnc topic directory', async ({ page }) => {
   await page.goto('collection/hadeethenc')
