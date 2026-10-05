@@ -1,8 +1,9 @@
 # Android release preparation
 
-The web app is already installable as a PWA. An Android Play Store release can
-wrap the published site as a Trusted Web Activity (TWA), keeping reading and
-offline behavior in the existing app rather than opening a third-party reader.
+An Android Play Store release can wrap the published site as a Trusted Web
+Activity (TWA), keeping reading in the same app rather than opening a
+third-party reader. The website now requires an internet connection and does
+not support offline reading. This directory is preparation notes only; it does not contain a signed app or
 This directory is preparation notes only; it does not contain a signed app or
 release credentials.
 
@@ -30,8 +31,6 @@ release credentials.
 
 ## Preparation status
 
-- [x] Existing PWA manifest is configured for standalone display and includes
-  192px, 512px, maskable, and Apple touch icons.
 - [x] Git ignores Android signing material, local build configuration, and
   generated release bundles.
 - [ ] Confirm a permanent Android application ID in Play Console.
@@ -42,8 +41,8 @@ release credentials.
   an upload key outside the repository.
 - [ ] Build and locally validate a signed Android App Bundle (AAB), then add
   the Play app-signing SHA-256 fingerprint to the origin's asset links.
-- [ ] Verify the TWA origin association and test install, navigation, offline
-  reading, language rendering, and back behavior on Android devices.
+- [ ] Verify the TWA origin association and test install, online navigation,
+  language rendering, and back behavior on Android devices.
 - [ ] Complete Play Console listing, privacy/data-safety and content
   declarations, testing track, and store review.
 
@@ -57,8 +56,8 @@ fingerprint in the origin-root `assetlinks.json`. Test the signed bundle through
 an internal Play testing track before requesting production review.
 
 The Android wrapper does not replace app-level privacy and content review. The
-app remains an offline-first reader; the current website has no account system
-or analytics. Review the Play Console policy and declarations against the final
+app requires a network connection and has no account system or analytics.
+Review the Play Console policy and declarations against the final
 release build rather than assuming the web privacy notice alone is sufficient.
 
 ## Official references

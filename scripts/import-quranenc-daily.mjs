@@ -74,4 +74,4 @@ await writeFile(outputPath, JSON.stringify({
   translations: translationMetadata,
   ayahs,
 }, null, 2))
-console.log(`Prepared ${ayahs.length} versioned QuranEnc ayat in English and Urdu for the offline daily card.`)
+console.log(`Prepared ${ayahs.length} versioned QuranEnc ayat in English and Urdu for the daily reading card.`)

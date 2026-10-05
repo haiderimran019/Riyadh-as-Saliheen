@@ -47,7 +47,7 @@ class HadithDatabase extends Dexie {
       settings: 'key',
     }).upgrade(async (transaction) => {
       const theme = await transaction.table('settings').get('theme')
-      if (!theme) await transaction.table('settings').put({ key: 'theme', value: 'system' })
+      if (!theme) await transaction.table('settings').put({ key: 'theme', value: 'dark' })
     })
   }
 }

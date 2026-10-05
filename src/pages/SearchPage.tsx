@@ -6,9 +6,12 @@ import { hadithRepository } from '../data/HadithRepository'
 import { loadAllTranslations } from '../data/loader'
 import { createHadithSearch, type SearchableHadith } from '../search'
 import { useI18n } from '../i18n'
+import { stripArabicDiacritics } from '../utils/arabicText'
+import { useShowDiacritics } from '../hooks/useShowDiacritics'
 
 export function SearchPage() {
   const { language, t } = useI18n()
+  const showDiacritics = useShowDiacritics()
   const [params, setParams] = useSearchParams()
   const [records, setRecords] = useState<SearchableHadith[]>([])
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
@@ -45,7 +48,10 @@ export function SearchPage() {
         {state === 'error' && <p className="notice error">{t('Search data could not be loaded. Please try again online.')}</p>}
         {state === 'ready' && deferredQuery.length < 2 && <p className="result-count">{t('Enter at least two characters to search')} {records.length.toLocaleString()} {t('hadith')}.</p>}
         {state === 'ready' && deferredQuery.length >= 2 && <p className="result-count">{results.length === 40 ? t('First 40 matches') : `${results.length} ${t(results.length === 1 ? 'match' : 'matches')}`} {t('for')} “{deferredQuery}”</p>}
-        {results.map((record) => <Link className="search-result" key={record.id} to={`/collection/${record.collectionId}/chapter/${record.chapterId}#${record.id}`}><span className="result-topline">{t('Hadith')} {record.number} · {t('Chapter')} {record.chapterId}<ArrowUpRight size={18} /></span><p dir="rtl" lang="ar">{record.arabic.length > 180 ? `${record.arabic.slice(0, 180)}…` : record.arabic}</p>{record.translationText && <span className="result-translation" lang={language}>{record.translationText.length > 180 ? `${record.translationText.slice(0, 180)}…` : record.translationText}</span>}<small>{record.chapterTitle?.replace(/^\d+\s*[-–—]\s*/, '')}</small></Link>)}
+        {results.map((record) => {
+          const arabic = showDiacritics ? record.arabic : stripArabicDiacritics(record.arabic)
+          return <Link className="search-result" key={record.id} to={`/collection/${record.collectionId}/chapter/${record.chapterId}#${record.id}`}><span className="result-topline">{t('Hadith')} {record.number} · {t('Chapter')} {record.chapterId}<ArrowUpRight size={18} /></span><p dir="rtl" lang="ar">{arabic.length > 180 ? `${arabic.slice(0, 180)}…` : arabic}</p>{record.translationText && <span className="result-translation" lang={language}>{record.translationText.length > 180 ? `${record.translationText.slice(0, 180)}…` : record.translationText}</span>}<small>{record.chapterTitle?.replace(/^\d+\s*[-–—]\s*/, '')}</small></Link>
+        })}
       </div>
     </main>
   )

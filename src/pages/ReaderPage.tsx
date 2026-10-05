@@ -4,7 +4,6 @@ import { Link, useParams } from 'react-router-dom'
 import { HadithCard } from '../components/HadithCard'
 import type { ReadingPreferences } from '../components/ReadingControlsSheet'
 import { db, getSetting, setSetting } from '../data/db'
-import { getDataRoot } from '../config'
 import { hadithRepository } from '../data/HadithRepository'
 import { APP_EVENTS, dispatchAppEvent } from '../core/appEvents'
 import type { ArabicChapterDataset, CollectionIndex, HadithRecord, TranslationChapterDataset } from '../types/hadith'
@@ -27,7 +26,6 @@ export function ReaderPage() {
   const [chapter, setChapter] = useState<ArabicChapterDataset | null>(null)
   const [translation, setTranslation] = useState<TranslationChapterDataset | null>(null)
   const [language, setLanguage] = useState('en')
-  const [offlineStatus, setOfflineStatus] = useState('')
   const [showDiacritics, setShowDiacritics] = useState(true)
   const [arabicSize, setArabicSize] = useState(getDefaultArabicSize)
   const [trustFilter, setTrustFilter] = useState<TrustFilter>('all')
@@ -143,22 +141,6 @@ export function ReaderPage() {
     return () => observer.disconnect()
   }, [chapter, chapterId, collectionId, visibleRecords])
 
-  const downloadLanguage = async () => {
-    if (!collection || language === 'ar') return
-    setOfflineStatus('Downloading…')
-    try {
-      for (let index = 0; index < collection.chapters.length; index += 6) {
-        await Promise.all(collection.chapters.slice(index, index + 6).map((chapterItem) => fetch(`${getDataRoot()}/translations/${language}/${collectionId}/${chapterItem.file}`).then((response) => {
-          if (!response.ok) throw new Error(String(response.status))
-          return response.arrayBuffer()
-        })))
-      }
-      setOfflineStatus('Available offline')
-    } catch {
-      setOfflineStatus('Download failed')
-    }
-  }
-
   const renderHadith = (hadith: HadithRecord) => (
     <HadithCard
       key={hadith.id}
@@ -209,7 +191,6 @@ export function ReaderPage() {
               <option value="all">{t('All')}</option>
             </select>
           </label>}
-          {collection && language !== 'ar' && <button className="offline-button" onClick={() => void downloadLanguage()}>{offlineStatus || t('Offline text')}</button>}
         </div>
 
         {error && <p className="notice error" role="alert">{error}</p>}

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { BookOpen, ChevronRight, Languages, MessageSquareText, SlidersHorizontal } from 'lucide-react'
 import { SHOW_FEEDBACK } from '../config'
 import { APP_EVENTS, dispatchAppEvent } from '../core/appEvents'
 import { LanguagePicker } from '../components/LanguagePicker'
@@ -8,19 +9,25 @@ export function SettingsPage() {
   const { t } = useI18n()
   return (
     <main className="content-page narrow page-with-nav">
-      <header className="page-heading compact">
+      <header className="page-heading compact settings-heading">
         <p className="eyebrow">{t('On-device preferences')}</p>
         <h1>{t('Settings')}</h1>
+        <p>{t('A gentle moment for thoughtful reading.')}</p>
       </header>
-      <div className="settings-list">
-        <div className="setting-row"><span><strong>{t('Reading display')}</strong><small>{t('Arabic and translation size, theme, and diacritics.')}</small></span><button className="settings-action" onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}>{t('Open')}</button></div>
-        <div className="setting-row setting-language-row"><span><strong>{t('App language')}</strong><small>{t('Choose the language for menus and reading tools.')}</small></span><LanguagePicker /></div>
-        <div className="setting-row">
-          <span><strong>{t('Sources and credits')}</strong><small>{t('Review every Arabic dataset and translation independently.')}</small></span>
-          <Link to="/sources">{t('View')}</Link>
+      <section className="settings-group" aria-labelledby="settings-reader-title">
+        <p id="settings-reader-title" className="settings-group-label">{t('Reading display')}</p>
+        <div className="settings-list">
+          <button className="setting-row setting-row-button" onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}><span className="setting-icon"><SlidersHorizontal size={20} /></span><span className="setting-copy"><strong>{t('Text appearance')}</strong><small>{t('Arabic and translation size, theme, and diacritics.')}</small></span><ChevronRight size={18} /></button>
+          <div className="setting-row setting-language-row"><span className="setting-icon"><Languages size={20} /></span><span className="setting-copy"><strong>{t('App language')}</strong><small>{t('Choose the language for menus and reading tools.')}</small></span><LanguagePicker /></div>
         </div>
-        {SHOW_FEEDBACK && <div className="setting-row"><span><strong>{t('Feedback')}</strong><small>{t('Report a mistake, bug, or suggestion.')}</small></span><Link to="/feedback">{t('Send feedback')}</Link></div>}
-      </div>
+      </section>
+      <section className="settings-group" aria-labelledby="settings-info-title">
+        <p id="settings-info-title" className="settings-group-label">{t('About this edition')}</p>
+        <div className="settings-list">
+          <Link className="setting-row setting-row-link" to="/sources"><span className="setting-icon"><BookOpen size={20} /></span><span className="setting-copy"><strong>{t('Sources and credits')}</strong><small>{t('Review every Arabic dataset and translation independently.')}</small></span><ChevronRight size={18} /></Link>
+          {SHOW_FEEDBACK && <Link className="setting-row setting-row-link" to="/feedback"><span className="setting-icon"><MessageSquareText size={20} /></span><span className="setting-copy"><strong>{t('Feedback')}</strong><small>{t('Report a mistake, bug, or suggestion.')}</small></span><ChevronRight size={18} /></Link>}
+        </div>
+      </section>
     </main>
   )
 }

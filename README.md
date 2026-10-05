@@ -1,6 +1,6 @@
 # Hadith Reader
 
-A free, ad-free, offline-capable Riyad as-Salihin reading PWA. The app is static and has no backend, accounts, cookies, or analytics. It makes no third-party runtime requests except an optional feedback submission.
+A free, ad-free, online Riyad as-Salihin reading site. The app is static and has no backend, accounts, cookies, or analytics. It makes no third-party runtime requests except an optional feedback submission.
 
 Bookmarks, bookmark folders, reading progress, themes, and reader settings are stored only in the browser with IndexedDB.
 
@@ -26,11 +26,11 @@ npm run test:overflow
 npm run verify
 ```
 
-The production build includes a Workbox service worker. The app shell is precached; Arabic chapters and optional translation files are cached on-device after first use.
+The production site requires an internet connection. It does not register a service worker or intentionally cache reading content for offline use.
 
 ## Data modes
 
-The default mode is `placeholder`, which shows an empty preview shell and never substitutes sample religious text. Import Riyad and daily Quran data into the ignored `data-local/generated` directory, then set `VITE_DATA_MODE=real` to read it locally or build it into static output. The Hadith of the Day uses the bundled Riyad edition; the Ayah of the Day uses QuranEnc Arabic and English/Urdu meanings. Both are bundled for offline use; there are no text-source requests at runtime. Riyad currently has no verified Urdu translation in this release. Urdu mode keeps the Arabic source visible and reports the gap instead of showing English as Urdu.
+The default mode is `placeholder`, which shows an empty preview shell and never substitutes sample religious text. Import Riyad and daily Quran data into the ignored `data-local/generated` directory, then set `VITE_DATA_MODE=real` to read it locally or build it into static output. The Hadith of the Day uses the Riyad edition; the Ayah of the Day uses QuranEnc Arabic and English/Urdu meanings. The static site serves these data files over the internet. Riyad currently has no verified Urdu translation in this release. Urdu mode keeps the Arabic source visible and reports the gap instead of showing English as Urdu.
 
 Fetch the authorized stage 5a languages with at most two delayed, retrying requests at a time:
 
@@ -64,10 +64,10 @@ For a user or organization site at the domain root, use `VITE_BASE_PATH=/`. The 
 
 GitHub Pages does not apply `public/_headers`; set equivalent headers at a proxy or custom domain if those controls are required. The separate CI workflow validates, tests, and builds without deploying. The Pages workflow publishes only after a push to `main` or a manual workflow dispatch.
 
-## Privacy and offline behavior
+## Privacy and online behavior
 
 - No accounts, cookies, analytics, or external runtime requests.
 - Fonts are bundled with the app.
 - Bookmarks, folders, progress, and settings stay in IndexedDB on the device.
-- The service worker precaches the app shell and caches only same-origin dataset files as they are read.
-- Removing site data in the browser removes all locally stored user data and offline caches.
+- The app requires internet access to load its interface and reading content; it does not intentionally provide offline reading or installable offline behavior.
+- Bookmarks, folders, progress, and settings remain stored locally in the browser.
