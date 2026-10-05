@@ -16,3 +16,14 @@ scripts/source-data/real/
 /screenshots/
 /playwright-report/
 /test-results/
+
+# Android release artifacts and machine-specific signing/build configuration.
+/android/twa-manifest.json
+/android/*.keystore
+/android/*.jks
+/android/local.properties
+/android/.gradle/
+/android/app/build/
+/android/app-release*.aab
+/android/app-release*.apk
+/android/service-account*.json

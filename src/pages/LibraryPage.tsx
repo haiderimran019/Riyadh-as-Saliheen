@@ -7,7 +7,7 @@ import type { CollectionIndex } from '../types/hadith'
 import { useI18n } from '../i18n'
 
 export function LibraryPage() {
-  const { t, language } = useI18n()
+  const { t } = useI18n()
   const [collection, setCollection] = useState<CollectionIndex | null>(null)
   const [error, setError] = useState('')
 
@@ -35,7 +35,7 @@ export function LibraryPage() {
           <h2 id="riyad-title">{t('Riyad as-Salihin')}</h2>
           {collection ? (
             <>
-              <p>{collection.chapters.length} {t('Chapters')} · {collection.recordIds?.length ?? 0} {t('narrations')} · {t('Arabic and English')}</p>
+              <p>{new Intl.NumberFormat('en-US').format(collection.chapters.length)} {t('Chapters')} · {new Intl.NumberFormat('en-US').format(collection.recordIds?.length ?? 0)} {t('hadith')} · {t('Arabic and English')}</p>
               <p className="data-status"><span aria-hidden="true" /> {t('Local reading text is ready, including offline.')}</p>
               <Link className="primary-action" to={firstChapter ? `/collection/${collection.id}/chapter/${firstChapter.id}` : `/collection/${collection.id}`}><BookOpen size={18} /> {t('Begin reading')} <ChevronRight size={17} /></Link>
               <Link className="text-action" to={`/collection/${collection.id}`}>{t('Browse all chapters')}</Link>

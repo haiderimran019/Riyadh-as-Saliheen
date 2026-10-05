@@ -9,6 +9,7 @@ const urdu: Record<string, string> = {
   'Skip to content': 'اصل مواد پر جائیں', 'Send feedback': 'رائے بھیجیں', 'Feedback': 'رائے',
   'About': 'تعارف', 'Sources & credits': 'ماخذ اور حوالہ', 'Privacy': 'رازداری', 'Terms': 'شرائط',
   'THE GARDENS OF THE RIGHTEOUS': 'ریاض الصالحین', 'A place to return to the words.': 'نبی کریم ﷺ کے ارشادات سے وابستگی کا ایک پُرسکون مقام',
+  'Language and app settings': 'زبان اور ایپ کی ترتیبات', 'Text appearance': 'متن کی ظاہری ترتیب', 'A gentle moment for thoughtful reading.': 'غور و فکر سے مطالعے کا ایک پُرسکون لمحہ۔',
   'Read Riyad as-Salihin with the Arabic text and English translation, one chapter and one hadith at a time.': 'ریاض الصالحین عربی متن اور دستیاب ترجمے کے ساتھ، باب اور حدیث کے ترتیب وار مطالعے کے لیے۔',
   'Continue reading': 'مطالعہ جاری رکھیں', 'Start reading': 'مطالعہ شروع کریں', 'Search the collection': 'مجموعے میں تلاش کریں',
   'YOUR READING': 'آپ کا مطالعہ', 'Make room for reflection.': 'غور و فکر کے لیے وقت نکالیں', 'All chapters': 'تمام ابواب',

@@ -22,7 +22,7 @@ export function BottomNavigation() {
           <Icon size={20} /><span>{t(label)}</span>
         </NavLink>
       ))}
-      <button type="button" aria-label={t('Reading settings')} aria-haspopup="dialog" aria-expanded={settingsOpen} onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}>
+      <button type="button" aria-label={t('Text appearance')} title={t('Text appearance')} aria-haspopup="dialog" aria-expanded={settingsOpen} onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}>
         <Type size={20} /><span>Aa</span>
       </button>
     </nav>

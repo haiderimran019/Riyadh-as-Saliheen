@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { BookOpen, Settings2 } from 'lucide-react'
+import { BookOpen, Languages } from 'lucide-react'
 import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import { DATA_MODE } from './config'
 import { InstallPrompt } from './components/InstallPrompt'
@@ -33,7 +33,7 @@ function AppShell() {
           <span className="brand-mark" aria-hidden="true"><img src={`${import.meta.env.BASE_URL}icons/icon.svg`} alt="" /></span>
           <span className="brand-copy"><strong>{t('Riyad as-Salihin')}</strong><small>رياض الصالحين</small></span>
         </Link>
-        <Link className="header-settings" to="/settings" aria-label={t('Settings')} title={t('Settings')}><Settings2 size={20} /></Link>
+        <Link className="header-settings" to="/settings" aria-label={t('Language and app settings')} title={t('Language and app settings')}><Languages size={20} /></Link>
       </header>
       {DATA_MODE === 'placeholder' && <p className="preview-banner" role="status">{t('Preview build: content is being added')}</p>}
 

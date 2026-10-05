@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Coffee, Monitor, Moon, RotateCcw, Sun, X } from 'lucide-react'
+import { BookOpenText, Monitor, Moon, RotateCcw, Sun, X } from 'lucide-react'
 import { getSetting, setSetting } from '../data/db'
 import { APP_EVENTS, dispatchAppEvent } from '../core/appEvents'
 import { useI18n } from '../i18n'
@@ -16,6 +16,7 @@ const getDefaultArabicSize = () => window.matchMedia('(min-width: 721px)').match
 export function ReadingControlsSheet() {
   const { t, language } = useI18n()
   const [open, setOpen] = useState(false)
+  const [preferencesLoaded, setPreferencesLoaded] = useState(false)
   const [preferences, setPreferences] = useState<ReadingPreferences>(() => ({ arabicSize: getDefaultArabicSize(), translationSize: 17, showDiacritics: true, theme: 'dark' }))
   const closeRef = useRef<HTMLButtonElement>(null)
   const dialogRef = useRef<HTMLElement>(null)
@@ -24,20 +25,26 @@ export function ReadingControlsSheet() {
   useEffect(() => {
     Promise.all([
       getSetting('arabicSizePx', getDefaultArabicSize()),
-      getSetting('translationSizePx', 17),
+      getSetting('translationSizePx', 17).then((size) => Math.max(16, size)),
       getSetting('showDiacritics', true),
       getSetting<ReadingPreferences['theme']>('theme', 'dark'),
-    ]).then(([arabicSize, translationSize, showDiacritics, theme]) => setPreferences({ arabicSize, translationSize, showDiacritics, theme }))
+    ]).then(([arabicSize, translationSize, showDiacritics, theme]) => {
+      const normalizedTranslationSize = Math.max(16, translationSize)
+      setPreferences({ arabicSize, translationSize: normalizedTranslationSize, showDiacritics, theme })
+      setPreferencesLoaded(true)
+      if (normalizedTranslationSize !== translationSize) void setSetting('translationSizePx', normalizedTranslationSize)
+    })
     const show = () => setOpen(true)
     window.addEventListener(APP_EVENTS.openReadingSettings, show)
     return () => window.removeEventListener(APP_EVENTS.openReadingSettings, show)
   }, [])
 
   useEffect(() => {
+    if (!preferencesLoaded) return
     document.documentElement.dataset.theme = preferences.theme
     document.documentElement.style.setProperty('--translation-size', `${preferences.translationSize}px`)
     window.dispatchEvent(new CustomEvent<ReadingPreferences>(APP_EVENTS.readingPreferencesChange, { detail: preferences }))
-  }, [preferences])
+  }, [preferences, preferencesLoaded])
 
   useEffect(() => {
     if (!open) return
@@ -90,12 +97,12 @@ export function ReadingControlsSheet() {
           <button ref={closeRef} className="icon-button" aria-label={t('Close reading settings')} onClick={() => setOpen(false)}><X /></button>
         </header>
         <label className="range-setting"><span><strong>{t('Arabic size')}</strong><output>{preferences.arabicSize}px</output></span><input type="range" min="20" max="56" value={preferences.arabicSize} onChange={(event) => update('arabicSize', Number(event.target.value))} /></label>
-        <label className="range-setting"><span><strong>{t('Translation size')}</strong><output>{preferences.translationSize}px</output></span><input type="range" min="14" max="28" value={preferences.translationSize} onChange={(event) => update('translationSize', Number(event.target.value))} /></label>
+        <label className="range-setting"><span><strong>{t('Translation size')}</strong><output>{preferences.translationSize}px</output></span><input type="range" min="16" max="28" value={preferences.translationSize} onChange={(event) => update('translationSize', Number(event.target.value))} /></label>
         <fieldset className="theme-options"><legend>{t('Theme')}</legend><div className="theme-buttons">{([
-          ['system', 'System', Monitor], ['light', 'Light', Sun], ['dark', 'Dark', Moon], ['sepia', 'Sepia', Coffee],
-        ] as const).map(([theme, label, Icon]) => <button type="button" key={theme} className="theme-choice" aria-label={`${t(label)} theme`} title={`${t(label)} theme`} aria-pressed={preferences.theme === theme} onClick={() => update('theme', theme)}><Icon size={20} aria-hidden="true" /></button>)}</div></fieldset>
-        <label className="switch-setting"><span><strong>{t('Diacritics')}</strong><small>{t('Show Arabic tashkeel where provided.')}</small></span><input type="checkbox" checked={preferences.showDiacritics} onChange={(event) => update('showDiacritics', event.target.checked)} /></label>
-        <div className="reading-preview" aria-label={t('Live reading preview')}><p dir="rtl" lang="ar" style={{ fontSize: preferences.arabicSize }}>نص عربي للمعاينة</p><p lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'} style={{ fontSize: preferences.translationSize }}>{t('Translation preview')}</p></div>
+          ['system', 'System', Monitor], ['light', 'Light', Sun], ['dark', 'Dark', Moon], ['sepia', 'Sepia', BookOpenText],
+        ] as const).map(([theme, label, Icon]) => <button type="button" key={theme} className="theme-choice" aria-label={t(label)} title={t(label)} aria-pressed={preferences.theme === theme} onClick={() => update('theme', theme)}><Icon size={20} aria-hidden="true" /><span>{t(label)}</span></button>)}</div></fieldset>
+        <label className="switch-setting"><span><strong>{t('Diacritics')}</strong><small>{t('Show Arabic tashkeel where provided.')}</small></span><span className="switch-control"><input role="switch" aria-checked={preferences.showDiacritics} type="checkbox" checked={preferences.showDiacritics} onChange={(event) => update('showDiacritics', event.target.checked)} /><span className="switch-track" aria-hidden="true" /></span></label>
+        <div className="reading-preview" aria-label={t('Live reading preview')}><p dir="rtl" lang="ar" style={{ fontSize: preferences.arabicSize }}>نص عربي للمعاينة</p><small className="preview-label">{t('Translation preview')}</small><p lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'} style={{ fontSize: preferences.translationSize }}>{t('A gentle moment for thoughtful reading.')}</p></div>
         <button className="reset-button" onClick={reset}><RotateCcw size={17} /> {t('Reset')}</button>
       </section>
     </>

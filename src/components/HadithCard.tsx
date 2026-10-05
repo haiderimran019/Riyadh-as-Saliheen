@@ -6,6 +6,7 @@ import type { DatasetMetadata, HadithRecord, Translation } from '../types/hadith
 import { shareHadithImage } from '../utils/shareImage'
 import { SHOW_FEEDBACK } from '../config'
 import { useI18n } from '../i18n'
+import { stripArabicDiacritics } from '../utils/arabicText'
 
 type Props = {
   hadith: HadithRecord
@@ -18,11 +19,7 @@ type Props = {
   language: string
 }
 
-const ARABIC_DIACRITICS = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g
 const LANGUAGE_NAMES: Record<string, string> = { en: 'English', ar: 'Arabic', ur: 'Urdu', bn: 'Bengali', hi: 'Hindi' }
-export function stripArabicDiacritics(value: string) {
-  return value.replace(ARABIC_DIACRITICS, '')
-}
 
 export function HadithCard({ hadith, translation, translationMetadata, showDiacritics, arabicSize, collectionId, chapterId, language }: Props) {
   const { t } = useI18n()
