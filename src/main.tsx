@@ -5,6 +5,7 @@ import { App } from './App'
 import '@fontsource/noto-nastaliq-urdu/400.css'
 import './styles.css'
 import './edition.css'
+import './gravitas.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

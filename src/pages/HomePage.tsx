@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowRight, BookOpen, Compass, Heart, MessageCircle, RotateCcw, Search, Sparkles, Sprout } from 'lucide-react'
+import { ArrowRight, BookOpen, Compass, Heart, MessageCircle, RotateCcw, Sparkles, Sprout } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { DATA_MODE, DEFAULT_COLLECTION, SHOW_FEEDBACK } from '../config'
 import { db, type ReadingProgress } from '../data/db'
@@ -65,6 +65,7 @@ export function HomePage() {
   }, [dailyMoment, language])
 
   const firstChapter = collection?.chapters[0]
+  const numberLocale = language === 'ur' ? 'ur-PK' : 'en-US'
   const readUrl = progress
     ? `/collection/${DEFAULT_COLLECTION}/chapter/${progress.chapterId}#${progress.hadithId}`
     : firstChapter ? `/collection/${DEFAULT_COLLECTION}/chapter/${firstChapter.id}` : '/library'
@@ -73,17 +74,49 @@ export function HomePage() {
     <main className="welcome page-with-nav riyad-home">
       <section className="home-hero" aria-labelledby="home-title">
         <div className="home-hero-text">
-          <p className="eyebrow">{t('THE GARDENS OF THE RIGHTEOUS')} <span aria-hidden="true">—</span> رياض الصالحين</p>
-          <h1 id="home-title">{t('A place to return to the words.')}</h1>
+          <p className="eyebrow"><span className="home-hero-kicker">{t('THE GARDENS OF THE RIGHTEOUS')}</span> <span className="home-hero-divider" aria-hidden="true">✦</span> <bdi className="home-hero-arabic" lang="ar" dir="rtl">رياض الصالحين</bdi></p>
+          <h1 id="home-title">{t('Riyad as-Salihin')}</h1>
           <p className="home-intro">{t('Read Riyad as-Salihin with the Arabic text and English translation, one chapter and one hadith at a time.')}</p>
-          <Link className="home-search-field" to="/search" aria-label={t('Search the collection')}><Search size={20} aria-hidden="true" /><span>{t('Search the collection')}</span><kbd aria-hidden="true">→</kbd></Link>
           <div className="home-actions">
             <Link className="primary-action" to={readUrl}><BookOpen size={19} /> {t(progress ? 'Continue reading' : 'Start reading')} <ArrowRight size={18} /></Link>
+            <Link className="home-secondary-action" to={`/collection/${DEFAULT_COLLECTION}`}>{t('Browse all chapters')} <ArrowRight size={17} /></Link>
           </div>
-          <p className="home-hero-count">{collection ? `${new Intl.NumberFormat('en-US').format(collection.chapters.length)} ${t('Chapters')} · ${new Intl.NumberFormat('en-US').format(collection.recordIds?.length ?? 0)} ${t('hadith')}` : DATA_MODE === 'placeholder' ? t('Preview edition · text not included') : t('Loading the collection…')}</p>
+          <p className="home-hero-count">{collection ? `${new Intl.NumberFormat(numberLocale).format(collection.chapters.length)} ${t('Chapters')} · ${new Intl.NumberFormat(numberLocale).format(collection.recordIds?.length ?? 0)} ${t('hadith')}` : DATA_MODE === 'placeholder' ? t('Preview edition · text not included') : t('Loading the collection…')}</p>
         </div>
-        <div className="home-hero-art" aria-hidden="true"><span className="garden-arch"><span>رياض<br />الصالحين</span></span></div>
+        <div className="home-hero-art" aria-hidden="true"><span className="garden-arch"><span lang="ar" dir="rtl">رياض<br />الصالحين</span></span><i>{t('IMAM AL-NAWAWI · A CLASSIC COLLECTION')}</i></div>
       </section>
+
+      {(dailyHadith || quran) && <section className="daily-reading" aria-labelledby="daily-reading-title">
+        <header className="daily-reading-heading"><p className="eyebrow">{t('TODAY’S READINGS')}</p><span id="daily-reading-title">{t('Hadith of the day')} <i aria-hidden="true">·</i> {t('Ayah of the day')}</span></header>
+        <div className="daily-reading-grid">
+          {dailyHadith && <section className="daily-card daily-hadith" aria-labelledby="daily-hadith-title">
+            <p className="eyebrow"><Sparkles size={14} /> {t('Hadith of the day')}</p>
+            <p className="daily-arabic" lang="ar" dir="rtl">{showDiacritics ? dailyHadith.arabic : stripArabicDiacritics(dailyHadith.arabic)}</p>
+            {language === 'en' && dailyTranslation?.translations[dailyHadith.id] && <p className="daily-translation" lang="en" dir="ltr">{dailyTranslation.translations[dailyHadith.id].text}</p>}
+            {language === 'en' && !dailyTranslation?.translations[dailyHadith.id] && <p className="daily-missing-translation">{t('English translation is not available for this narration; the Arabic text above is from the source edition.')}</p>}
+            {language === 'ur' && <p className="daily-missing-translation" lang="ur">{t('The Urdu translation for this collection is not available yet. The Arabic source text is shown.')}</p>}
+            <div className="daily-card-footer">
+              <span id="daily-hadith-title" className="daily-reference"><bdi dir={language === 'ur' ? 'rtl' : 'ltr'}>{t('Riyad as-Salihin')}</bdi><span className="reference-separator">·</span><span dir="rtl">{t('Hadith')} <bdi dir="ltr">{dailyHadith.chapterNumber || dailyHadith.number}</bdi></span></span>
+              <Link to={`/collection/${DEFAULT_COLLECTION}/chapter/${dailyHadith.chapterId}#${dailyHadith.id}`}>{t('Read hadith')} <ArrowRight size={16} /></Link>
+            </div>
+          </section>}
+          {quran && quran.ayahs.length > 0 && (() => {
+            const ayah = selectDailyAyah(quran, dailyMoment)
+            const localized = ayah.translations[language]
+            const direction = language === 'ur' ? 'rtl' : 'ltr'
+            return <section className="daily-card daily-ayah" aria-labelledby="daily-ayah-title">
+              <p className="eyebrow"><Sparkles size={14} /> {t('Ayah of the day')}</p>
+              <p className="daily-arabic" lang="ar" dir="rtl">{ayah.arabic_text}</p>
+              <p className="daily-translation" lang={language} dir={direction}>{withIsolatedFootnoteMarkers(localized.translation, language)}</p>
+              {localized.footnotes && <details className="daily-footnotes"><summary>{t('Translation notes')}</summary><p lang={language} dir={direction}>{withIsolatedFootnoteMarkers(localized.footnotes, language)}</p></details>}
+              <div className="daily-card-footer">
+                <span id="daily-ayah-title" className="daily-reference"><bdi dir="rtl">{t('Qur’an')}</bdi><span className="reference-separator">·</span><bdi dir="ltr">{ayah.sura}:{ayah.aya}</bdi></span>
+                <bdi className="daily-source-line" dir="ltr">QuranEnc.com · {quran.translations[language].title} · v{quran.translations[language].version}</bdi>
+              </div>
+            </section>
+          })()}
+        </div>
+      </section>}
 
       {collection && <section className="everyday-section" aria-labelledby="everyday-title">
         <div className="everyday-heading">
@@ -111,35 +144,6 @@ export function HomePage() {
           {!collection && <div className="home-data-note"><BookOpen size={19} /><span>{DATA_MODE === 'placeholder' ? t('Reading text is not bundled in this preview yet.') : t('The chapter list could not be loaded right now.')}</span></div>}
         </div>
       </section>
-      {dailyHadith && <section className="daily-card daily-hadith" aria-labelledby="daily-hadith-title">
-        <p className="eyebrow"><Sparkles size={14} /> {t('Hadith of the day')}</p>
-        <p className="daily-arabic" lang="ar" dir="rtl">{showDiacritics ? dailyHadith.arabic : stripArabicDiacritics(dailyHadith.arabic)}</p>
-        {language === 'en' && dailyTranslation?.translations[dailyHadith.id] && <p className="daily-translation" lang="en" dir="ltr">{dailyTranslation.translations[dailyHadith.id].text}</p>}
-        {language === 'en' && !dailyTranslation?.translations[dailyHadith.id] && <p className="daily-missing-translation">{t('English translation is not available for this narration; the Arabic text above is from the source edition.')}</p>}
-        {language === 'ur' && <p className="daily-missing-translation" lang="ur">{t('The Urdu translation for this collection is not available yet. The Arabic source text is shown.')}</p>}
-        <div className="daily-card-footer">
-            <span id="daily-hadith-title" className="daily-reference">
-            <bdi dir="ltr">Riyad as-Salihin</bdi><span className="reference-separator">·</span>
-            <span dir="rtl">{t('Hadith')} <bdi dir="ltr">{dailyHadith.chapterNumber || dailyHadith.number}</bdi></span>
-          </span>
-          <Link to={`/collection/${DEFAULT_COLLECTION}/chapter/${dailyHadith.chapterId}#${dailyHadith.id}`}>{t('Read hadith')} <ArrowRight size={16} /></Link>
-        </div>
-      </section>}
-      {quran && quran.ayahs.length > 0 && (() => {
-        const ayah = selectDailyAyah(quran, dailyMoment)
-        const localized = ayah.translations[language]
-        const direction = language === 'ur' ? 'rtl' : 'ltr'
-        return <section className="daily-card daily-ayah" aria-labelledby="daily-ayah-title">
-          <p className="eyebrow"><Sparkles size={14} /> {t('Ayah of the day')}</p>
-          <p className="daily-arabic" lang="ar" dir="rtl">{ayah.arabic_text}</p>
-          <p className="daily-translation" lang={language} dir={direction}>{withIsolatedFootnoteMarkers(localized.translation, language)}</p>
-          {localized.footnotes && <details className="daily-footnotes"><summary>{t('Translation notes')}</summary><p lang={language} dir={direction}>{withIsolatedFootnoteMarkers(localized.footnotes, language)}</p></details>}
-          <div className="daily-card-footer">
-            <span id="daily-ayah-title" className="daily-reference"><bdi dir="rtl">{t('Qur’an')}</bdi><span className="reference-separator">·</span><bdi dir="ltr">{ayah.sura}:{ayah.aya}</bdi></span>
-            <bdi className="daily-source-line" dir="ltr">QuranEnc.com · {quran.translations[language].title} · v{quran.translations[language].version}</bdi>
-          </div>
-        </section>
-      })()}
       <div className="home-bottomline"><span>{t('No account. No ads. No tracking.')}</span><span><Link to="/sources">{t('Text & sources')}</Link>{SHOW_FEEDBACK && <> · <Link to="/feedback">{t('Feedback')}</Link></>}</span></div>
     </main>
   )

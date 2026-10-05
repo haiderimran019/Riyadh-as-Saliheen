@@ -21,7 +21,7 @@ const urdu: Record<string, string> = {
   'Begin with intention': 'نیت سے آغاز کریں', 'Make room to return': 'رجوع کے لیے گنجائش رکھیں', 'Meet hardship with patience': 'صبر کے ساتھ مشکل کا سامنا کریں',
   'Choose gentleness': 'نرمی اختیار کریں', 'Speak with care': 'سوچ سمجھ کر بات کریں', 'Seek guidance': 'رہنمائی طلب کریں',
   'Begin with Chapter 1': 'پہلے باب سے آغاز کریں', 'Your saved passages': 'آپ کی محفوظ احادیث', 'Keep meaningful readings close, privately on this device.': 'پسندیدہ مطالعہ اسی آلے میں محفوظ رکھیں۔',
-  'No account. No ads. No tracking.': 'نہ اکاؤنٹ، نہ اشتہار، نہ نگرانی۔', 'Hadith of the day': 'آج کی حدیث', 'Ayah of the day': 'آج کی آیت',
+  'No account. No ads. No tracking.': 'نہ اکاؤنٹ، نہ اشتہار، نہ نگرانی۔', 'TODAY’S READINGS': 'آج کا مطالعہ', 'IMAM AL-NAWAWI · A CLASSIC COLLECTION': 'امام نووی کا معروف مجموعہ', 'Hadith of the day': 'آج کی حدیث', 'Ayah of the day': 'آج کی آیت',
   'Read hadith': 'حدیث پڑھیں', 'Read ayah': 'آیت پڑھیں', 'Translation unavailable': 'ترجمہ دستیاب نہیں',
   'The Urdu translation for this collection is not available yet. The Arabic source text is shown.': 'اس مجموعے کا اردو ترجمہ فی الحال دستیاب نہیں۔ اصل عربی متن دکھایا جا رہا ہے۔',
   'On-device preferences': 'آپ کے آلے کی ترتیبات', 'Reading display': 'مطالعے کی ظاہری ترتیب', 'Arabic and translation size, theme, and diacritics.': 'عربی اور ترجمے کا حجم، رنگ اور اعراب۔',

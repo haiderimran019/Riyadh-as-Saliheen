@@ -67,7 +67,10 @@ function readPage(language, page) {
     return [...document.querySelectorAll('.single-page-inner .row.page')].map((row) => {
       const text = row.textContent?.replace(/\s+/gu, ' ').trim() ?? ''
       const heading = row.querySelector('h1')?.textContent?.replace(/\s+/gu, ' ').trim() ?? ''
-      const headingNumber = Number(heading.match(/^\s*(\d+)\s*[-–—ـ]/u)?.[1])
+      // English chapter headings use a period ("4. Chapter …"), while the
+      // Arabic edition uses dash-like separators. Recognize both so each
+      // chapter keeps its actual published English title.
+      const headingNumber = Number(heading.match(/^\s*(\d+)\s*(?:\.\s*|[-–—ـ]\s*)/u)?.[1])
       const match = text.match(/^(\d+)\s*\/\s*(\d+)\s*[-–—ـ]+/u)
       const record = match ? {
         sourceNumber: String(Number(language === 'ar' ? match[2] : match[1])),

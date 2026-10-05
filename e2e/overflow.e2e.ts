@@ -11,6 +11,7 @@ for (const width of widths) {
       if (screen === 'Home') {
         await page.goto('./')
         await expect(page.locator('.everyday-card')).toHaveCount(6)
+        await expect(page.locator('.home-hero-arabic')).toHaveText('رياض الصالحين')
       }
       if (screen === 'Library') await page.goto('library')
       if (screen === 'Chapters') await page.goto('collection/riyad-as-salihin')
@@ -35,6 +36,19 @@ for (const width of widths) {
     })
   }
 }
+
+test('Arabic Riyad name stays legible in both reading themes', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('./')
+  await expect(page.locator('.home-hero-arabic')).toBeVisible()
+  await expect(page.locator('.garden-arch > span')).toBeVisible()
+
+  for (const theme of ['dark', 'light']) {
+    await page.locator('html').evaluate((element, value) => element.setAttribute('data-theme', value), theme)
+    await expect(page.locator('.home-hero-arabic')).toHaveCSS('color', 'rgb(241, 230, 198)')
+    await expect(page.locator('.garden-arch > span')).toHaveCSS('color', 'rgb(241, 230, 198)')
+  }
+})
 
 test('daily scripture uses a restrained Arabic scale on iPhone and iPad widths', async ({ page }) => {
   await page.goto('./')
@@ -104,4 +118,61 @@ test('legacy collection route no longer exposes the HadeethEnc topic directory',
   await expect(page).toHaveURL(/\/library$/)
   await expect(page.getByRole('heading', { name: 'Riyad as-Salihin' })).toBeVisible()
   await expect(page.locator('.topic-tree')).toHaveCount(0)
+})
+
+test('footer remains padded, readable, and clear of the tabs in both languages and themes', async ({ page }) => {
+  test.setTimeout(90_000)
+  for (const language of ['en', 'ur']) {
+    await page.goto('settings')
+    await page.getByRole('button', { name: language === 'en' ? 'English' : 'Urdu' }).click()
+    for (const width of [320, 390, 1440]) {
+      await page.setViewportSize({ width, height: 844 })
+      await page.goto('./')
+      await expect(page.locator('.bismillah-splash')).toBeHidden()
+      await expect(page.locator('.everyday-card')).toHaveCount(6)
+      for (const theme of ['light', 'dark']) {
+        await page.locator('html').evaluate((element, value) => element.setAttribute('data-theme', value), theme)
+        const footer = page.locator('.site-footer')
+        const spacing = await footer.evaluate((element) => {
+          const style = getComputedStyle(element)
+          return { side: parseFloat(style.paddingInlineStart), bottom: parseFloat(style.paddingBottom) }
+        })
+        expect(spacing.side).toBeGreaterThanOrEqual(16)
+        expect(spacing.bottom).toBeLessThanOrEqual(24)
+        const clippedCredits = await footer.locator('.footer-credit, .footer-meta > span').evaluateAll((elements) => elements.filter((element) => element.scrollWidth > element.clientWidth + 1).length)
+        expect(clippedCredits, `${language}/${theme}/${width}`).toBe(0)
+        await footer.locator('.footer-caution summary').click()
+        await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+        const clearOfTabs = await page.evaluate(() => {
+          const meta = document.querySelector('.footer-meta')!.getBoundingClientRect()
+          const tabs = document.querySelector('.floating-nav')!.getBoundingClientRect()
+          return meta.bottom <= tabs.top - 12
+        })
+        expect(clearOfTabs, `${language}/${theme}/${width}`).toBe(true)
+      }
+    }
+  }
+})
+
+test('Library primary action has accessible contrast in either theme', async ({ page }) => {
+  await page.goto('library')
+  const action = page.locator('.library-feature-copy .primary-action')
+  await expect(action).toBeVisible()
+  for (const theme of ['light', 'dark']) {
+    await page.locator('html').evaluate((element, value) => element.setAttribute('data-theme', value), theme)
+    const contrast = await action.evaluate((element) => {
+      const style = getComputedStyle(element)
+      const luminance = (color: string) => {
+        const [r, g, b] = color.match(/[\d.]+/g)!.slice(0, 3).map(Number).map((channel) => {
+          const value = channel / 255
+          return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
+        })
+        return r * 0.2126 + g * 0.7152 + b * 0.0722
+      }
+      const foreground = luminance(style.color)
+      const background = luminance(style.backgroundColor)
+      return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05)
+    })
+    expect(contrast).toBeGreaterThanOrEqual(4.5)
+  }
 })

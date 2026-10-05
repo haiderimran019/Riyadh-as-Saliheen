@@ -13,7 +13,10 @@
 - [x] GitHub Pages deployment and public mobile reader verified with real Arabic and English data.
 - [x] Mobile polish: compact English/Urdu control in Settings, named chapter fallbacks, and chapter-local hadith numbering; IslamEnc credit stays in the footer.
 - [x] Home discovery: six Urdu/English everyday-life themes link directly to matching original chapters; reading progress and previous/next chapter controls support ongoing reading.
-- [x] Final verification: 18 unit tests, 38 responsive browser checks, and focused 390/1440px English/Urdu home checks passed on the GitHub Pages base path.
+- [x] New visual edition: architectural Riyad hero, paired daily readings, topic-led discovery, and a compact chapter index; distinct responsive type, color, and surface system.
+- [x] Chapter titles: importer now recognizes both dash- and period-numbered source headings; 362 chapters have English source titles and the remaining 2 retain Arabic source titles.
+- [x] Compact bilingual footer: consistent internal padding, responsive source credits, readable metadata, expandable caution, and safe space above the floating tabs.
+- [x] Final verification: lint, 18 unit tests, real-data Pages build, and all 41 responsive/theme checks across 320–1440px, including English/Urdu footer clearance and Library button contrast.
 - [ ] This imported IslamEnc edition has no structured grades for its 1,892 records; obtaining an authoritative, rights-cleared grading dataset remains necessary. Grades are not inferred.
 - [ ] No verified Urdu Riyad as-Salihin translation is available in the bundled source edition; Urdu mode keeps the Arabic original and explains the gap.
 - [ ] Full Lighthouse and screenshot matrix deferred.

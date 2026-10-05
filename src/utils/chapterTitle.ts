@@ -1,7 +1,7 @@
 import type { ChapterIndex } from '../types/hadith'
 
 const genericTitle = /^chapter\s+\d+$/iu
-const chapterPrefix = /^\s*[\d\u0660-\u0669]+\s*[-–—ـ]+\s*/u
+const chapterPrefix = /^\s*[\d\u0660-\u0669]+\s*(?:\.\s*|[-–—ـ]+\s*)/u
 
 export function getChapterTitle(chapter: ChapterIndex, language: string) {
   const englishTitle = chapter.title?.trim()

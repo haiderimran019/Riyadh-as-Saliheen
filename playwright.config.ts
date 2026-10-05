@@ -9,6 +9,7 @@ export default defineConfig({
   use: { baseURL: previewUrl },
   webServer: process.env.PLAYWRIGHT_BASE_URL ? undefined : {
     command: 'npm run preview -- --host 127.0.0.1 --port 4173 --strictPort',
+    env: { VITE_BASE_PATH: '/Riyadh-as-Saliheen/' },
     url: 'http://127.0.0.1:4173/Riyadh-as-Saliheen/',
     reuseExistingServer: true,
   },

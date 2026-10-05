@@ -50,7 +50,7 @@ function AppShell() {
       <header className="topbar">
         <Link className="brand" to="/" aria-label={t('Riyad as-Salihin home')}>
           <span className="brand-mark" aria-hidden="true"><img src={`${import.meta.env.BASE_URL}icons/icon.svg`} alt="" /></span>
-          <span className="brand-copy"><strong>{t('Riyad as-Salihin')}</strong><small>رياض الصالحين</small></span>
+          <span className="brand-copy"><strong>{t('Riyad as-Salihin')}</strong><small lang="ar" dir="rtl">رياض الصالحين</small></span>
         </Link>
         <nav className="topbar-actions" aria-label={t('Quick links')}>
           <Link className="topbar-search" to="/search"><Search size={18} /><span>{t('Search')}</span></Link>
