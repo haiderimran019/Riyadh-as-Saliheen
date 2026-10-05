@@ -43,6 +43,7 @@ export type HadithRecord = {
   book: string
   chapter: string
   number: string
+  chapterNumber?: string
   arabic: string
   grades: HadithGrade[]
   narrator?: string

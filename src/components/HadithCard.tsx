@@ -16,12 +16,13 @@ type Props = {
   arabicSize: number
   collectionId: string
   chapterId: string
+  displayNumber: string
   language: string
 }
 
 const LANGUAGE_NAMES: Record<string, string> = { en: 'English', ar: 'Arabic', ur: 'Urdu', bn: 'Bengali', hi: 'Hindi' }
 
-export function HadithCard({ hadith, translation, translationMetadata, showDiacritics, arabicSize, collectionId, chapterId, language }: Props) {
+export function HadithCard({ hadith, translation, translationMetadata, showDiacritics, arabicSize, collectionId, chapterId, displayNumber, language }: Props) {
   const { t } = useI18n()
   const [saved, setSaved] = useState(false)
   const [folderId, setFolderId] = useState('')
@@ -57,7 +58,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
 
   const copyReading = async () => {
     try {
-      await navigator.clipboard.writeText(`${hadith.arabic}${translation ? `\n\n${translation.text}` : ''}\n\nRiyad as-Salihin ${hadith.number} · ${hadith.sourceName ?? 'IslamHouse.com / IslamEnc.com'}`)
+      await navigator.clipboard.writeText(`${hadith.arabic}${translation ? `\n\n${translation.text}` : ''}\n\nRiyad as-Salihin · Chapter ${hadith.chapter}, hadith ${displayNumber} · source reference ${hadith.number} · ${hadith.sourceName ?? 'IslamHouse.com / IslamEnc.com'}`)
       setCopied(true)
       window.setTimeout(() => setCopied(false), 2200)
     } catch { setCopied(false) }
@@ -67,13 +68,13 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
     <article className="hadith-card" id={hadith.id}>
       <header className="hadith-meta">
         <div>
-          <span className="hadith-number">{t('Hadith')} {hadith.number}</span>
+          <span className="hadith-number">{t('Hadith')} {displayNumber}</span>
           <p>{t('Riyad as-Salihin')} · {t('Chapter')} {hadith.chapter}</p>
         </div>
         <div className="hadith-quick-actions">
-          <button type="button" aria-label={saved ? `${t('Remove hadith from saved')} ${hadith.number}` : `${t('Save hadith')} ${hadith.number}`} aria-pressed={saved} onClick={() => void toggleBookmark()}><Bookmark size={20} fill={saved ? 'currentColor' : 'none'} /></button>
-          <button type="button" aria-label={copied ? t('Copied') : `${t('Copy')} ${t('Hadith')} ${hadith.number}`} onClick={() => void copyReading()}><Copy size={19} /></button>
-          <button type="button" aria-label={`${t('Share')} ${t('Hadith')} ${hadith.number}`} onClick={() => void shareHadithImage(hadith, translation, translationMetadata)}><Share2 size={19} /></button>
+          <button type="button" aria-label={saved ? `${t('Remove hadith from saved')} ${displayNumber}` : `${t('Save hadith')} ${displayNumber}`} aria-pressed={saved} onClick={() => void toggleBookmark()}><Bookmark size={20} fill={saved ? 'currentColor' : 'none'} /></button>
+          <button type="button" aria-label={copied ? t('Copied') : `${t('Copy')} ${t('Hadith')} ${displayNumber}`} onClick={() => void copyReading()}><Copy size={19} /></button>
+          <button type="button" aria-label={`${t('Share')} ${t('Hadith')} ${displayNumber}`} onClick={() => void shareHadithImage(hadith, translation, translationMetadata)}><Share2 size={19} /></button>
         </div>
       </header>
 
@@ -87,7 +88,6 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
             <summary><Info size={16} /> {t('About this translation')}</summary>
             <div>
               <p><strong>{t('Language:')}</strong> {t(LANGUAGE_NAMES[language] ?? language.toUpperCase())}</p>
-              <p><strong>{t('Translation source:')}</strong> {translationMetadata.sourceName}</p>
               <p>{t('Not reviewed by this app’s team.')}</p>
               <p><Link to="/sources">{t('Sources')}</Link>{SHOW_FEEDBACK && <> · <Link to={`/feedback?type=mistake&hadith=${encodeURIComponent(hadith.id)}`}>{t('Report an error')}</Link></>}</p>
             </div>
@@ -97,16 +97,14 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
 
       {language !== 'ar' && !translation && <p className="notice">{t(language === 'ur' ? 'The Urdu translation for this collection is not available yet. The Arabic source text is shown.' : 'English translation is not available for this narration; the Arabic text above is from the source edition.')}</p>}
 
-      <p className="hadeethenc-credit">{t('Text source:')} {hadith.sourceName ?? translationMetadata?.sourceName ?? 'IslamHouse.com / IslamEnc.com'}</p>
-
       <footer className="hadith-footer">
         <div className="trust-summary">
           {hadith.grades.map((grade) => <span className={`grade grade-${grade.grade.toLocaleLowerCase().replace(/[^a-z]+/g, '-')}`} key={`${grade.grader}-${grade.grade}`}>{grade.grade} <small>· per {grade.grader}</small></span>)}
-          <span className="reference">{t('Reference:')} {hadith.collection}, no. {hadith.number}</span>
+          {hadith.grades.length === 0 && <span className="grade grade-unavailable">{t('Grade not supplied by this edition')}</span>}
         </div>
         <div className="save-controls">
           {saved && folders.length > 0 && (
-            <select aria-label={`Folder for hadith ${hadith.number}`} value={folderId} onChange={(event) => moveBookmark(event.target.value)}>
+            <select aria-label={`Folder for hadith ${displayNumber}`} value={folderId} onChange={(event) => moveBookmark(event.target.value)}>
               <option value="">{t('No folder')}</option>
               {folders.map((folder) => <option key={folder.id} value={folder.id}>{folder.name}</option>)}
             </select>

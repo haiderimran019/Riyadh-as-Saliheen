@@ -6,6 +6,7 @@ import { hadithRepository } from '../data/HadithRepository'
 import { loadAllTranslations } from '../data/loader'
 import { createHadithSearch, type SearchableHadith } from '../search'
 import { useI18n } from '../i18n'
+import { getChapterTitle } from '../utils/chapterTitle'
 import { stripArabicDiacritics } from '../utils/arabicText'
 import { useShowDiacritics } from '../hooks/useShowDiacritics'
 
@@ -24,7 +25,7 @@ export function SearchPage() {
     Promise.all([hadithRepository.getAllHadith(), hadithRepository.getCollection(DEFAULT_COLLECTION), loadAllTranslations(language, DEFAULT_COLLECTION).catch(() => null)])
       .then(([all, collection, localized]) => {
         if (!active) return
-        const chapterNames = new Map(collection.chapters.map((chapter) => [chapter.id, language === 'ur' ? chapter.titleArabic || '' : chapter.title]))
+        const chapterNames = new Map(collection.chapters.map((chapter) => [chapter.id, getChapterTitle(chapter, language)]))
         setRecords(all.map((record) => ({ ...record, chapterTitle: chapterNames.get(record.chapterId) ?? '', translationText: localized?.translations[record.id]?.text ?? '' })))
         setState('ready')
       })

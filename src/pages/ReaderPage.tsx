@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, Search, Type } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, Search, Type } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { HadithCard } from '../components/HadithCard'
 import type { ReadingPreferences } from '../components/ReadingControlsSheet'
@@ -8,6 +8,7 @@ import { hadithRepository } from '../data/HadithRepository'
 import { APP_EVENTS, dispatchAppEvent } from '../core/appEvents'
 import type { ArabicChapterDataset, CollectionIndex, HadithRecord, TranslationChapterDataset } from '../types/hadith'
 import { useI18n } from '../i18n'
+import { getChapterTitle } from '../utils/chapterTitle'
 
 type TrustFilter = 'sahih' | 'sahih-hasan' | 'all'
 const getDefaultArabicSize = () => window.matchMedia('(min-width: 721px)').matches ? 34 : 30
@@ -29,6 +30,7 @@ export function ReaderPage() {
   const [showDiacritics, setShowDiacritics] = useState(true)
   const [arabicSize, setArabicSize] = useState(getDefaultArabicSize)
   const [trustFilter, setTrustFilter] = useState<TrustFilter>('all')
+  const [currentReadingPosition, setCurrentReadingPosition] = useState(1)
   const [error, setError] = useState('')
   const [chapterLoading, setChapterLoading] = useState(true)
   const [collectionLoading, setCollectionLoading] = useState(true)
@@ -37,6 +39,9 @@ export function ReaderPage() {
     () => collection?.chapters.find((candidate) => candidate.id === chapterId),
     [collection, chapterId],
   )
+  const chapterOrdinal = collection?.chapters.findIndex((candidate) => candidate.id === chapterId) ?? -1
+  const previousChapter = chapterOrdinal > 0 ? collection?.chapters[chapterOrdinal - 1] : undefined
+  const nextChapter = chapterOrdinal >= 0 ? collection?.chapters[chapterOrdinal + 1] : undefined
 
   const visibleRecords = useMemo(() => (chapter?.records ?? []).filter((hadith) => {
     if (trustFilter === 'all') return true
@@ -90,6 +95,8 @@ export function ReaderPage() {
       return
     }
     let active = true
+    setCurrentReadingPosition(1)
+    window.scrollTo(0, 0)
     setChapterLoading(true)
     setChapter(null)
     hadithRepository.getChapter(collectionId, chapterIndex.file)
@@ -133,6 +140,7 @@ export function ReaderPage() {
       const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
       if (!visible) return
       const record = chapter.records.find((candidate) => candidate.id === visible.target.id)
+      if (record) setCurrentReadingPosition(chapter.records.findIndex((candidate) => candidate.id === record.id) + 1)
       void db.progress.put({ collectionId, chapterId, hadithId: visible.target.id, updatedAt: Date.now() })
     }, { threshold: [0.55, 0.8] })
     targets.forEach((target) => observer.observe(target))
@@ -141,7 +149,7 @@ export function ReaderPage() {
     return () => observer.disconnect()
   }, [chapter, chapterId, collectionId, visibleRecords])
 
-  const renderHadith = (hadith: HadithRecord) => (
+  const renderHadith = (hadith: HadithRecord, index: number) => (
     <HadithCard
       key={hadith.id}
       hadith={hadith}
@@ -151,6 +159,7 @@ export function ReaderPage() {
       arabicSize={arabicSize}
       collectionId={collectionId}
       chapterId={chapterId}
+      displayNumber={hadith.chapterNumber || String(index + 1)}
       language={translation?.translations[hadith.id]?.language ?? language}
     />
   )
@@ -163,7 +172,7 @@ export function ReaderPage() {
         <nav>
           {collection?.chapters.map((item) => (
             <Link data-active={item.id === chapterId} key={item.id} to={`/collection/${collectionId}/chapter/${item.id}`}>
-              <span>{item.id.padStart(2, '0')}</span>{item.title}
+              <span>{item.id.padStart(2, '0')}</span>{getChapterTitle(item, appLanguage)}
             </Link>
           ))}
         </nav>
@@ -174,8 +183,12 @@ export function ReaderPage() {
           <div className="reader-crumbs"><Link className="back-link mobile-reader-back" to={`/collection/${collectionId}`}><ArrowLeft size={17} /> {t('All chapters')}</Link><Link className="reader-search-link" to="/search"><Search size={17} /> {t('Search')}</Link></div>
           <div>
             <p className="eyebrow">{t('Riyad as-Salihin / Chapter')} {chapterId}</p>
-            <h1>{chapterIndex ? (appLanguage === 'ur' ? chapterIndex.titleArabic || chapterIndex.title : chapterIndex.title).replace(/^\d+\s*[-–—]\s*/, '') : collectionLoading ? t('Opening the collection…') : t('Chapter unavailable')}</h1>
+            <h1 dir="auto">{chapterIndex ? getChapterTitle(chapterIndex, appLanguage) : collectionLoading ? t('Opening the collection…') : t('Chapter unavailable')}</h1>
             <span className="reader-chapter-count">{chapterIndex?.count ?? 0} {t('hadith')} · {t(appLanguage === 'ur' ? 'Arabic text only' : 'Arabic with English translation')}</span>
+            {chapterIndex && <div className="chapter-progress">
+              <div><span>{t('Reading progress')}</span><span>{Math.min(currentReadingPosition, chapterIndex.count)} / {chapterIndex.count}</span></div>
+              <progress max={chapterIndex.count} value={Math.min(currentReadingPosition, chapterIndex.count)} aria-label={`${t('Reading progress')}: ${Math.min(currentReadingPosition, chapterIndex.count)} ${t('of')} ${chapterIndex.count}`} />
+            </div>}
           </div>
         </div>
 
@@ -201,6 +214,15 @@ export function ReaderPage() {
         <section className="hadith-list" aria-live="polite">
           {visibleRecords.map(renderHadith)}
         </section>
+        {chapterIndex && <nav className="chapter-navigation" aria-label={t('Chapter navigation')}>
+          {previousChapter
+            ? <Link to={`/collection/${collectionId}/chapter/${previousChapter.id}`}><ChevronLeft aria-hidden="true" /><span><small>{t('Previous chapter')}</small><strong dir="auto">{getChapterTitle(previousChapter, appLanguage)}</strong></span></Link>
+            : <span aria-hidden="true" />}
+          <span className="chapter-position">{t('Chapter')} {chapterOrdinal + 1} {t('of')} {collection?.chapters.length ?? 0}</span>
+          {nextChapter
+            ? <Link className="next-chapter" to={`/collection/${collectionId}/chapter/${nextChapter.id}`}><span><small>{t('Next chapter')}</small><strong dir="auto">{getChapterTitle(nextChapter, appLanguage)}</strong></span><ChevronRight aria-hidden="true" /></Link>
+            : <span aria-hidden="true" />}
+        </nav>}
       </section>
 
     </main>

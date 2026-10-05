@@ -8,14 +8,20 @@ for (const width of widths) {
       const pageErrors: string[] = []
       page.on('pageerror', (error) => pageErrors.push(error.message))
       await page.setViewportSize({ width, height: 900 })
-      if (screen === 'Home') await page.goto('./')
+      if (screen === 'Home') {
+        await page.goto('./')
+        await expect(page.locator('.everyday-card')).toHaveCount(6)
+      }
       if (screen === 'Library') await page.goto('library')
       if (screen === 'Chapters') await page.goto('collection/riyad-as-salihin')
       if (screen === 'Reader') {
         await page.goto('collection/riyad-as-salihin/chapter/1')
         await expect(page.locator('.hadith-card').first()).toBeVisible()
         await expect(page.locator('.arabic-text').first()).not.toBeEmpty()
-        await expect(page.getByText(/Text source: IslamEnc.com/).first()).toBeVisible()
+        await expect(page.getByText('Grade not supplied by this edition').first()).toBeVisible()
+        await expect(page.locator('.chapter-progress progress')).toBeVisible()
+        await expect(page.locator('.chapter-navigation')).toBeVisible()
+        await expect(page.locator('.site-footer').getByText(/IslamHouse.com.*IslamEnc.com/)).toBeVisible()
         await expect(page.locator('.floating-nav')).toBeVisible()
       }
       if (screen === 'Settings') await page.goto('settings')
@@ -79,6 +85,12 @@ test('Urdu stays within phone width across every app screen', async ({ page }) =
       await expect(page.locator('html')).toHaveAttribute('lang', 'ur')
       await page.waitForLoadState('networkidle')
       await expect(page.locator('.bismillah-splash')).toBeHidden()
+      if (route === './') {
+        await expect(page.getByRole('heading', { name: 'ایک موضوع چنیں، اپنی رفتار سے پڑھیں۔' })).toBeVisible()
+        await expect(page.locator('.everyday-card')).toHaveCount(6)
+        await expect(page.locator('.everyday-card strong').first()).toHaveText('نیت سے آغاز کریں')
+        await expect(page.locator('.everyday-heading h2')).toHaveCSS('font-family', /Noto Nastaliq Urdu/)
+      }
       const dimensions = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }))
       expect(dimensions.scroll, `Urdu overflow on ${route} at ${width}px`).toBeLessThanOrEqual(dimensions.client)
       const textOverflow = await page.locator('.home-hero h1, .home-intro, .reader-heading h1, .translation-block[lang="ur"] > p, .daily-translation').evaluateAll((elements) => elements.filter((element) => element instanceof HTMLElement && element.scrollWidth > element.clientWidth).map((element) => element.className))

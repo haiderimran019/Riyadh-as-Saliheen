@@ -33,7 +33,7 @@ const indexSchema = z.object({
   metadata: metadataSchema,
   allFile: z.string().min(1),
 }).passthrough()
-const recordSchema = z.object({ id: z.string().min(1), arabic: z.string().min(1), sourceName: z.string().min(1) }).passthrough()
+const recordSchema = z.object({ id: z.string().min(1), number: z.string().min(1), chapterNumber: z.string().min(1), arabic: z.string().min(1), sourceName: z.string().min(1) }).passthrough()
 const chapterSchema = z.object({ metadata: metadataSchema, records: z.array(recordSchema).min(1) }).passthrough()
 const translationValueSchema = z.object({ text: z.string().min(1), language: z.string().optional(), raw: z.record(z.string(), z.unknown()).optional() })
 const translationsSchema = z.object({ metadata: metadataSchema, translations: z.record(z.string(), translationValueSchema) }).passthrough()
@@ -58,6 +58,7 @@ async function loadJson(path, schema, label) {
 await access(dataRoot)
 const manifest = await loadJson(join(dataRoot, 'collections.json'), manifestSchema, 'Collection manifest')
 const index = await loadJson(join(dataRoot, manifest.collections[0].index), indexSchema, 'Riyad collection index')
+if (index.chapters.some((chapter) => /^chapter\s+\d+$/iu.test(chapter.title))) throw new Error('A chapter is missing its published English or Arabic title.')
 let recordCount = 0
 let translationCount = 0
 const seenIds = new Set()
@@ -70,7 +71,8 @@ for (const chapter of index.chapters) {
     if (seenIds.has(record.id)) throw new Error(`Duplicate Riyad hadith ID ${record.id}.`)
     seenIds.add(record.id)
     recordCount++
-    if (!record.arabic.match(new RegExp(`^\\d+\\s*/\\s*${record.number}\\s*[-–—ـ]`))) throw new Error(`Arabic source reference mismatch for hadith ${record.id}.`)
+    const sourceReference = record.arabic.match(/^\s*(\d+)\s*\/\s*(\d+)\s*[-–—ـ]/u)
+    if (!sourceReference || Number(sourceReference[1]) !== Number(record.chapterNumber) || Number(sourceReference[2]) !== Number(record.number)) throw new Error(`Arabic source reference mismatch for hadith ${record.id}.`)
   }
 
   const language = 'en'

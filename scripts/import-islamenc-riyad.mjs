@@ -176,6 +176,7 @@ for (const chapter of [...chapters.values()].filter((item) => item.records.size 
       book: 'Riyad as-Salihin',
       chapter: chapter.id,
       number: record.number,
+      chapterNumber: record.inChapterNumber,
       arabic: record.arabic,
       grades: [],
       references: [],
@@ -193,7 +194,7 @@ for (const chapter of [...chapters.values()].filter((item) => item.records.size 
     await mkdir(translationDirectory, { recursive: true })
     await writeFile(translationPath, JSON.stringify({ metadata, translations }))
   }
-  chapterIndexes.push({ id: chapter.id, title: chapter.title || `Chapter ${chapter.id}`, titleArabic: chapter.titleArabic, file, count: records.length })
+  chapterIndexes.push({ id: chapter.id, title: chapter.title || chapter.titleArabic || `باب ${chapter.id}`, titleArabic: chapter.titleArabic, file, count: records.length })
 }
 
 const collection = {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Moon, RotateCcw, Sun, X } from 'lucide-react'
+import { RotateCcw, Sprout, Sun, X } from 'lucide-react'
 import { getSetting, setSetting } from '../data/db'
 import { APP_EVENTS, dispatchAppEvent } from '../core/appEvents'
 import { useI18n } from '../i18n'
@@ -101,7 +101,7 @@ export function ReadingControlsSheet() {
         <label className="range-setting"><span><strong>{t('Arabic size')}</strong><output>{preferences.arabicSize}px</output></span><input type="range" min="20" max="56" value={preferences.arabicSize} onChange={(event) => update('arabicSize', Number(event.target.value))} /></label>
         <label className="range-setting"><span><strong>{t('Translation size')}</strong><output>{preferences.translationSize}px</output></span><input type="range" min="16" max="28" value={preferences.translationSize} onChange={(event) => update('translationSize', Number(event.target.value))} /></label>
         <fieldset className="theme-options"><legend>{t('Theme')}</legend><div className="theme-buttons">{([
-          ['light', 'White', Sun], ['dark', 'Black', Moon],
+          ['dark', 'Green', Sprout], ['light', 'White', Sun],
         ] as const).map(([theme, label, Icon]) => <button type="button" key={theme} className="theme-choice" aria-label={t(label)} title={t(label)} aria-pressed={preferences.theme === theme} onClick={() => update('theme', theme)}><Icon size={20} aria-hidden="true" /><span>{t(label)}</span></button>)}</div></fieldset>
         <label className="switch-setting"><span><strong>{t('Diacritics')}</strong><small>{t('Show Arabic tashkeel where provided.')}</small></span><span className="switch-control"><input role="switch" aria-checked={preferences.showDiacritics} type="checkbox" checked={preferences.showDiacritics} onChange={(event) => update('showDiacritics', event.target.checked)} /><span className="switch-track" aria-hidden="true" /></span></label>
         <div className="reading-preview" aria-label={t('Live reading preview')}><p dir="rtl" lang="ar" style={{ fontSize: preferences.arabicSize }}>نص عربي للمعاينة</p><small className="preview-label">{t('Translation preview')}</small><p lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'} style={{ fontSize: preferences.translationSize }}>{t('A gentle moment for thoughtful reading.')}</p></div>

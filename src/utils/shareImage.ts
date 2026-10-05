@@ -35,27 +35,27 @@ export async function createShareImage(
   const context = canvas.getContext('2d')
   if (!context) throw new Error('Canvas is unavailable')
 
-  context.fillStyle = '#111916'
+  context.fillStyle = '#0c3527'
   context.fillRect(0, 0, canvas.width, canvas.height)
-  context.fillStyle = '#a9d0bd'
+  context.fillStyle = '#d8c88f'
   context.fillRect(0, 0, canvas.width, 22)
-  context.fillStyle = '#f1f4ed'
+  context.fillStyle = '#f5f3e8'
   context.textAlign = 'left'
   context.direction = 'ltr'
   context.font = '700 34px Manrope Variable, system-ui'
   context.fillText(APP_NAME, 84, 104)
-  context.fillStyle = '#b0beb5'
+  context.fillStyle = '#c1d1c5'
   context.font = '600 25px system-ui'
-  context.fillText(`Hadith ${hadith.number} · ${hadith.book} · Chapter ${hadith.chapter}`, 84, 152)
+  context.fillText(`Hadith ${hadith.chapterNumber ?? hadith.number} · ${hadith.book} · Chapter ${hadith.chapter}`, 84, 152)
 
-  context.fillStyle = '#f1f4ed'
+  context.fillStyle = '#f5f3e8'
   context.textAlign = 'right'
   context.direction = 'rtl'
   context.font = '52px Amiri, serif'
   let y = drawLines(context, wrapText(context, hadith.arabic, 912), 996, 260, 94) + 36
 
   if (translation && translationMetadata) {
-    context.strokeStyle = '#34433a'
+    context.strokeStyle = '#315e4c'
     context.beginPath()
     context.moveTo(84, y)
     context.lineTo(996, y)
@@ -63,23 +63,23 @@ export async function createShareImage(
     y += 55
     context.textAlign = 'left'
     context.direction = 'ltr'
-    context.fillStyle = '#f1f4ed'
+    context.fillStyle = '#f5f3e8'
     context.font = '34px Manrope Variable, system-ui'
     y = drawLines(context, wrapText(context, translation.text, 912), 84, y, 52) + 26
-    context.fillStyle = '#b0beb5'
+    context.fillStyle = '#c1d1c5'
     context.font = '20px system-ui'
     y = drawLines(context, wrapText(context, `Translation source: ${translationMetadata.sourceName}`, 912), 84, y, 30) + 20
   }
 
   context.textAlign = 'left'
   context.direction = 'ltr'
-  context.fillStyle = '#a9d0bd'
+  context.fillStyle = '#afd2b8'
   context.font = '700 24px system-ui'
   const grade = hadith.grades.length > 0
     ? hadith.grades.map((item) => `${item.grade} · graded by ${item.grader}`).join('; ')
-    : 'Grade not available'
+    : 'Grade not supplied by this edition'
   context.fillText(grade, 84, 1238)
-  context.fillStyle = '#b0beb5'
+  context.fillStyle = '#c1d1c5'
   context.font = '22px system-ui'
   context.fillText(`Reference: ${hadith.collection}, no. ${hadith.number}`, 84, 1288)
   context.textAlign = 'right'
@@ -92,10 +92,11 @@ export async function createShareImage(
 
 export async function shareHadithImage(hadith: HadithRecord, translation?: Translation, metadata?: DatasetMetadata) {
   const blob = await createShareImage(hadith, translation, metadata)
-  const file = new File([blob], `hadith-${hadith.number}.png`, { type: 'image/png' })
+  const localNumber = hadith.chapterNumber ?? hadith.number
+  const file = new File([blob], `hadith-${hadith.chapter}-${localNumber}.png`, { type: 'image/png' })
   if (navigator.share && navigator.canShare?.({ files: [file] })) {
     try {
-      await navigator.share({ files: [file], title: `${APP_NAME} · Hadith ${hadith.number}` })
+      await navigator.share({ files: [file], title: `${APP_NAME} · Hadith ${localNumber}` })
     } catch (error) {
       if (!(error instanceof DOMException) || error.name !== 'AbortError') throw error
     }

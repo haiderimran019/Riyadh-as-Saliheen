@@ -859,45 +859,36 @@ body { background-image: none; }
 }
 @media (prefers-reduced-transparency: reduce) { .floating-nav { background: var(--surface); backdrop-filter: none; -webkit-backdrop-filter: none; } }
 
-/* Strict monochrome palette: a true black reading mode and a clean white mode. */
+/* Two reading palettes inspired by the deep green and warm ivory of Masjid Nabawi carpets. */
 :root, :root[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #080808;
-  --surface: #141414;
-  --surface-soft: #202020;
-  --border: #393939;
-  --text: #f7f7f7;
-  --muted: #c1c1c1;
-  --accent: #ededed;
-  --accent-strong: #ffffff;
-  --accent-foreground: #101010;
-  --focus: #ffffff;
-  --danger: #f0b4b4;
+  --bg: #09271e;
+  --surface: #103629;
+  --surface-soft: #194838;
+  --border: #315e4c;
+  --text: #f5f3e8;
+  --muted: #c1d1c5;
+  --accent: #afd2b8;
+  --accent-strong: #d8e9d5;
+  --accent-foreground: #0d3023;
+  --focus: #e2c784;
+  --danger: #ffd0c3;
+  --shadow: 0 4px 10px rgba(0, 15, 10, .18), 0 22px 48px rgba(0, 15, 10, .24);
 }
 :root[data-theme='light'] {
   color-scheme: light;
-  --bg: #ffffff;
-  --surface: #fafafa;
-  --surface-soft: #f0f0f0;
-  --border: #d5d5d5;
-  --text: #111111;
-  --muted: #555555;
-  --accent: #171717;
-  --accent-strong: #000000;
+  --bg: #f2f4ed;
+  --surface: #fffefa;
+  --surface-soft: #e8eee6;
+  --border: #ced9cf;
+  --text: #1a2b22;
+  --muted: #52665a;
+  --accent: #245b42;
+  --accent-strong: #174832;
   --accent-foreground: #ffffff;
-  --focus: #111111;
-  --danger: #8b1f1f;
-}
-@media (prefers-color-scheme: light) {
-  :root[data-theme='system'] {
-    color-scheme: light;
-    --bg: #ffffff; --surface: #fafafa; --surface-soft: #f0f0f0; --border: #d5d5d5;
-    --text: #111111; --muted: #555555; --accent: #171717; --accent-strong: #000000;
-    --accent-foreground: #ffffff; --focus: #111111; --danger: #8b1f1f;
-  }
-}
-@media (prefers-color-scheme: dark) {
-  :root[data-theme='system'] { color-scheme: dark; }
+  --focus: #8b6728;
+  --danger: #8b302c;
+  --shadow: 0 3px 8px rgba(24, 53, 37, .08), 0 20px 42px rgba(24, 53, 37, .12);
 }
 .home-hero .eyebrow span, .library-feature-art > small { color: var(--muted); }
 .home-hero .primary-action, .primary-action { background: var(--accent); color: var(--accent-foreground); }
@@ -905,11 +896,15 @@ body { background-image: none; }
 .garden-arch { border-color: color-mix(in srgb, var(--text) 34%, var(--border)); }
 .garden-arch > span { color: var(--text); }
 .library-feature-art { background: radial-gradient(circle at 50% 44%, #383838, #1b1b1b 58%, #101010); color: #ffffff; }
-.brand-mark img, .splash-mark img { filter: grayscale(1); }
+.brand-mark img, .splash-mark img { filter: none; }
 .theme-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 260px; }
-.theme-choice[aria-pressed='true'] { border-color: var(--text); background: color-mix(in srgb, var(--text) 10%, var(--surface)); color: var(--text); }
-.bismillah-splash p { color: #ffffff; }
+.theme-choice[aria-pressed='true'] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--accent-strong); }
+.bismillah-splash { background: var(--bg); color: var(--text); backdrop-filter: none; -webkit-backdrop-filter: none; animation: splash-arrive .2s ease-out both; }
+.bismillah-splash p { color: var(--accent-strong); text-shadow: none; }
+.splash-mark { background: var(--surface); box-shadow: 0 10px 28px rgba(0,0,0,.18); }
+.splash-rule { background: var(--focus); }
 .grade { border-color: var(--border); background: var(--surface-soft); color: var(--text); }
+.grade-unavailable { color: var(--muted); font-weight: 650; }
 .home-hero { border-color: color-mix(in srgb, var(--border) 80%, var(--text)); }
 
 /* New app shell: book identity, direct tools, and a reading-first workspace. */
@@ -928,6 +923,14 @@ body { background-image: none; }
 .preview-banner { margin: 0; padding: 9px 16px; text-align: center; }
 .home-hero { border-radius: 10px 42px 10px 42px; }
 .home-hero h1 { max-width: 12ch; }
+.app-shell { background-color: var(--bg); background-image: radial-gradient(ellipse at 50% -22%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 58%); }
+.settings-language-control { gap: 2px; padding: 3px; border-radius: 12px; }
+.settings-language-control button { min-width: 48px; min-height: 38px; padding-inline: 9px; font-size: .8125rem; }
+.hadith-footer { border-top-color: var(--border); }
+.grade-unavailable { border-style: dashed; }
+.bismillah-splash { background: var(--bg); }
+.bismillah-splash::before { position: absolute; inset: 18px; border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent); border-radius: 24px; content: ''; pointer-events: none; }
+.bismillah-splash p { max-width: 18ch; font-size: clamp(2.1rem, 8vw, 4rem); }
 .home-hero-count { padding-top: 14px; border-top: 1px solid color-mix(in srgb, var(--border) 68%, transparent); font-weight: 700; }
 .home-explore .section-title { align-items: center; }
 .home-link-grid { border-radius: 12px; }
@@ -1005,10 +1008,81 @@ body { background-image: none; }
   .reader-toolbar { top: 3px; }
 }
 
-/* Keep the final cascade monochrome, including earlier decorative components. */
+/* Keep decorative surfaces in the reading palette as well. */
 .home-hero .primary-action, .primary-action { background: var(--accent); color: var(--accent-foreground); }
 .home-hero .primary-action:hover, .primary-action:hover { background: var(--accent-strong); color: var(--accent-foreground); }
-.library-feature-art { background: radial-gradient(circle at 50% 44%, #383838, #1b1b1b 58%, #101010); color: #ffffff; }
+.library-feature-art { background: radial-gradient(circle at 50% 44%, #37674e, #174333 58%, #0b2d21); color: #f4f1e4; }
 .library-feature-art > small, .home-hero .eyebrow span { color: var(--muted); }
 .home-hero::before { background: radial-gradient(circle at 84% 48%, transparent 0 96px, color-mix(in srgb, var(--text) 27%, transparent) 97px 98px, transparent 99px 111px, color-mix(in srgb, var(--text) 15%, transparent) 112px 113px, transparent 114px), repeating-linear-gradient(135deg, transparent 0 15px, color-mix(in srgb, var(--text) 5%, transparent) 15px 16px); }
 .library-cover-seal { border-color: color-mix(in srgb, var(--text) 40%, var(--border)); box-shadow: inset 0 0 0 8px color-mix(in srgb, var(--text) 3%, transparent), inset 0 0 0 9px color-mix(in srgb, var(--text) 15%, transparent); }
+.setting-language-row .settings-language-control { width: max-content; max-width: 100%; }
+.setting-language-row .settings-language-control button { flex: 0 0 auto; }
+.hadith-card { border: 1px solid var(--border); border-radius: 8px 26px 8px 26px; background: var(--surface); box-shadow: var(--shadow); }
+.daily-card { border: 1px solid var(--border); background: linear-gradient(145deg, color-mix(in srgb, var(--surface) 98%, var(--accent)), var(--surface)); box-shadow: var(--shadow); }
+.chapter-progress { display: grid; gap: 6px; max-width: 330px; margin-top: 13px; color: var(--muted); font-size: .78rem; font-weight: 700; }
+.chapter-progress > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.chapter-progress progress { width: 100%; height: 5px; overflow: hidden; border: 0; border-radius: 99px; appearance: none; background: var(--surface-soft); }
+.chapter-progress progress::-webkit-progress-bar { border-radius: 99px; background: var(--surface-soft); }
+.chapter-progress progress::-webkit-progress-value { border-radius: 99px; background: var(--focus); }
+.chapter-progress progress::-moz-progress-bar { border-radius: 99px; background: var(--focus); }
+.chapter-navigation { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 10px; margin: 24px 8px 0; }
+.chapter-navigation > a { display: flex; min-width: 0; min-height: 64px; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); text-decoration: none; box-shadow: 0 7px 20px rgba(0,0,0,.08); }
+.chapter-navigation > a > span { display: grid; min-width: 0; gap: 3px; }
+.chapter-navigation small { color: var(--muted); font-size: .72rem; }
+.chapter-navigation strong { overflow: hidden; font-size: .82rem; text-overflow: ellipsis; white-space: nowrap; }
+.chapter-navigation svg { flex: none; color: var(--accent); }
+.chapter-navigation .next-chapter { justify-content: flex-end; text-align: end; }
+.chapter-position { color: var(--muted); font-size: .75rem; white-space: nowrap; }
+@media (max-width: 520px) {
+  .chapter-navigation { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .chapter-position { display: none; }
+  .chapter-navigation strong { max-width: 34vw; }
+}
+
+/* A source-linked daily-life entry point: compact cards on phones, editorial grid on desktop. */
+.everyday-section { width: min(1050px, 100%); margin: clamp(34px, 6vw, 72px) auto 0; }
+.everyday-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .7fr); align-items: end; gap: 12px 36px; margin-bottom: 18px; }
+.everyday-heading .eyebrow { margin-bottom: 8px; color: var(--accent-strong); font-size: .74rem; letter-spacing: .1em; }
+.everyday-heading h2 { max-width: 21ch; margin: 0; font-family: var(--display-font); font-size: clamp(1.8rem, 3.4vw, 2.65rem); font-weight: 500; line-height: 1.08; text-wrap: balance; }
+.everyday-heading > p { max-width: 39ch; margin: 0 0 2px; color: var(--muted); font-size: .94rem; line-height: 1.65; }
+.everyday-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.everyday-card { position: relative; display: flex; min-width: 0; min-height: 148px; flex-direction: column; justify-content: space-between; gap: 13px; overflow: hidden; padding: 16px 17px 14px; border: 1px solid var(--border); border-radius: 15px 15px 7px 15px; background: linear-gradient(145deg, color-mix(in srgb, var(--surface) 96%, var(--accent)), var(--surface)); color: var(--text); text-decoration: none; box-shadow: 0 8px 22px rgba(12, 29, 20, .08), inset 0 1px rgba(255,255,255,.52); transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.everyday-card::after { position: absolute; right: -33px; bottom: -52px; width: 112px; aspect-ratio: 1; border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent); border-radius: 50%; box-shadow: 0 0 0 11px color-mix(in srgb, var(--accent) 3%, transparent), 0 0 0 23px color-mix(in srgb, var(--accent) 2%, transparent); content: ''; pointer-events: none; }
+.everyday-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 43%, var(--border)); box-shadow: 0 14px 28px rgba(12, 29, 20, .13), inset 0 1px rgba(255,255,255,.62); }
+.everyday-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.everyday-card-top, .everyday-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.everyday-icon { display: grid; width: 36px; height: 36px; flex: none; place-items: center; border: 1px solid color-mix(in srgb, var(--accent) 16%, var(--border)); border-radius: 11px; background: color-mix(in srgb, var(--accent) 9%, var(--surface)); color: var(--accent-strong); }
+.everyday-index { color: var(--muted); font-size: .72rem; font-variant-numeric: tabular-nums; letter-spacing: .08em; }
+.everyday-card > strong { max-width: 19ch; min-height: 2.5em; font-size: 1rem; font-weight: 730; line-height: 1.26; text-wrap: balance; }
+.everyday-card-foot { position: relative; z-index: 1; color: var(--muted); font-size: .75rem; line-height: 1.4; }
+.everyday-card-foot > span { min-width: 0; }
+.everyday-card-foot svg { flex: none; color: var(--accent); }
+@media (max-width: 720px) {
+  .everyday-section { margin-top: 34px; }
+  .everyday-heading { grid-template-columns: minmax(0,1fr); gap: 7px; margin-bottom: 13px; }
+  .everyday-heading .eyebrow { margin-bottom: 7px; font-size: .7rem; }
+  .everyday-heading h2 { max-width: 23ch; font-size: clamp(1.75rem, 7.2vw, 2.25rem); }
+  .everyday-heading > p { max-width: 43ch; font-size: .875rem; }
+  .everyday-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
+  .everyday-card { min-height: 142px; gap: 10px; padding: 12px 12px 11px; border-radius: 12px 12px 6px 12px; }
+  .everyday-icon { width: 34px; height: 34px; }
+  .everyday-card > strong { font-size: .9rem; }
+  .everyday-card-foot { font-size: .68rem; }
+}
+@media (max-width: 360px) {
+  .everyday-grid { gap: 7px; }
+  .everyday-card { min-height: 146px; padding-inline: 10px; }
+  .everyday-card > strong { font-size: .84rem; }
+  .everyday-card-foot { gap: 5px; font-size: .63rem; }
+}
+/* Give the landing hero its own clear first-screen stage, leaving the dock over quiet space. */
+@media (min-width: 721px) {
+  .riyad-home .home-hero { min-height: clamp(560px, calc(100svh - 175px), 850px); }
+}
+@media (max-width: 720px) {
+  .riyad-home .home-hero { display: grid; grid-template-columns: minmax(0,1fr); align-content: center; min-height: clamp(580px, calc(100svh - 110px), 880px); }
+  .home-hero-text { width: 100%; }
+}
+html[lang='ur'] .everyday-heading h2 { font-family: 'Noto Nastaliq Urdu', serif; font-size: clamp(1.55rem, 5.4vw, 2.1rem); line-height: 1.9; letter-spacing: 0; }
+html[lang='ur'] .everyday-heading > p { line-height: 2.05; }
+html[lang='ur'] .everyday-card > strong { font-family: 'Noto Nastaliq Urdu', serif; line-height: 1.9; }

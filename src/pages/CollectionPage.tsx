@@ -6,6 +6,7 @@ import { db, type ReadingProgress } from '../data/db'
 import type { CollectionIndex } from '../types/hadith'
 import { TopicTree } from '../components/TopicTree'
 import { useI18n } from '../i18n'
+import { getChapterTitle } from '../utils/chapterTitle'
 
 export function CollectionPage() {
   const { t, language } = useI18n()
@@ -44,7 +45,7 @@ export function CollectionPage() {
             {visibleChapters.map((chapter) => (
               <Link className="chapter-row" key={chapter.id} to={`/collection/${collection.id}/chapter/${chapter.id}`}>
                 <span className="chapter-index">{chapter.id.padStart(2, '0')}</span>
-                <span><strong>{chapter.titleArabic && language === 'ur' ? chapter.titleArabic : chapter.title}</strong><small>{chapter.count} {t('hadith')}</small></span>
+                <span><strong dir="auto">{getChapterTitle(chapter, language)}</strong><small>{chapter.count} {t('hadith')}</small></span>
                 <ChevronRight aria-hidden="true" />
               </Link>
             ))}

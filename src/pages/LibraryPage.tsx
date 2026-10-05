@@ -5,6 +5,7 @@ import { DATA_MODE, DEFAULT_COLLECTION } from '../config'
 import { hadithRepository } from '../data/HadithRepository'
 import type { CollectionIndex } from '../types/hadith'
 import { useI18n } from '../i18n'
+import { getChapterTitle } from '../utils/chapterTitle'
 
 export function LibraryPage() {
   const { t, language } = useI18n()
@@ -52,7 +53,7 @@ export function LibraryPage() {
       <p className="library-footnote">{language === 'ur' ? 'عربی متن اور انگریزی ترجمہ IslamHouse / IslamEnc سے ہیں اور اصل صورت میں دکھائے گئے ہیں۔ اردو ترجمہ فی الحال اس نسخے میں شامل نہیں۔' : t('Text and translation are provided by IslamHouse / IslamEnc and shown as published. Translation coverage is identified per narration.')}</p>
       {collection && <section className="library-contents" aria-labelledby="library-contents-title">
         <header className="library-contents-heading"><div><p className="eyebrow">{t('Begin anywhere')}</p><h2 id="library-contents-title">{t('Open a chapter')}</h2></div><Link to={`/collection/${collection.id}`}>{t('All chapters')} <ChevronRight size={17} /></Link></header>
-        <div className="library-chapter-preview">{collection.chapters.slice(0, 3).map((chapter) => <Link className="chapter-row" key={chapter.id} to={`/collection/${collection.id}/chapter/${chapter.id}`}><span className="chapter-index">{chapter.id.padStart(2, '0')}</span><span><strong>{chapter.title.replace(/^\d+\s*[-–—]\s*/, '')}</strong><small>{chapter.count.toLocaleString('en-US')} {t('hadith')}</small></span><ChevronRight aria-hidden="true" /></Link>)}</div>
+        <div className="library-chapter-preview">{collection.chapters.slice(0, 3).map((chapter) => <Link className="chapter-row" key={chapter.id} to={`/collection/${collection.id}/chapter/${chapter.id}`}><span className="chapter-index">{chapter.id.padStart(2, '0')}</span><span><strong dir="auto">{getChapterTitle(chapter, language)}</strong><small>{chapter.count.toLocaleString('en-US')} {t('hadith')}</small></span><ChevronRight aria-hidden="true" /></Link>)}</div>
       </section>}
     </main>
   )

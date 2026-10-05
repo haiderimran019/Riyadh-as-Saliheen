@@ -4,7 +4,7 @@
 
 Arabic text, English translation, and chapter headings were retrieved from the published IslamEnc Riyad collection on 2026-10-04. The source presents paired Arabic and English editions; see [IslamEnc Riyad](https://riyadh.islamenc.com/en) and the [IslamHouse API Hub content policy](https://github.com/IslamHouse-API/multilingual-quran-hadith-islamic-content-database-api-hub#content-usage-policy).
 
-The imported source text is retained as published, including its numbering. The importer pairs languages by the source's global hadith reference. No text is generated or inferred. The interface presents the reference number separately from the body and may reflow lines for reading. The edition provides no grade data in this import, so the app labels grades unavailable rather than inferring them.
+The imported source text is retained as published, including both its chapter-local and collection-wide numbering. The importer pairs languages by the source's global hadith reference; reading views use the chapter-local number, while shared cards retain the source reference. No text or grade is generated or inferred. This edition provides no grade data in this import, so the app labels grades as not supplied rather than inventing them.
 
 | Language | Source entries | Included and paired |
 | --- | ---: | ---: |
