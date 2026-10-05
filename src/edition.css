@@ -499,6 +499,20 @@ button, input, select, textarea { font-family: inherit; }
   .daily-card > .daily-arabic { margin-block: 16px 12px; font-size: clamp(1.3rem, 5.8vw, 1.5rem); line-height: 1.85; }
   .daily-card > .daily-translation { font-size: 1rem; line-height: 1.7; }
 }
+@media (max-width: 720px) {
+  html[lang='ur'] body { overflow-wrap: anywhere; }
+  html[lang='ur'] :is(.home-hero-text, .page-heading, .reader-heading, .hadith-card, .translation-block, .daily-card, .site-footer) { min-width: 0; max-width: 100%; }
+  html[lang='ur'] .home-hero-art { display: none; }
+  html[lang='ur'] .home-hero::before { background: none; }
+  html[lang='ur'] .home-hero h1 { max-width: 100%; font-size: clamp(1.75rem, 8vw, 2.1rem); line-height: 2.25; letter-spacing: 0; }
+  html[lang='ur'] .home-intro,
+  html[lang='ur'] .page-heading > p,
+  html[lang='ur'] .reader-heading h1,
+  html[lang='ur'] .translation-block[lang='ur'] > p,
+  html[lang='ur'] .daily-translation { line-height: 2.4; }
+  html[lang='ur'] .page-heading h1, html[lang='ur'] .page-heading h2,
+  html[lang='ur'] .reader-heading h1 { max-width: 100%; font-size: clamp(1.4rem, 7vw, 1.8rem); letter-spacing: 0; }
+}
 @media (prefers-reduced-motion: reduce) {
   .home-link-card:hover, .theme-choice:hover { transform: none; }
 }

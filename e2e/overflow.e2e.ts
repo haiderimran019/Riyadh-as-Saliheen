@@ -50,6 +50,43 @@ test('daily scripture uses a restrained Arabic scale on iPhone and iPad widths',
   }
 })
 
+test('Urdu stays within phone width across every app screen', async ({ page }) => {
+  test.setTimeout(120_000)
+  const routes = [
+    './',
+    'library',
+    'collection/riyad-as-salihin',
+    'collection/riyad-as-salihin/chapter/1',
+    'search',
+    'saved',
+    'settings',
+    'sources',
+    'about',
+    'privacy',
+    'terms',
+  ]
+
+  await page.goto('settings')
+  await page.waitForLoadState('networkidle')
+  await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible()
+  await page.getByRole('button', { name: 'Urdu' }).click()
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ur')
+
+  for (const width of [320, 360, 390]) {
+    await page.setViewportSize({ width, height: 844 })
+    for (const route of routes) {
+      await page.goto(route)
+      await expect(page.locator('html')).toHaveAttribute('lang', 'ur')
+      await page.waitForLoadState('networkidle')
+      await expect(page.locator('.bismillah-splash')).toBeHidden()
+      const dimensions = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }))
+      expect(dimensions.scroll, `Urdu overflow on ${route} at ${width}px`).toBeLessThanOrEqual(dimensions.client)
+      const textOverflow = await page.locator('.home-hero h1, .home-intro, .reader-heading h1, .translation-block[lang="ur"] > p, .daily-translation').evaluateAll((elements) => elements.filter((element) => element instanceof HTMLElement && element.scrollWidth > element.clientWidth).map((element) => element.className))
+      expect(textOverflow, `Urdu text clipped on ${route} at ${width}px`).toEqual([])
+    }
+  }
+})
+
 test('legacy collection route no longer exposes the HadeethEnc topic directory', async ({ page }) => {
   await page.goto('collection/hadeethenc')
   await expect(page).toHaveURL(/\/library$/)
