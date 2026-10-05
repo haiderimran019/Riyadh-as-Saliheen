@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { HadithRecord } from '../types/hadith'
-import { dateKey, selectDailyHadith } from './dailyHadith'
+import { dateKey, selectDailyAyah, selectDailyHadith } from './dailyHadith'
 
 const record = (id: string): HadithRecord => ({
   id,
@@ -27,5 +27,13 @@ describe('daily hadith selection', () => {
   it('works without translations and handles an empty pool', () => {
     expect(selectDailyHadith([record('1')], new Date())?.id).toBe('1')
     expect(selectDailyHadith([], new Date())).toBeUndefined()
+  })
+
+  it('selects a stable, locally bundled daily ayah by date', () => {
+    const ayahs = [{ sura: 1, aya: 1 }, { sura: 2, aya: 286 }, { sura: 13, aya: 28 }]
+    const dataset = { ayahs } as never
+    const date = new Date(2026, 9, 5)
+    expect(selectDailyAyah(dataset, date)).toEqual(selectDailyAyah(dataset, new Date(2026, 9, 5)))
+    expect(ayahs).toContainEqual(selectDailyAyah(dataset, date))
   })
 })

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Download } from 'lucide-react'
+import { useI18n } from '../i18n'
 
 type InstallEvent = Event & {
   prompt: () => Promise<void>
@@ -7,6 +8,7 @@ type InstallEvent = Event & {
 }
 
 export function InstallPrompt() {
+  const { t } = useI18n()
   const [event, setEvent] = useState<InstallEvent | null>(null)
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export function InstallPrompt() {
       await event.userChoice
       setEvent(null)
     }}>
-      <Download size={17} /> Install for offline reading
+      <Download size={17} /> {t('Install for offline reading')}
     </button>
   )
 }

@@ -20,4 +20,5 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run data:import:riyad -- --languages=ar,en
+      - run: npm run data:import:quran-day
       - run: VITE_DATA_MODE=real npm run build

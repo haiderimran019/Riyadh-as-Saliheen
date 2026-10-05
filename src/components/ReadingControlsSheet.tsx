@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Coffee, Monitor, Moon, RotateCcw, Sun, X } from 'lucide-react'
 import { getSetting, setSetting } from '../data/db'
 import { APP_EVENTS, dispatchAppEvent } from '../core/appEvents'
+import { useI18n } from '../i18n'
 
 export type ReadingPreferences = {
   arabicSize: number
@@ -10,11 +11,12 @@ export type ReadingPreferences = {
   theme: 'light' | 'dark' | 'sepia' | 'system'
 }
 
-const getDefaultArabicSize = () => window.matchMedia('(min-width: 721px)').matches ? 38 : 34
+const getDefaultArabicSize = () => window.matchMedia('(min-width: 721px)').matches ? 34 : 30
 
 export function ReadingControlsSheet() {
+  const { t, language } = useI18n()
   const [open, setOpen] = useState(false)
-  const [preferences, setPreferences] = useState<ReadingPreferences>({ arabicSize: 34, translationSize: 17, showDiacritics: true, theme: 'dark' })
+  const [preferences, setPreferences] = useState<ReadingPreferences>(() => ({ arabicSize: getDefaultArabicSize(), translationSize: 17, showDiacritics: true, theme: 'dark' }))
   const closeRef = useRef<HTMLButtonElement>(null)
   const dialogRef = useRef<HTMLElement>(null)
   const returnFocusRef = useRef<HTMLElement | null>(null)
@@ -81,20 +83,20 @@ export function ReadingControlsSheet() {
 
   return (
     <>
-      <button className="reading-sheet-backdrop" aria-label="Close reading settings" onClick={() => setOpen(false)} />
+      <button className="reading-sheet-backdrop" aria-label={t('Close reading settings')} onClick={() => setOpen(false)} />
       <section ref={dialogRef} className="reading-sheet" role="dialog" aria-modal="true" aria-labelledby="reading-settings-title">
         <header>
-          <div><p className="eyebrow">Display</p><h2 id="reading-settings-title">Reading settings</h2></div>
-          <button ref={closeRef} className="icon-button" aria-label="Close reading settings" onClick={() => setOpen(false)}><X /></button>
+          <div><p className="eyebrow">{t('Display')}</p><h2 id="reading-settings-title">{t('Reading settings')}</h2></div>
+          <button ref={closeRef} className="icon-button" aria-label={t('Close reading settings')} onClick={() => setOpen(false)}><X /></button>
         </header>
-        <label className="range-setting"><span><strong>Arabic size</strong><output>{preferences.arabicSize}px</output></span><input type="range" min="20" max="56" value={preferences.arabicSize} onChange={(event) => update('arabicSize', Number(event.target.value))} /></label>
-        <label className="range-setting"><span><strong>Translation size</strong><output>{preferences.translationSize}px</output></span><input type="range" min="14" max="28" value={preferences.translationSize} onChange={(event) => update('translationSize', Number(event.target.value))} /></label>
-        <fieldset className="theme-options"><legend>Theme</legend><div className="theme-buttons">{([
+        <label className="range-setting"><span><strong>{t('Arabic size')}</strong><output>{preferences.arabicSize}px</output></span><input type="range" min="20" max="56" value={preferences.arabicSize} onChange={(event) => update('arabicSize', Number(event.target.value))} /></label>
+        <label className="range-setting"><span><strong>{t('Translation size')}</strong><output>{preferences.translationSize}px</output></span><input type="range" min="14" max="28" value={preferences.translationSize} onChange={(event) => update('translationSize', Number(event.target.value))} /></label>
+        <fieldset className="theme-options"><legend>{t('Theme')}</legend><div className="theme-buttons">{([
           ['system', 'System', Monitor], ['light', 'Light', Sun], ['dark', 'Dark', Moon], ['sepia', 'Sepia', Coffee],
-        ] as const).map(([theme, label, Icon]) => <button type="button" key={theme} className="theme-choice" aria-label={`${label} theme`} title={`${label} theme`} aria-pressed={preferences.theme === theme} onClick={() => update('theme', theme)}><Icon size={20} aria-hidden="true" /></button>)}</div></fieldset>
-        <label className="switch-setting"><span><strong>Diacritics</strong><small>Show Arabic tashkeel where provided.</small></span><input type="checkbox" checked={preferences.showDiacritics} onChange={(event) => update('showDiacritics', event.target.checked)} /></label>
-        <div className="reading-preview" aria-label="Live reading preview"><p dir="rtl" lang="ar" style={{ fontSize: preferences.arabicSize }}>نص عربي للمعاينة</p><p style={{ fontSize: preferences.translationSize }}>Translation preview</p></div>
-        <button className="reset-button" onClick={reset}><RotateCcw size={17} /> Reset</button>
+        ] as const).map(([theme, label, Icon]) => <button type="button" key={theme} className="theme-choice" aria-label={`${t(label)} theme`} title={`${t(label)} theme`} aria-pressed={preferences.theme === theme} onClick={() => update('theme', theme)}><Icon size={20} aria-hidden="true" /></button>)}</div></fieldset>
+        <label className="switch-setting"><span><strong>{t('Diacritics')}</strong><small>{t('Show Arabic tashkeel where provided.')}</small></span><input type="checkbox" checked={preferences.showDiacritics} onChange={(event) => update('showDiacritics', event.target.checked)} /></label>
+        <div className="reading-preview" aria-label={t('Live reading preview')}><p dir="rtl" lang="ar" style={{ fontSize: preferences.arabicSize }}>نص عربي للمعاينة</p><p lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'} style={{ fontSize: preferences.translationSize }}>{t('Translation preview')}</p></div>
+        <button className="reset-button" onClick={reset}><RotateCcw size={17} /> {t('Reset')}</button>
       </section>
     </>
   )

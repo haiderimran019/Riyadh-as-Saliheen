@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom'
 import { DATA_MODE, DEFAULT_COLLECTION } from '../config'
 import { hadithRepository } from '../data/HadithRepository'
 import type { CollectionIndex } from '../types/hadith'
+import { useI18n } from '../i18n'
 
 export function LibraryPage() {
+  const { t, language } = useI18n()
   const [collection, setCollection] = useState<CollectionIndex | null>(null)
   const [error, setError] = useState('')
 
@@ -22,32 +24,32 @@ export function LibraryPage() {
   return (
     <main className="content-page page-with-nav library-page">
       <header className="page-heading compact">
-        <p className="eyebrow">One collection · read by chapter</p>
-        <h1>The library</h1>
-        <p>Riyad as-Salihin, with its Arabic text and a published English translation.</p>
+        <p className="eyebrow">{t('One collection · read by chapter')}</p>
+        <h1>{t('The library')}</h1>
+        <p>{t('Riyad as-Salihin, with its Arabic text and a published English translation.')}</p>
       </header>
       <section className="library-feature" aria-labelledby="riyad-title">
         <div className="library-feature-art" aria-hidden="true"><span>رياض</span><i>الصالحين</i><small>RIYAD AS-SALIHIN</small></div>
         <div className="library-feature-copy">
-          <span className="label">The collection</span>
-          <h2 id="riyad-title">Riyad as-Salihin</h2>
+          <span className="label">{t('The collection')}</span>
+          <h2 id="riyad-title">{t('Riyad as-Salihin')}</h2>
           {collection ? (
             <>
-              <p>{collection.chapters.length} chapters · {collection.recordIds?.length ?? 0} narrations · Arabic and English</p>
-              <p className="data-status"><span aria-hidden="true" /> Local reading text is ready, including offline.</p>
-              <Link className="primary-action" to={firstChapter ? `/collection/${collection.id}/chapter/${firstChapter.id}` : `/collection/${collection.id}`}><BookOpen size={18} /> Begin reading <ChevronRight size={17} /></Link>
-              <Link className="text-action" to={`/collection/${collection.id}`}>Browse all chapters</Link>
+              <p>{collection.chapters.length} {t('Chapters')} · {collection.recordIds?.length ?? 0} {t('narrations')} · {t('Arabic and English')}</p>
+              <p className="data-status"><span aria-hidden="true" /> {t('Local reading text is ready, including offline.')}</p>
+              <Link className="primary-action" to={firstChapter ? `/collection/${collection.id}/chapter/${firstChapter.id}` : `/collection/${collection.id}`}><BookOpen size={18} /> {t('Begin reading')} <ChevronRight size={17} /></Link>
+              <Link className="text-action" to={`/collection/${collection.id}`}>{t('Browse all chapters')}</Link>
             </>
           ) : (
             <>
-              <p>{DATA_MODE === 'placeholder' ? 'This preview contains no real hadith text yet.' : error || 'Opening the locally stored chapter index…'}</p>
-              <p className="data-status"><span aria-hidden="true" /> {DATA_MODE === 'placeholder' ? 'Switch to the local real-data build to read.' : error ? 'Check the data import and try again.' : 'Loading the chapter list.'}</p>
-              <Link className="primary-action" to="/sources">Source status <ChevronRight size={17} /></Link>
+              <p>{DATA_MODE === 'placeholder' ? t('This preview contains no real hadith text yet.') : error || t('Opening the locally stored chapter index…')}</p>
+              <p className="data-status"><span aria-hidden="true" /> {DATA_MODE === 'placeholder' ? t('Switch to the local real-data build to read.') : error ? t('Check the data import and try again.') : t('Loading the chapter list.')}</p>
+              <Link className="primary-action" to="/sources">{t('Source status')} <ChevronRight size={17} /></Link>
             </>
           )}
         </div>
       </section>
-      <p className="library-footnote">Text and translation are provided by IslamHouse / IslamEnc and shown as published. Translation coverage is identified per narration.</p>
+      <p className="library-footnote">{language === 'ur' ? 'عربی متن اور انگریزی ترجمہ IslamHouse / IslamEnc سے ہیں اور اصل صورت میں دکھائے گئے ہیں۔ اردو ترجمہ فی الحال اس نسخے میں شامل نہیں۔' : t('Text and translation are provided by IslamHouse / IslamEnc and shown as published. Translation coverage is identified per narration.')}</p>
     </main>
   )
 }

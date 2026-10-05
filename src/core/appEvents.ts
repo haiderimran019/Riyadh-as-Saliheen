@@ -1,6 +1,7 @@
 export const APP_EVENTS = {
   openReadingSettings: 'open-reading-settings',
   languageChange: 'app-language-change',
+  appLanguageChange: 'app-locale-change',
   readingPreferencesChange: 'reading-preferences-change',
   readingSettingsState: 'reading-settings-state',
 } as const

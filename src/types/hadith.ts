@@ -59,6 +59,7 @@ export type HadeethCategory = { id: string; title: string; hadeeths_count: strin
 export type ChapterIndex = {
   id: string
   title: string
+  titleArabic?: string
   file: string
   count: number
 }
@@ -106,3 +107,14 @@ export type SourcesManifest = {
   metadata: DatasetMetadata
   sources: SourceCredit[]
 }
+
+export type DailyQuranDataset = {
+  publisher: string
+  sourceUrl: string
+  apiUrl: string
+  dateRetrieved: string
+  translations: Record<'en' | 'ur', { key: string; title: string; version: string; sourceUrl: string }>
+  ayahs: Array<{ sura: number; aya: number; arabic_text: string; translations: { en: QuranEncAyah; ur: QuranEncAyah } }>
+}
+
+export type QuranEncAyah = { id: string; sura: string; aya: string; arabic_text: string; translation: string; footnotes: string }

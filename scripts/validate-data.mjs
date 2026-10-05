@@ -37,6 +37,15 @@ const recordSchema = z.object({ id: z.string().min(1), arabic: z.string().min(1)
 const chapterSchema = z.object({ metadata: metadataSchema, records: z.array(recordSchema).min(1) }).passthrough()
 const translationValueSchema = z.object({ text: z.string().min(1), language: z.string().optional(), raw: z.record(z.string(), z.unknown()).optional() })
 const translationsSchema = z.object({ metadata: metadataSchema, translations: z.record(z.string(), translationValueSchema) }).passthrough()
+const quranAyahSchema = z.object({
+  id: z.string().min(1), sura: z.string(), aya: z.string(),
+  arabic_text: z.string().min(1), translation: z.string().min(1), footnotes: z.string(),
+})
+const dailyQuranSchema = z.object({
+  publisher: z.literal('QuranEnc.com'), sourceUrl: z.string().url(), apiUrl: z.string().url(), dateRetrieved: z.string().date(),
+  translations: z.object({ en: z.object({ key: z.string().min(1), title: z.string().min(1), version: z.string().min(1), sourceUrl: z.string().url() }), ur: z.object({ key: z.string().min(1), title: z.string().min(1), version: z.string().min(1), sourceUrl: z.string().url() }) }),
+  ayahs: z.array(z.object({ sura: z.number().int().positive(), aya: z.number().int().positive(), arabic_text: z.string().min(1), translations: z.object({ en: quranAyahSchema, ur: quranAyahSchema }) })).min(1),
+})
 
 async function loadJson(path, schema, label) {
   const source = await readFile(path, 'utf8')
@@ -86,4 +95,14 @@ if (index.languages.includes('en')) {
   if (Object.keys(allEnglish.translations).length !== translationCount) throw new Error('English search index count mismatch.')
   if (Object.keys(allEnglish.translations).some((id) => !seenIds.has(id))) throw new Error('English search index contains an unknown hadith ID.')
 }
+const dailyQuran = await loadJson(join(dataRoot, 'quran-of-day.json'), dailyQuranSchema, 'QuranEnc daily ayah data')
+for (const ayah of dailyQuran.ayahs) {
+  for (const language of ['en', 'ur']) {
+    const translated = ayah.translations[language]
+    if (Number(translated.sura) !== ayah.sura || Number(translated.aya) !== ayah.aya || translated.arabic_text !== ayah.arabic_text) {
+      throw new Error(`QuranEnc ${language} translation reference mismatch for ${ayah.sura}:${ayah.aya}.`)
+    }
+  }
+}
 console.log(`Validated IslamHouse/IslamEnc Riyad: ${recordCount} Arabic narrations, ${translationCount} English translations across ${index.chapters.length} chapters.`)
+console.log(`Validated QuranEnc daily ayah data: ${dailyQuran.ayahs.length} references with English and Urdu translations.`)

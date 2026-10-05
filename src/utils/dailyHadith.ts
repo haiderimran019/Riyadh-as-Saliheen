@@ -1,4 +1,5 @@
 import type { HadithRecord } from '../types/hadith'
+import type { DailyQuranDataset } from '../types/hadith'
 
 export function dateKey(date: Date) {
   const year = date.getFullYear()
@@ -15,4 +16,8 @@ export function selectDailyHadith<T extends HadithRecord>(records: T[], date: Da
 export function selectDailyIndex(length: number, date: Date) {
   const seed = [...dateKey(date)].reduce((total, character) => ((total * 31) + character.charCodeAt(0)) >>> 0, 0)
   return length > 0 ? seed % length : -1
+}
+
+export function selectDailyAyah(dataset: DailyQuranDataset, date: Date) {
+  return dataset.ayahs[selectDailyIndex(dataset.ayahs.length, date)]
 }

@@ -6,11 +6,14 @@ Bookmarks, bookmark folders, reading progress, themes, and reader settings are s
 
 The Arabic collection and English translation are supplied by IslamHouse.com / IslamEnc.com and displayed as published. See `DATA_SOURCES.md` and `NOTICE` for source and reuse details.
 
+Every screen follows the shared responsive, accessible interface rules in `DESIGN_STANDARDS.md`.
+
 ## Run locally
 
 ```bash
 npm install
 npm run data:import:riyad -- --languages=ar,en
+npm run data:import:quran-day
 VITE_DATA_MODE=real npm run dev
 ```
 
@@ -27,12 +30,13 @@ The production build includes a Workbox service worker. The app shell is precach
 
 ## Data modes
 
-The default mode is `placeholder`, which shows an empty preview shell and never substitutes sample religious text. Import Riyad data into the ignored `data-local/generated` directory, then set `VITE_DATA_MODE=real` to read it locally or build it into a temporary static output.
+The default mode is `placeholder`, which shows an empty preview shell and never substitutes sample religious text. Import Riyad and daily Quran data into the ignored `data-local/generated` directory, then set `VITE_DATA_MODE=real` to read it locally or build it into static output. The Hadith of the Day uses the bundled Riyad edition; the Ayah of the Day uses QuranEnc Arabic and English/Urdu meanings. Both are bundled for offline use; there are no text-source requests at runtime. Riyad currently has no verified Urdu translation in this release. Urdu mode keeps the Arabic source visible and reports the gap instead of showing English as Urdu.
 
 Fetch the authorized stage 5a languages with at most two delayed, retrying requests at a time:
 
 ```bash
 npm run data:import:riyad -- --languages=ar,en
+npm run data:import:quran-day
 ```
 
 The import is resumable from cached raw pages. The reader bundles Arabic and English files into the build output; those files are generated locally and never committed.
@@ -41,7 +45,7 @@ The import is resumable from cached raw pages. The reader bundles Arabic and Eng
 
 ### Cloudflare Pages
 
-- Build command: `npm run data:import:riyad -- --languages=ar,en && VITE_DATA_MODE=real npm run build`
+- Build command: `npm run data:import:riyad -- --languages=ar,en && npm run data:import:quran-day && VITE_DATA_MODE=real npm run build`
 - Output directory: `dist`
 - Environment: fetch approved data in the build job; for feedback, set `VITE_FEEDBACK_ENDPOINT` and `VITE_FEEDBACK_KEY` and ensure the endpoint host appears in `public/_headers` under `connect-src`.
 - The tracked `wrangler.toml`, `public/_redirects`, and `public/_headers` provide the Pages output directory, SPA fallback, CSP, and security headers.
@@ -52,6 +56,7 @@ Pushing `main` runs `.github/workflows/static.yml`, which imports the approved c
 
 ```bash
 npm run data:import:riyad -- --languages=ar,en
+npm run data:import:quran-day
 VITE_DATA_MODE=real VITE_BASE_PATH=/Riyadh-as-Saliheen/ npm run build
 ```
 

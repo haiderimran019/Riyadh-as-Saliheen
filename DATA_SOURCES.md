@@ -15,6 +15,12 @@ There are 19 Arabic narrations with no paired English entry and 6 English entrie
 
 The English text is displayed as published and is not reviewed by this app's team. The app makes no source requests at runtime. A real-data build includes the locally generated files in its output for offline reading.
 
+## Ayah of the day
+
+The daily Quran Arabic text and selected English and Urdu translations are retrieved from the official [QuranEnc API](https://quranenc.com/ar/home/api/) at build time, with the publisher's [content-use terms](https://quranenc.com/ur/home) observed. The imported wording, Arabic text, translation notes, and footnotes are retained exactly as received. Each build records the API edition key, version, source URL, and retrieval date. The selection rotates locally by date from six fixed references; the generated dataset is bundled for offline use, so the app does not contact QuranEnc at runtime. Raw responses and generated text remain under ignored `data-local` and are not committed.
+
+The application interface is available in English and Urdu. Riyad as-Salihin's imported edition has Arabic and English only; it has no verified Urdu translation in this release. Urdu mode does not present English as Urdu. A suitable rights-cleared Urdu edition can be added later without changing the existing source text.
+
 ## Code and content
 
-The MIT license covers code only. Hadith content is not covered by the code license and remains subject to the source's reuse policy. Keep visible attribution to IslamHouse.com / IslamEnc.com and preserve the source wording and reference numbering.
+The MIT license covers code only. Hadith content is not covered by the code license and remains subject to the source's reuse policy. Keep visible attribution to IslamHouse.com / IslamEnc.com and preserve the source wording and reference numbering. Quran text and translations remain subject to QuranEnc.com's terms and are separately credited.

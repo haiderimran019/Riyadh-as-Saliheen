@@ -2,11 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { APP_VERSION, FEEDBACK_ENABLED, FEEDBACK_ENDPOINT, FEEDBACK_KEY } from '../config'
-import { getSetting } from '../data/db'
+import { useI18n } from '../i18n'
 
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 
 export function FeedbackModal() {
+  const { t, language } = useI18n()
   const location = useLocation()
   const navigate = useNavigate()
   const dialogRef = useRef<HTMLElement>(null)
@@ -47,42 +48,41 @@ export function FeedbackModal() {
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
     setError('')
-    if (!message.trim()) { setError('Please enter a message.'); return }
-    if (message.length > 2000) { setError('Please keep the message to 2,000 characters.'); return }
+    if (!message.trim()) { setError(t('Please enter a message.')); return }
+    if (message.length > 2000) { setError(t('Please keep the message to 2,000 characters.')); return }
     if (website) { setStatus('success'); return }
     const previous = Number(localStorage.getItem('feedback-last-sent') ?? 0)
-    if (Date.now() - previous < 30_000) { setError('Please wait a moment before sending again.'); return }
+    if (Date.now() - previous < 30_000) { setError(t('Please wait a moment before sending again.')); return }
     setStatus('submitting')
     try {
-      const language = await getSetting('language', 'en')
       const response = await fetch(FEEDBACK_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ access_key: FEEDBACK_KEY, type, message: message.trim(), reply_email: replyEmail.trim() || undefined, hadith_id: params.get('hadith') || undefined, language, app_version: APP_VERSION }),
       })
-      if (!response.ok) throw new Error('The feedback service did not accept the message.')
+      if (!response.ok) throw new Error(t('The feedback service did not accept the message.'))
       localStorage.setItem('feedback-last-sent', String(Date.now()))
       setStatus('success')
     } catch (reason) {
       setStatus('error')
-      setError(reason instanceof Error ? reason.message : 'Unable to send feedback. Please try again.')
+      setError(reason instanceof Error ? reason.message : t('Unable to send feedback. Please try again.'))
     }
   }
 
   return (
     <>
-      <button className="feedback-backdrop" aria-label="Close feedback" onClick={close} />
+      <button className="feedback-backdrop" aria-label={t('Close feedback')} onClick={close} />
       <section ref={dialogRef} className="feedback-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
-        <header><div><p className="eyebrow">Help improve the app</p><h2 id="feedback-title">Send feedback</h2></div><button className="icon-button" aria-label="Close feedback" onClick={close}><X /></button></header>
-        {!FEEDBACK_ENABLED ? (import.meta.env.DEV ? <p className="notice">Feedback is unavailable in development until VITE_FEEDBACK_ENDPOINT and VITE_FEEDBACK_KEY are configured.</p> : null) : status === 'success' ? <div className="feedback-result" role="status"><h3>Thank you</h3><p>Your feedback was sent.</p><button onClick={close}>Close</button></div> : (
+        <header><div><p className="eyebrow">{t('Help improve the app')}</p><h2 id="feedback-title">{t('Send feedback')}</h2></div><button className="icon-button" aria-label={t('Close feedback')} onClick={close}><X /></button></header>
+        {!FEEDBACK_ENABLED ? (import.meta.env.DEV ? <p className="notice">{t('Feedback is unavailable in development until the feedback service is configured.')}</p> : null) : status === 'success' ? <div className="feedback-result" role="status"><h3>{t('Thank you')}</h3><p>{t('Your feedback was sent.')}</p><button onClick={close}>{t('Close')}</button></div> : (
           <form onSubmit={submit}>
-            <label><span>Type</span><select value={type} onChange={(event) => setType(event.target.value)}><option>Mistake in hadith or translation</option><option>Bug</option><option>Suggestion</option><option>Other</option></select></label>
-            <label><span>Message <strong>Required</strong></span><textarea ref={messageRef} required maxLength={2000} rows={7} value={message} onChange={(event) => setMessage(event.target.value)} /><small>{message.length}/2000</small></label>
-            <label><span>Reply email <small>Optional</small></span><input type="email" autoComplete="email" value={replyEmail} onChange={(event) => setReplyEmail(event.target.value)} /></label>
+            <label><span>{t('Type')}</span><select value={type} onChange={(event) => setType(event.target.value)}>{['Mistake in hadith or translation', 'Bug', 'Suggestion', 'Other'].map((option) => <option key={option} value={option}>{t(option)}</option>)}</select></label>
+            <label><span>{t('Message')} <strong>{t('Required')}</strong></span><textarea ref={messageRef} required maxLength={2000} rows={7} value={message} onChange={(event) => setMessage(event.target.value)} /><small>{message.length}/2000</small></label>
+            <label><span>{t('Reply email')} <small>{t('Optional')}</small></span><input type="email" autoComplete="email" value={replyEmail} onChange={(event) => setReplyEmail(event.target.value)} /></label>
             <label className="honeypot" aria-hidden="true"><span>Website</span><input tabIndex={-1} autoComplete="off" value={website} onChange={(event) => setWebsite(event.target.value)} /></label>
             {error && <p className="form-error" role="alert">{error}</p>}
-            <p className="service-note">Sending contacts the third-party form service at {new URL(FEEDBACK_ENDPOINT).host}, only when you submit.</p>
-            <button className="submit-button" type="submit" disabled={status === 'submitting'}>{status === 'submitting' ? 'Sending…' : 'Send feedback'}</button>
+            <p className="service-note">{t('Sending contacts the third-party form service at')} {new URL(FEEDBACK_ENDPOINT).host}, {t('only when you submit.')}</p>
+            <button className="submit-button" type="submit" disabled={status === 'submitting'}>{t(status === 'submitting' ? 'Sending…' : 'Send feedback')}</button>
           </form>
         )}
       </section>

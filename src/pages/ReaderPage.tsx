@@ -8,8 +8,10 @@ import { getDataRoot } from '../config'
 import { hadithRepository } from '../data/HadithRepository'
 import { APP_EVENTS, dispatchAppEvent } from '../core/appEvents'
 import type { ArabicChapterDataset, CollectionIndex, HadithRecord, TranslationChapterDataset } from '../types/hadith'
+import { useI18n } from '../i18n'
 
 type TrustFilter = 'sahih' | 'sahih-hasan' | 'all'
+const getDefaultArabicSize = () => window.matchMedia('(min-width: 721px)').matches ? 34 : 30
 
 const gradeCategory = (grade: string) => {
   const value = grade.toLocaleLowerCase()
@@ -19,6 +21,7 @@ const gradeCategory = (grade: string) => {
 }
 
 export function ReaderPage() {
+  const { language: appLanguage, t } = useI18n()
   const { collectionId = '', chapterId = '' } = useParams()
   const [collection, setCollection] = useState<CollectionIndex | null>(null)
   const [chapter, setChapter] = useState<ArabicChapterDataset | null>(null)
@@ -26,7 +29,7 @@ export function ReaderPage() {
   const [language, setLanguage] = useState('en')
   const [offlineStatus, setOfflineStatus] = useState('')
   const [showDiacritics, setShowDiacritics] = useState(true)
-  const [arabicSize, setArabicSize] = useState(38)
+  const [arabicSize, setArabicSize] = useState(getDefaultArabicSize)
   const [trustFilter, setTrustFilter] = useState<TrustFilter>('all')
   const [error, setError] = useState('')
   const [chapterLoading, setChapterLoading] = useState(true)
@@ -50,15 +53,14 @@ export function ReaderPage() {
     setError('')
     setCollectionLoading(true)
     setCollection(null)
-    Promise.all([getSetting('showDiacritics', true), getSetting('arabicSizePx', window.matchMedia('(min-width: 721px)').matches ? 38 : 34)]).then(([diacritics, size]) => {
+    Promise.all([getSetting('showDiacritics', true), getSetting('arabicSizePx', getDefaultArabicSize())]).then(([diacritics, size]) => {
       setShowDiacritics(diacritics)
       setArabicSize(size)
     })
-    Promise.all([hadithRepository.getCollection(collectionId), getSetting('language', 'en')])
+    Promise.all([hadithRepository.getCollection(collectionId), getSetting<'en' | 'ur'>('appLanguage', 'en')])
       .then(([value, preferredLanguage]) => {
         setCollection(value)
-        const available = ['ar', ...value.languages]
-        setLanguage(available.includes(preferredLanguage) ? preferredLanguage : available.includes('en') ? 'en' : 'ar')
+        setLanguage(value.languages.includes(preferredLanguage) ? preferredLanguage : preferredLanguage === 'ur' ? 'ar' : value.languages.includes('en') ? 'en' : 'ar')
       })
       .catch(() => setError('The reading data is not available in this preview yet.'))
       .finally(() => setCollectionLoading(false))
@@ -66,12 +68,12 @@ export function ReaderPage() {
 
   useEffect(() => {
     const update = (event: Event) => {
-      const preferred = (event as CustomEvent<string>).detail
-      const available = ['ar', ...(collection?.languages ?? [])]
-      setLanguage(available.includes(preferred) ? preferred : available.includes('en') ? 'en' : 'ar')
+      const preferred = (event as CustomEvent<'en' | 'ur'>).detail
+      const available = collection?.languages ?? []
+      setLanguage(available.includes(preferred) ? preferred : preferred === 'ur' ? 'ar' : available.includes('en') ? 'en' : 'ar')
     }
-    window.addEventListener(APP_EVENTS.languageChange, update)
-    return () => window.removeEventListener(APP_EVENTS.languageChange, update)
+    window.addEventListener(APP_EVENTS.appLanguageChange, update)
+    return () => window.removeEventListener(APP_EVENTS.appLanguageChange, update)
   }, [collection])
 
   useEffect(() => {
@@ -173,9 +175,9 @@ export function ReaderPage() {
 
   return (
     <main className="reader-page page-with-nav two-pane-page">
-      <aside className="browse-pane" aria-label="Browse chapters">
-        <Link className="back-link" to={`/collection/${collectionId}`}><ArrowLeft size={17} /> Collection</Link>
-        <p className="pane-label">Chapters</p>
+      <aside className="browse-pane" aria-label={t('Browse chapters')}>
+        <Link className="back-link" to={`/collection/${collectionId}`}><ArrowLeft size={17} /> {t('Collection')}</Link>
+        <p className="pane-label">{t('Chapters')}</p>
         <nav>
           {collection?.chapters.map((item) => (
             <Link data-active={item.id === chapterId} key={item.id} to={`/collection/${collectionId}/chapter/${item.id}`}>
@@ -187,31 +189,33 @@ export function ReaderPage() {
 
       <section className="read-pane">
         <div className="reader-heading">
-          <div className="reader-crumbs"><Link className="back-link mobile-reader-back" to={`/collection/${collectionId}`}><ArrowLeft size={17} /> All chapters</Link><Link className="reader-search-link" to="/search"><Search size={17} /> Search</Link></div>
+          <div className="reader-crumbs"><Link className="back-link mobile-reader-back" to={`/collection/${collectionId}`}><ArrowLeft size={17} /> {t('All chapters')}</Link><Link className="reader-search-link" to="/search"><Search size={17} /> {t('Search')}</Link></div>
           <div>
-            <p className="eyebrow">Riyad as-Salihin / Chapter {chapterId}</p>
-            <h1>{chapterIndex?.title.replace(/^\d+\s*[-–—]\s*/, '') ?? (collectionLoading ? 'Opening the collection…' : 'Chapter unavailable')}</h1>
-            <span className="reader-chapter-count">{chapterIndex?.count ?? 0} hadith · Arabic with English translation</span>
+            <p className="eyebrow">{t('Riyad as-Salihin / Chapter')} {chapterId}</p>
+            <h1>{chapterIndex ? (appLanguage === 'ur' ? chapterIndex.titleArabic || chapterIndex.title : chapterIndex.title).replace(/^\d+\s*[-–—]\s*/, '') : collectionLoading ? t('Opening the collection…') : t('Chapter unavailable')}</h1>
+            <span className="reader-chapter-count">{chapterIndex?.count ?? 0} {t('hadith')} · {t(appLanguage === 'ur' ? 'Arabic text only' : 'Arabic with English translation')}</span>
           </div>
         </div>
 
-        <div className="reader-toolbar" aria-label="Reader controls">
-          <div className="reader-toolbar-head"><button className="open-reading-controls" aria-label="Open reading display settings" onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}><Type size={17} /> Display</button></div>
+        {appLanguage === 'ur' && <p className="notice" lang="ur" dir="rtl">{t('The Urdu translation for this collection is not available yet. The Arabic source text is shown.')}</p>}
+
+        <div className="reader-toolbar" aria-label={t('Reader controls')}>
+          <div className="reader-toolbar-head"><button className="open-reading-controls" aria-label={t('Open reading display settings')} onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}><Type size={17} /> {t('Display')}</button></div>
           {hasGrades && <label className="trust-control">
-            <span>Grade filter</span>
+            <span>{t('Grade filter')}</span>
             <select value={trustFilter} onChange={(event) => setTrustFilter(event.target.value as TrustFilter)}>
-              <option value="sahih">Sahih only</option>
-              <option value="sahih-hasan">Sahih + Hasan</option>
-              <option value="all">All</option>
+              <option value="sahih">{t('Sahih only')}</option>
+              <option value="sahih-hasan">{t('Sahih and Hasan')}</option>
+              <option value="all">{t('All')}</option>
             </select>
           </label>}
-          {collection && language !== 'ar' && <button className="offline-button" onClick={() => void downloadLanguage()}>{offlineStatus || 'Offline text'}</button>}
+          {collection && language !== 'ar' && <button className="offline-button" onClick={() => void downloadLanguage()}>{offlineStatus || t('Offline text')}</button>}
         </div>
 
         {error && <p className="notice error" role="alert">{error}</p>}
-        {chapterLoading && <div className="reader-loading" role="status"><span className="loading-dot" /> Preparing this chapter…</div>}
+        {chapterLoading && <div className="reader-loading" role="status"><span className="loading-dot" /> {t('Preparing this chapter…')}</div>}
         {visibleRecords.length === 0 && chapter && (
-          <p className="empty-state">No records match this trust filter. Missing grades are never inferred.</p>
+          <p className="empty-state">{t('No records match this trust filter. Missing grades are never inferred.')}</p>
         )}
         <section className="hadith-list" aria-live="polite">
           {visibleRecords.map(renderHadith)}

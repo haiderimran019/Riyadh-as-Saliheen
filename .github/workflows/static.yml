@@ -36,6 +36,9 @@ jobs:
       - name: Import the approved Riyad Arabic and English edition
         run: npm run data:import:riyad -- --languages=ar,en
 
+      - name: Import versioned QuranEnc daily verse data
+        run: npm run data:import:quran-day
+
       - name: Build the real-data project site
         env:
           VITE_DATA_MODE: real

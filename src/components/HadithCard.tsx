@@ -5,6 +5,7 @@ import { db, type BookmarkFolder } from '../data/db'
 import type { DatasetMetadata, HadithRecord, Translation } from '../types/hadith'
 import { shareHadithImage } from '../utils/shareImage'
 import { SHOW_FEEDBACK } from '../config'
+import { useI18n } from '../i18n'
 
 type Props = {
   hadith: HadithRecord
@@ -24,6 +25,7 @@ export function stripArabicDiacritics(value: string) {
 }
 
 export function HadithCard({ hadith, translation, translationMetadata, showDiacritics, arabicSize, collectionId, chapterId, language }: Props) {
+  const { t } = useI18n()
   const [saved, setSaved] = useState(false)
   const [folderId, setFolderId] = useState('')
   const [folders, setFolders] = useState<BookmarkFolder[]>([])
@@ -68,13 +70,13 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
     <article className="hadith-card" id={hadith.id}>
       <header className="hadith-meta">
         <div>
-          <span className="hadith-number">Hadith {hadith.number}</span>
-          <p>Riyad as-Salihin · Chapter {hadith.chapter}</p>
+          <span className="hadith-number">{t('Hadith')} {hadith.number}</span>
+          <p>{t('Riyad as-Salihin')} · {t('Chapter')} {hadith.chapter}</p>
         </div>
         <div className="hadith-quick-actions">
-          <button type="button" aria-label={saved ? `Remove hadith ${hadith.number} from saved` : `Save hadith ${hadith.number}`} aria-pressed={saved} onClick={() => void toggleBookmark()}><Bookmark size={20} fill={saved ? 'currentColor' : 'none'} /></button>
-          <button type="button" aria-label={copied ? 'Copied' : `Copy hadith ${hadith.number}`} onClick={() => void copyReading()}><Copy size={19} /></button>
-          <button type="button" aria-label={`Share hadith ${hadith.number} as an image`} onClick={() => void shareHadithImage(hadith, translation, translationMetadata)}><Share2 size={19} /></button>
+          <button type="button" aria-label={saved ? `${t('Remove hadith from saved')} ${hadith.number}` : `${t('Save hadith')} ${hadith.number}`} aria-pressed={saved} onClick={() => void toggleBookmark()}><Bookmark size={20} fill={saved ? 'currentColor' : 'none'} /></button>
+          <button type="button" aria-label={copied ? t('Copied') : `${t('Copy')} ${t('Hadith')} ${hadith.number}`} onClick={() => void copyReading()}><Copy size={19} /></button>
+          <button type="button" aria-label={`${t('Share')} ${t('Hadith')} ${hadith.number}`} onClick={() => void shareHadithImage(hadith, translation, translationMetadata)}><Share2 size={19} /></button>
         </div>
       </header>
 
@@ -82,33 +84,33 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
 
       {translation && translationMetadata && (
         <section className="translation-block" lang={language} dir={language === 'ur' ? 'rtl' : 'auto'}>
-          <span className="translation-label">{LANGUAGE_NAMES[language] ?? language.toUpperCase()} translation</span>
+          <span className="translation-label">{t(LANGUAGE_NAMES[language] ?? language.toUpperCase())} {t('translation')}</span>
           <p>{translation.text}</p>
           <details className="translation-about">
-            <summary><Info size={16} /> About this translation</summary>
+            <summary><Info size={16} /> {t('About this translation')}</summary>
             <div>
-              <p><strong>Language:</strong> {LANGUAGE_NAMES[language] ?? language.toUpperCase()}</p>
-              <p><strong>Translation source:</strong> {translationMetadata.sourceName}</p>
-              <p>Not reviewed by this app's team.</p>
-              <p><Link to="/sources">Sources</Link>{SHOW_FEEDBACK && <> · <Link to={`/feedback?type=mistake&hadith=${encodeURIComponent(hadith.id)}`}>Report an error</Link></>}</p>
+              <p><strong>{t('Language:')}</strong> {t(LANGUAGE_NAMES[language] ?? language.toUpperCase())}</p>
+              <p><strong>{t('Translation source:')}</strong> {translationMetadata.sourceName}</p>
+              <p>{t('Not reviewed by this app’s team.')}</p>
+              <p><Link to="/sources">{t('Sources')}</Link>{SHOW_FEEDBACK && <> · <Link to={`/feedback?type=mistake&hadith=${encodeURIComponent(hadith.id)}`}>{t('Report an error')}</Link></>}</p>
             </div>
           </details>
         </section>
       )}
 
-      {language !== 'ar' && !translation && <p className="notice">English translation is not available for this narration; the Arabic text above is from the source edition.</p>}
+      {language !== 'ar' && !translation && <p className="notice">{t(language === 'ur' ? 'The Urdu translation for this collection is not available yet. The Arabic source text is shown.' : 'English translation is not available for this narration; the Arabic text above is from the source edition.')}</p>}
 
-      <p className="hadeethenc-credit">Text source: {hadith.sourceName ?? translationMetadata?.sourceName ?? 'IslamHouse.com / IslamEnc.com'}</p>
+      <p className="hadeethenc-credit">{t('Text source:')} {hadith.sourceName ?? translationMetadata?.sourceName ?? 'IslamHouse.com / IslamEnc.com'}</p>
 
       <footer className="hadith-footer">
         <div className="trust-summary">
           {hadith.grades.map((grade) => <span className={`grade grade-${grade.grade.toLocaleLowerCase().replace(/[^a-z]+/g, '-')}`} key={`${grade.grader}-${grade.grade}`}>{grade.grade} <small>· per {grade.grader}</small></span>)}
-          <span className="reference">Reference: {hadith.collection}, no. {hadith.number}</span>
+          <span className="reference">{t('Reference:')} {hadith.collection}, no. {hadith.number}</span>
         </div>
         <div className="save-controls">
           {saved && folders.length > 0 && (
             <select aria-label={`Folder for hadith ${hadith.number}`} value={folderId} onChange={(event) => moveBookmark(event.target.value)}>
-              <option value="">No folder</option>
+              <option value="">{t('No folder')}</option>
               {folders.map((folder) => <option key={folder.id} value={folder.id}>{folder.name}</option>)}
             </select>
           )}
