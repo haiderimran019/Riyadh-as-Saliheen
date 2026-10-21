@@ -90,3 +90,20 @@ Riyad as-Salihin Arabic text and English translations are sourced from **IslamEn
 Quran text and translations used in the daily verse section are sourced from **QuranEnc**.
 
 See [`DATA_SOURCES.md`](DATA_SOURCES.md) for details.
+
+## Run it locally
+
+```bash
+npm install
+npm run dev
+```
+
+By default the dev server runs in **preview mode** with placeholder content, so you'll see a "Preview build" banner. To build with the real collection, as the live site does:
+
+```bash
+npm run data:import:riyad -- --languages=ar,en
+npm run data:import:quran-day
+VITE_DATA_MODE=real npm run dev
+```
+
+`npm run verify` runs type-checking, linting, unit tests, data validation, the production build and the Playwright layout checks.
