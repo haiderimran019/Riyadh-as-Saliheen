@@ -1,11 +1,13 @@
-import { renderToPipeableStream } from 'react-dom/server'
+import { prerenderToNodeStream } from 'react-dom/static'
 import { StaticRouter } from 'react-router-dom'
-import { PassThrough } from 'node:stream'
 import { App } from './App'
 import { BootProvider,type BootData } from './ssr/BootData'
-export function render(url:string,data:BootData):Promise<string>{return new Promise((resolve,reject)=>{
-  const output=new PassThrough(),chunks:Buffer[]=[]
-  output.on('data',chunk=>chunks.push(Buffer.from(chunk)));output.on('end',()=>resolve(Buffer.concat(chunks).toString()));output.on('error',reject)
-  const timer=setTimeout(()=>{stream.abort();reject(new Error('Server rendering timed out.'))},10000)
-  const stream=renderToPipeableStream(<StaticRouter basename={import.meta.env.BASE_URL} location={`${import.meta.env.BASE_URL.replace(/\/$/,'')}${url}`}><BootProvider data={data}><App/></BootProvider></StaticRouter>,{onAllReady(){clearTimeout(timer);stream.pipe(output)},onShellError(error){clearTimeout(timer);reject(error)},onError(error){console.error('Public page rendering failed:',error instanceof Error?error.message:'render error')}})
-})}
+export async function render(url:string,data:BootData):Promise<string>{
+  // Each response is a complete document. Resolve lazy routes before emitting
+  // HTML so no hidden Suspense chunks or inline swap scripts are required.
+  const {prelude,postponed}=await prerenderToNodeStream(<StaticRouter basename={import.meta.env.BASE_URL} location={`${import.meta.env.BASE_URL.replace(/\/$/,'')}${url}`}><BootProvider data={data}><App/></BootProvider></StaticRouter>,{signal:AbortSignal.timeout(10000),progressiveChunkSize:Number.MAX_SAFE_INTEGER,onError(error){console.error('Public page rendering failed:',error instanceof Error?error.message:'render error')}})
+  if(postponed)throw new Error('The server page did not finish rendering.')
+  const chunks:Buffer[]=[]
+  for await(const chunk of prelude)chunks.push(Buffer.from(chunk))
+  return Buffer.concat(chunks).toString()
+}

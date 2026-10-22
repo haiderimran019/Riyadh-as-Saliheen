@@ -21,6 +21,12 @@ test('production server returns reading HTML without JavaScript and enforces sec
   const response=await fetch(`${base}${path}`),html=await response.text();assert.equal(response.status,200,`${path}: ${html.slice(0,300)} ${output}`);assert.ok(html.includes(marker),`${path} did not contain ${marker}`);assert.ok(html.includes('riyad-bootstrap'));assert.ok(html.includes('rel="canonical"'));assert.ok(!html.includes('<!--ssr-outlet-->'));assert.ok(!html.includes('auth-secret'));assert.match(response.headers.get('content-security-policy'),/script-src 'self' 'nonce-/);assert.equal(response.headers.get('x-frame-options'),'DENY');assert.equal(response.headers.get('cache-control'),'no-store')
  }
  const q=await(await fetch(`${base}/quran/1`)).text();assert.ok(q.includes('quran-translation'));assert.ok(q.includes('QuranEnc.com'))
+ for(const path of ['/','/quran/1','/reminders']){
+  const html=await(await fetch(`${base}${path}`)).text()
+  assert.ok(!html.includes('<!--$?-->'),`${path} must contain its completed server content`)
+  assert.ok(!html.includes('id="S:'),`${path} must not rely on hidden streaming content`)
+  assert.ok(!/<script>(?!<)/.test(html),`${path} must not contain nonce-less streaming scripts`)
+ }
  for(const path of ['/does-not-exist','/.data/riyad.sqlite','/server/.env.local','/quran/115'])assert.equal((await fetch(`${base}${path}`)).status,404,path)
  assert.equal((await fetch(`${base}/api/admin/users`)).status,401)
  const privateHtml=await fetch(`${base}/account`);assert.match(privateHtml.headers.get('x-robots-tag'),/noindex/)
