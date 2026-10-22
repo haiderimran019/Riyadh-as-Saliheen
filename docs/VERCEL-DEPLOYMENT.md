@@ -33,8 +33,8 @@ The first signup never becomes an owner automatically. Only the configured, veri
 
 ## Reminders and retention
 
-Vercel Workflow sleeps durably until each opted-in hadith, ayah or prayer occurrence. Hadith and ayah times remain five elapsed hours apart across DST and midnight. Jobs use database leases, device receipts, bounded retries and schedule generations. Preference changes invalidate older sleeping runs; disabling or deleting data stops future sends. The authenticated daily cron only repairs stopped schedules and cleans expired security counters.
+Vercel Workflow sleeps durably until each opted-in hadith, ayah or prayer occurrence. Hadith and ayah times remain five elapsed hours apart across DST and midnight. Jobs use database leases, device receipts, bounded retries and schedule generations. Preference changes invalidate older sleeping runs; disabling or deleting data stops future sends. The authenticated daily cron repairs stopped schedules and cleans expired security counters and reminder history.
 
-Workflow arguments contain opaque user/schedule identifiers. Completed-run plaintext retention is set to zero. Account deletion cascades through active application tables; provider recovery/email retention remains subject to the providers. Reminder history is cleaned after 30 days of scheduled processing. No additional operator backup archive is currently created.
+Workflow arguments contain opaque user/schedule identifiers. Completed-run plaintext retention is set to zero. Account deletion cascades through active application tables; provider recovery/email retention remains subject to the providers. Reminder history is cleaned after 30 days during daily reconciliation, including for users who have stopped reminders. No additional operator backup archive is currently created.
 
 Browser permission, device support and push-provider/network conditions govern real delivery. Vibration is best-effort; Safari does not support it. Physical device delivery and vibration need a real-device check and cannot be proven by injected delivery tests.

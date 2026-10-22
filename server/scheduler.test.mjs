@@ -71,6 +71,10 @@ test('durable schedules deduplicate, retry without resending successful devices,
     assert.equal((await get('SELECT status FROM app_jobs WHERE id=?',future.id)).status,'pending');
     await run('UPDATE app_reminders SET hadith=0,ayah=0,prayers=0 WHERE user_id=?','scheduler-user');
     assert.deepEqual(await nextReminder('scheduler-user',generation),{stopped:true});
+    const {reconcileSchedules}=await import('./workflow-runtime.mjs');
+    await run("INSERT INTO app_jobs(id,user_id,kind,due_at,payload,status,created_at) VALUES(?,?,?,?,?,'sent',?)",'expired-history','scheduler-user','hadith',Date.now()-32*86400000,'{}',Date.now()-32*86400000);
+    await reconcileSchedules();
+    assert.equal(await get('SELECT id FROM app_jobs WHERE id=?','expired-history'),undefined);
     assert.throws(() => validateSubscription({ endpoint: 'https://private.attacker.test/steal', keys: {} }));
     db.close();
     rmSync(dir, { recursive: true, force: true });

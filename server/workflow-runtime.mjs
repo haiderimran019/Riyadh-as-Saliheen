@@ -22,6 +22,7 @@ export async function startSchedule(userId,generation){
 }
 export async function reconcileSchedules(){
  await run('DELETE FROM app_rate_limits WHERE resets_at<?',Date.now())
+ await run('DELETE FROM app_jobs WHERE due_at<?',Date.now()-30*86400000)
  const {all}=await import('./database.mjs'),{getRun}=await import('workflow/api')
  for(const row of await all('SELECT user_id FROM app_reminders WHERE hadith=1 OR ayah=1 OR prayers=1')){
   const record=await get('SELECT * FROM app_workflows WHERE user_id=?',row.user_id)
