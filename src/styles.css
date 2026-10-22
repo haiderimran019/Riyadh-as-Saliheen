@@ -53,7 +53,6 @@ html[lang='ur'] input,html[lang='ur'] button,html[lang='ur'] select { line-heigh
 .sidebar-note { position:relative; margin:50px 12px 32px; padding-bottom:25px; border-bottom:1px solid #52604b; }
 .note-line { display:block; width:22px; height:1px; background:#a5b18d; margin-bottom:15px; }
 .sidebar-note p { font-family:var(--serif); font-style:italic; line-height:1.4; font-size:27px; color:#d1d7bf; }
-.sidebar-note > svg { position:absolute; inset-inline-end:0; bottom:26px; color:#879373; }
 .sidebar-utility { display:flex; align-items:center; gap:12px; color:#c6cfbc; min-height:42px; padding:0 12px; font-size:11px; }
 .sidebar-utility:hover { color:white; }
 .sidebar-utility svg:last-child:not(:first-child) { margin-inline-start:auto; }
@@ -71,7 +70,6 @@ kbd { white-space:nowrap; font-size:10px; font-family:inherit; padding:4px; bord
 .settings-language-control button { font-family:'Manrope Variable',sans-serif; font-size:10px; padding:0 8px; color:var(--muted); border-radius:5px; }
 .settings-language-control button[lang='ur'] { font-family:'Noto Nastaliq Urdu',serif; font-size:11px; }
 .settings-language-control button[aria-pressed='true'] { color:var(--text); background:var(--surface-soft); }
-.display-button { border-inline-start:1px solid var(--border); border-radius:0; width:40px; padding-inline-start:12px; }
 .menu-toggle,.menu-close,.nav-scrim { display:none; }
 #main-content:focus { outline:none; }
 .today-page,.catalogue-page { max-width:1400px; padding:42px 46px 0; margin:0 auto; }
@@ -100,9 +98,7 @@ kbd { white-space:nowrap; font-size:10px; font-family:inherit; padding:4px; bord
 .live-dot { width:5px; height:5px; display:inline-block; border-radius:50%; background:#849768; }
 .daily-paper { min-width:0; }
 .daily-arabic { font-family:'Amiri',serif; font-size:25px; line-height:2.05; text-align:start; margin:28px 0 18px; }
-.daily-paper .daily-arabic { display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
 .daily-translation { font-family:var(--serif); font-size:18px; font-weight:380; line-height:1.65; color:var(--text); }
-.daily-paper .daily-translation { display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
 .daily-translation[lang='ur'] { font-family:'Noto Nastaliq Urdu',serif; font-size:15px; line-height:2.7; }
 .matching-note,.daily-missing-translation { color:var(--muted); font-size:10px; line-height:1.8; display:block; margin-top:14px; }
 .daily-paper-foot { display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid var(--border); padding-top:20px; margin-top:24px; }
@@ -430,7 +426,7 @@ html[lang='ur'] .wordmark,html[lang='ur'] .wordmark small,html[lang='ur'] .editi
 @media (max-width:900px) { .invitation-copy h2 { font-size:39px; } .invitation-copy > p { font-size:12px; } .return-reading p { font-size:11px; } .reading-invitation,.invitation-art { min-height:370px; } .text-action { font-size:11px; } }
 @media (max-width:700px) { .today-heading p,.catalogue-heading p { font-size:12px; } .reading-invitation { min-height:0; } .invitation-art { min-height:0; } .invitation-copy > p { font-size:12px; } .invitation-copy .primary-action { font-size:12px; } .edition-line { font-size:9px; } .invitation-author { font-size:10px; } .workspace-breadcrumb { font-size:12px; } .room-navigation > span { font-size:8px; } .reader-chapter-count { font-size:10px; } .chapter-toggle { font-size:10px; } .reading-layout button { font-size:10px; } .passage-navigation > button,.passage-navigation select { font-size:10px; } .hadith-footer,.grade,.grade small { font-size:9px; } .chapter-navigation small { font-size:9px; } .setting-copy strong { font-size:13px; } .setting-copy small { font-size:11px; } .collection-context > div > span { font-size:10px; } .catalogue-filterbar > span { font-size:9px; } .filter-tabs button { font-size:11px; } .paths-section .text-action { font-size:10px; } .footer-links { font-size:10px; } .return-reading p { font-size:12px; } .section-line > span { font-size:9px; } }
 @media (max-width:370px) { .reading-layout button { padding-inline:7px; font-size:9px; } .catalogue-filterbar > span { font-size:8px; } .filter-tabs { gap:14px; } .filter-tabs button { font-size:10px; } .edition-line { font-size:8px; } }
-.saved-excerpt { font-family:'Amiri',serif; font-size:23px; font-weight:400; line-height:2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; max-width:100%; }
+.saved-excerpt { font-family:'Amiri',serif; font-size:23px; font-weight:400; line-height:2; white-space:pre-line; overflow-wrap:anywhere; max-width:100%; }
 .saved-reference { padding-inline-end:15px; }
 .saved-empty .text-action { margin-top:18px; }
 .menu-is-open { overflow:hidden; }
@@ -448,3 +444,52 @@ html[lang='ur'] .wordmark,html[lang='ur'] .wordmark small,html[lang='ur'] .editi
 .honeypot { position:absolute !important; left:-10000px; width:1px !important; height:1px !important; overflow:hidden; }
 .workspace-sidebar { overflow-y:auto; scrollbar-width:thin; scrollbar-color:#6d7c5d #303b2f; }
 @media (max-width:700px) { .sidebar-bottom { padding-top:20px; } .sidebar-note { margin-top:25px; } }
+
+/* Reading tools and saved places share the existing paper-and-olive palette. */
+.workspace-sidebar > * { flex-shrink:0; }
+.workspace-topbar-actions { flex-shrink:0; }
+.workspace-breadcrumb { min-width:0; }
+.workspace-breadcrumb > span:last-child { overflow:hidden; text-overflow:ellipsis; }
+.footer-links a { min-height:44px; }
+.site-footer { padding-block:16px; }
+.resume-readings { display:grid; gap:1px; margin:0 0 26px; background:var(--border); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.resume-readings > a { display:flex; align-items:center; gap:15px; padding:18px 20px; background:var(--surface-soft); }
+.resume-readings > a:hover { background:var(--surface); }
+.resume-readings strong { display:block; font-size:14px; font-weight:550; }
+.resume-readings small { display:block; font-size:11px; color:var(--muted); margin-top:6px; }
+.resume-readings > a > svg:last-child { margin-inline-start:auto; }
+.saved-storage-note { font-size:12px; color:var(--muted); margin:18px 0; }
+.saved-row { align-items:flex-start; gap:12px; }
+.saved-row-actions { display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
+.saved-row-actions button { width:44px; }
+.saved-row-actions select { max-width:110px; font-size:11px; background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:5px; }
+.saved-kind { display:flex; gap:8px; align-items:center; }
+.reading-place-note { font-size:11px; color:var(--muted); margin-top:18px; }
+.reading-place-note a { display:inline-flex; align-items:center; gap:5px; text-decoration:underline; }
+.bookmark-message { font-size:12px; color:var(--accent-strong); }
+.bookmark-message:not(:empty) { padding-top:12px; }
+.quran-ayah > header > span { margin-inline-end:auto; }
+.ayah-bookmark { display:flex; align-items:center; justify-content:center; gap:7px; min-width:72px; min-height:44px; padding:0 9px; border-radius:5px; color:var(--accent-strong); font-size:11px; }
+.ayah-bookmark:hover,.ayah-bookmark[aria-pressed='true'] { background:var(--surface-soft); }
+.quran-ayah > header > a { min-height:44px; display:inline-flex; align-items:center; }
+.quran-arabic { overflow-wrap:anywhere; }
+.quran-translation > p { overflow-wrap:anywhere; }
+.quran-ayah,.hadith-card { break-inside:avoid-page; }
+@media (max-width:700px) {
+  html { scroll-padding-bottom:calc(105px + env(safe-area-inset-bottom)); }
+  .workspace-sidebar { padding-block:25px max(25px,env(safe-area-inset-bottom)); }
+  .sidebar-note { margin-block:22px; padding-bottom:18px; }
+  .sidebar-note p { font-size:26px; }
+  .workspace-topbar-actions .settings-language-control { gap:4px; }
+  .workspace-topbar-actions .settings-language-control button { min-width:44px; }
+  .footer-topline { gap:8px; }
+  .footer-links { gap:4px 16px; }
+  .site-footer { padding-block:16px; }
+  .quran-reader-toolbar { flex-wrap:wrap; }
+  .quran-reader-toolbar label { min-width:0; }
+  .quran-reader-toolbar select { max-width:145px; }
+  .quran-reader-toolbar label:first-child { flex:1; }
+  .reading-sheet { inset-block:auto 0; width:100%; max-height:90dvh; border-radius:16px 16px 0 0; padding-bottom:calc(25px + env(safe-area-inset-bottom)); box-shadow:0 -12px 45px #0002; }
+}
+
+.hadith-card > .bookmark-message { grid-column:1 / -1; }

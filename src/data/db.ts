@@ -21,6 +21,21 @@ export type ReadingProgress = {
   updatedAt: number
 }
 
+export type QuranBookmark = {
+  id: string
+  surah: number
+  ayah: number
+  folderId?: string
+  createdAt: number
+}
+
+export type QuranProgress = {
+  id: 'quran'
+  surah: number
+  ayah: number
+  updatedAt: number
+}
+
 export type StoredSetting = {
   key: string
   value: string | number | boolean
@@ -31,6 +46,8 @@ class HadithDatabase extends Dexie {
   folders!: EntityTable<BookmarkFolder, 'id'>
   progress!: EntityTable<ReadingProgress, 'collectionId'>
   settings!: EntityTable<StoredSetting, 'key'>
+  quranBookmarks!: EntityTable<QuranBookmark, 'id'>
+  quranProgress!: EntityTable<QuranProgress, 'id'>
 
   constructor() {
     super('hadith-app')
@@ -48,6 +65,10 @@ class HadithDatabase extends Dexie {
     }).upgrade(async (transaction) => {
       const theme = await transaction.table('settings').get('theme')
       if (!theme) await transaction.table('settings').put({ key: 'theme', value: 'dark' })
+    })
+    this.version(3).stores({
+      quranBookmarks: 'id, surah, folderId, createdAt',
+      quranProgress: 'id, updatedAt',
     })
   }
 }

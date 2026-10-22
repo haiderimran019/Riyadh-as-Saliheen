@@ -60,7 +60,7 @@ export function ReaderPage() {
     setActiveIndex(index >= 0 ? index : 0)
   }, [chapter, location.hash, location.search])
   useEffect(() => {
-    if (record) void db.progress.put({ collectionId, chapterId, hadithId: record.id, updatedAt: Date.now() }).catch(() => undefined)
+    if (record && record.chapter === chapterId) void db.progress.put({ collectionId, chapterId, hadithId: record.id, updatedAt: Date.now() }).catch(() => undefined)
   }, [record, collectionId, chapterId])
   useEffect(() => {
     const update = (event: Event) => { const value = (event as CustomEvent<ReadingPreferences>).detail; setShowDiacritics(value.showDiacritics); setArabicSize(value.arabicSize) }
@@ -87,6 +87,7 @@ export function ReaderPage() {
     {loading && <div className="reader-loading" role="status">{t('Preparing this chapter…')}</div>}
     {error && <div className="notice error" role="alert"><p>{t(error)}</p><button onClick={() => setRetry((value) => value + 1)}>{t('Try again')}</button><Link to="/library">{t('All chapters')}</Link></div>}
     {record && <>
+    <p className="reading-place-note">{t('Your reading place is saved automatically on this device.')} <Link to="/saved">{t('Saved passages')}</Link></p>
     <nav className="passage-navigation" aria-label={t('Hadith navigation')}><button onClick={() => openPassage(activeIndex - 1)} disabled={activeIndex === 0}><ChevronLeft size={18} /><span>{t('Previous hadith')}</span></button><label><span className="sr-only">{t('Jump to hadith')}</span><select aria-label={t('Jump to hadith')} value={activeIndex} onChange={(event) => openPassage(Number(event.target.value))}>{chapter?.records.map((item, index) => <option key={item.id} value={index}>{t('Hadith')} {index + 1} / {chapter.records.length}</option>)}</select></label><button onClick={() => openPassage(activeIndex + 1)} disabled={activeIndex >= (chapter?.records.length ?? 0) - 1}><span>{t('Next hadith')}</span><ChevronRight size={18} /></button></nav><div className={`passage-stage layout-${layout}`}><HadithCard key={record.id} hadith={record} translation={translation?.translations[record.id]} translationMetadata={translation?.metadata} showDiacritics={showDiacritics} arabicSize={arabicSize} collectionId={collectionId} chapterId={chapterId} displayNumber={record.chapterNumber || String(activeIndex + 1)} language={language} /></div></>}
     <noscript><nav aria-label="Hadith links without JavaScript">{chapter?.records.map((x,i)=><Link key={x.id} to={`?hadith=${encodeURIComponent(x.id)}`}>Hadith {i+1} </Link>)}</nav></noscript>
     {chapterIndex && <nav className="chapter-navigation" aria-label={t('Chapter navigation')}>{previousChapter ? <Link to={`/collection/${collectionId}/chapter/${previousChapter.id}`}><ArrowLeft size={17} /><span><small>{t('Previous chapter')}</small><strong dir="auto">{getChapterTitle(previousChapter, language)}</strong></span></Link> : <span />}<span className="chapter-position">{ordinal + 1} / {collection?.chapters.length}</span>{nextChapter ? <Link className="next-chapter" to={`/collection/${collectionId}/chapter/${nextChapter.id}`}><span><small>{t('Next chapter')}</small><strong dir="auto">{getChapterTitle(nextChapter, language)}</strong></span><ArrowRight size={17} /></Link> : <span />}</nav>}

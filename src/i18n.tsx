@@ -5,6 +5,21 @@ import { APP_EVENTS } from './core/appEvents'
 export type AppLanguage = 'en' | 'ur'
 
 const urdu: Record<string, string> = {
+  "Continue hadith": "حدیث کا مطالعہ جاری رکھیں",
+  "Continue Quran": "قرآن کا مطالعہ جاری رکھیں",
+  "Your reading place is saved automatically on this device.": "آپ کے مطالعے کی جگہ اس آلے پر خود بخود محفوظ ہوتی ہے۔",
+  "Bookmarks and reading places are stored on this device.": "بک مارکس اور مطالعے کی جگہیں اسی آلے پر محفوظ ہیں۔",
+  "Ayah saved. Open it directly from Saved passages.": "آیت محفوظ ہو گئی۔ محفوظ مطالعے سے اسے براہ راست کھولیں۔",
+  "Bookmark removed.": "بک مارک ہٹا دیا گیا۔",
+  "Could not save on this device. Please try again.": "اس آلے پر محفوظ نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
+  "Remove saved ayah": "محفوظ آیت ہٹائیں",
+  "Save ayah": "آیت محفوظ کریں",
+  "Quran reading": "قرآن کا مطالعہ",
+  "Opening your saved passages…": "محفوظ مطالعہ کھولا جا رہا ہے…",
+  "Save an ayah or hadith while reading. Your bookmarks will appear here.": "مطالعے کے دوران آیت یا حدیث محفوظ کریں۔ آپ کے بک مارکس یہاں نظر آئیں گے۔",
+  "Could not load saved passages on this device. Please try again.": "اس آلے پر محفوظ مطالعہ کھل نہیں سکا۔ دوبارہ کوشش کریں۔",
+  "Could not update saved passages. Please try again.": "محفوظ مطالعہ تبدیل نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
+  "Folder": "فولڈر",
   'Your account is waiting for verification.':'آپ کا اکاؤنٹ تصدیق کا منتظر ہے۔',
   'You do not need to create it again. Verify your email, then sign in with your password.':'اکاؤنٹ دوبارہ بنانے کی ضرورت نہیں۔ ای میل کی تصدیق کریں، پھر اپنے پاس ورڈ سے داخل ہوں۔',
   'This local preview does not send email to your inbox.':'یہ مقامی پیش منظر آپ کے ان باکس میں ای میل نہیں بھیجتا۔',

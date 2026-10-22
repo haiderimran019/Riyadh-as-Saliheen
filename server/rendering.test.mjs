@@ -4,10 +4,11 @@ import {spawn} from 'node:child_process'
 import {mkdtempSync,rmSync} from 'node:fs'
 import {tmpdir} from 'node:os'
 import {resolve} from 'node:path'
+import {JSDOM} from 'jsdom'
 import {publicBoot,renderDocument,sitemap} from './public-render.mjs'
 test('public render serialization escapes script injection and sitemap excludes private routes',()=>{
  const options={origin:'https://riyad.example.test',contentDir:resolve('data-local/generated'),indexable:true}
- const boot=publicBoot('/quran/2?ayah=255',options);assert.match(boot.seo.canonical,/quran\/2\?ayah=251$/);assert.equal(boot.quranSurah.result.length,286)
+ const boot=publicBoot('/quran/2?ayah=255',options);assert.match(boot.seo.canonical,/quran\/2\?ayah=241$/);assert.equal(boot.quranSurah.result.length,286)
  boot.quranIndex.edition={...boot.quranIndex.edition,title:'</script><script>alert(1)</script>'}
  const html=renderDocument('<html><head></head><body><div><!--ssr-outlet--></div><!--ssr-data--></body></html>','<main>Reading</main>',boot,'test-nonce');assert.ok(!html.includes('</script><script>alert'));assert.ok(html.includes('\\u003c/script'))
  const xml=sitemap(options);assert.ok(xml.includes('/quran/114'));assert.ok(xml.includes('?hadith='));assert.ok(!xml.includes('/admin'));assert.equal(publicBoot('/unknown',options).status,404)
@@ -21,6 +22,15 @@ test('production server returns reading HTML without JavaScript and enforces sec
   const response=await fetch(`${base}${path}`),html=await response.text();assert.equal(response.status,200,`${path}: ${html.slice(0,300)} ${output}`);assert.ok(html.includes(marker),`${path} did not contain ${marker}`);assert.ok(html.includes('riyad-bootstrap'));assert.ok(html.includes('rel="canonical"'));assert.ok(!html.includes('<!--ssr-outlet-->'));assert.ok(!html.includes('auth-secret'));assert.match(response.headers.get('content-security-policy'),/script-src 'self' 'nonce-/);assert.equal(response.headers.get('x-frame-options'),'DENY');assert.equal(response.headers.get('cache-control'),'no-store')
  }
  const q=await(await fetch(`${base}/quran/1`)).text();assert.ok(q.includes('quran-translation'));assert.ok(q.includes('QuranEnc.com'))
+ for(const [ayah,first,last,count] of [[255,241,260,20],[286,281,286,6]]){
+  const path=`/quran/2?ayah=${ayah}`,html=await(await fetch(`${base}${path}`)).text(),document=new JSDOM(html).window.document
+  const rows=[...document.querySelectorAll('.quran-ayah')],source=publicBoot(path,{origin:base,contentDir:resolve('data-local/generated')}).quranSurah
+  assert.equal(rows.length,count);assert.equal(rows[0].id,`ayah-${first}`);assert.equal(rows.at(-1).id,`ayah-${last}`)
+  for(const row of rows){const record=source.result.find(x=>x.aya===row.dataset.ayah);assert.equal(row.querySelector('.quran-arabic').textContent,record.arabic_text);assert.equal(row.querySelector('.quran-translation > p').textContent,record.translation)}
+ }
+ const hadithBoot=publicBoot('/collection/riyad-as-salihin/chapter/1',{origin:base,contentDir:resolve('data-local/generated')}),lastHadith=hadithBoot.chapter.records.at(-1)
+ const hadithHtml=await(await fetch(`${base}/collection/riyad-as-salihin/chapter/1?hadith=${encodeURIComponent(lastHadith.id)}`)).text()
+ assert.equal(new JSDOM(hadithHtml).window.document.querySelector('.arabic-text').textContent,lastHadith.arabic)
  for(const path of ['/','/quran/1','/reminders']){
   const html=await(await fetch(`${base}${path}`)).text()
   assert.ok(!html.includes('<!--$?-->'),`${path} must contain its completed server content`)

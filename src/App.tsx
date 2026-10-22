@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
-import { ArrowUpRight, Bell, BookMarked, BookOpen, Bookmark, ChevronRight, Flower2, House, Menu, Moon, MoreHorizontal, Search, Settings2, ShieldCheck, Type, UserRound, X } from 'lucide-react'
+import { ArrowUpRight, Bell, BookMarked, BookOpen, Bookmark, ChevronRight, Flower2, House, Menu, Moon, MoreHorizontal, Search, Settings2, ShieldCheck, UserRound, X } from 'lucide-react'
 import { Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { DATA_MODE } from './config'
 import { ReadingControlsSheet } from './components/ReadingControlsSheet'
@@ -30,6 +30,7 @@ function AppShell() {
   const location = {...routeLocation,pathname:routeLocation.pathname.replace(/\/+$/,'')||'/'}
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [readingSettingsOpen, setReadingSettingsOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [query, setQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -49,7 +50,12 @@ function AppShell() {
     if (!menuOpen && menuWasOpenRef.current) menuButtonRef.current?.focus()
     menuWasOpenRef.current = menuOpen
   }, [menuOpen])
-  useEffect(() => { document.body.classList.toggle('menu-is-open', menuOpen); return () => document.body.classList.remove('menu-is-open') }, [menuOpen])
+  useEffect(() => { document.body.classList.toggle('menu-is-open', menuOpen || readingSettingsOpen); return () => document.body.classList.remove('menu-is-open') }, [menuOpen, readingSettingsOpen])
+  useEffect(() => {
+    const update = (event: Event) => setReadingSettingsOpen((event as CustomEvent<boolean>).detail)
+    window.addEventListener(APP_EVENTS.readingSettingsState, update)
+    return () => window.removeEventListener(APP_EVENTS.readingSettingsState, update)
+  }, [])
   useEffect(() => { setMenuOpen(false); if (!location.hash) window.scrollTo(0, 0) }, [location.pathname])
   useEffect(() => {
     const keyboard = (event: KeyboardEvent) => {
@@ -90,20 +96,20 @@ function AppShell() {
   return <div className={`app-shell ${isReader ? 'reading-shell' : ''}`}>
     <Seo/><a className="skip-link" href="#main-content">{t('Skip to content')}</a>
     {menuOpen && <button className="nav-scrim" aria-label={t('Close menu')} onClick={() => { setMenuOpen(false); menuButtonRef.current?.focus() }} />}
-    <aside inert={isMobile && !menuOpen ? true : undefined} ref={sidebarRef} className={`workspace-sidebar ${menuOpen ? 'is-open' : ''}`} aria-label={t('Main menu')}>
+    <aside inert={readingSettingsOpen || isMobile && !menuOpen ? true : undefined} ref={sidebarRef} className={`workspace-sidebar ${menuOpen ? 'is-open' : ''}`} aria-label={t('Main menu')}>
       <Link className="wordmark" to="/" aria-label={t('Riyad as-Salihin home')}><Flower2 size={34} strokeWidth={1.25} /><span><strong>Riyad<span className="wordmark-dot">.</span></strong><small>AS-SALIHIN</small></span></Link>
       <button className="menu-close icon-button" aria-label={t('Close menu')} onClick={() => { setMenuOpen(false); menuButtonRef.current?.focus() }}><X size={20} /></button>
       <div className="sidebar-intro"><p lang="ar" dir="rtl">رياض الصالحين</p><span>{t('A space for what matters.')}</span></div>
       <nav className="workspace-navigation" aria-label={t('Primary navigation')}>
         {navigation.map(({ path, label, Icon, end }) => <NavLink aria-label={t(label)} key={path} to={path} end={end} className={({ isActive }) => (isActive || path === '/library' && location.pathname.startsWith('/collection')) ? 'is-active' : ''}><Icon size={19} strokeWidth={1.65} /><span>{t(label)}</span><ChevronRight size={14} className="nav-chevron" /></NavLink>)}
       </nav>
-      <div className="sidebar-bottom"><div className="sidebar-note"><span className="note-line" /><p>{t('Read slowly.')}<br />{t('Return often.')}</p><Flower2 size={43} strokeWidth={0.7} /></div><NavLink className="sidebar-utility" to="/settings"><Settings2 size={18} />{t('Settings')}</NavLink><Link className="sidebar-utility" to="/sources"><ShieldCheck size={18} />{t('Sources & credits')}<ArrowUpRight size={14} /></Link><small className="sidebar-privacy">{t('Your space, on your terms.')}</small></div>
+      <div className="sidebar-bottom"><div className="sidebar-note"><span className="note-line" /><p>{t('Read slowly.')}<br />{t('Return often.')}</p></div><Link className="sidebar-utility" to="/account"><UserRound size={18}/>{t(account ? 'Your account' : 'Sign in')}</Link><NavLink className="sidebar-utility" to="/settings"><Settings2 size={18} />{t('Settings')}</NavLink><Link className="sidebar-utility" to="/sources"><ShieldCheck size={18} />{t('Sources & credits')}<ArrowUpRight size={14} /></Link><small className="sidebar-privacy">{t('Your space, on your terms.')}</small></div>
     </aside>
-    <div className="workspace-body" inert={isMobile && menuOpen ? true : undefined}>
+    <div className="workspace-body" inert={readingSettingsOpen || isMobile && menuOpen ? true : undefined}>
       <header className="workspace-topbar">
         <div className="workspace-breadcrumb"><button ref={menuButtonRef} className="menu-toggle icon-button" aria-label={t('Open menu')} aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><Menu size={22} /></button><span className="desktop-crumb">{t('Your reading space')}</span><ChevronRight className="desktop-crumb" size={14} /><span>{t(section)}</span></div>
         <form className="global-search" role="search" onSubmit={(event) => { event.preventDefault(); navigate(`/search${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ''}`) }}><Search size={17} /><input ref={inputRef} aria-label={t('Search the collection')} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('Search the collection')} /><kbd>⌘ K</kbd></form>
-        <div className="workspace-topbar-actions"><Link className="account-topbar-link icon-button" to="/account" aria-label={t(account?'Your account':'Sign in')} title={t(account?'Your account':'Sign in')}>{account?<span>{account.user.name.charAt(0).toUpperCase()}</span>:<UserRound size={19}/>}</Link><LanguagePicker /><button className="display-button icon-button" aria-label={t('Open reading display settings')} onClick={() => dispatchAppEvent(APP_EVENTS.openReadingSettings)}><Type size={20} /></button></div>
+        <div className="workspace-topbar-actions"><LanguagePicker /></div>
       </header>
       {DATA_MODE === 'placeholder' && <p className="preview-banner" role="status">{t('Preview build: content is being added')}</p>}
       <div id="main-content" tabIndex={-1}>
@@ -115,7 +121,7 @@ function AppShell() {
         </Routes></Suspense>
       </div>
       <SiteFooter />
-      <nav className="mobile-floating-navigation" aria-label={t('Mobile navigation')}><NavLink to="/" end aria-label={t('Today')}><House size={20}/><span>{t('Today')}</span></NavLink><NavLink to="/library" aria-label={t('Hadith')}><BookOpen size={20}/><span>{t('Hadith')}</span></NavLink><NavLink to="/quran" aria-label={t('Quran')}><BookMarked size={20}/><span>{t('Quran')}</span></NavLink><NavLink to="/prayers" aria-label={t('Prayers')}><Moon size={20}/><span>{t('Prayers')}</span></NavLink><button aria-label={t('More menu')} aria-expanded={menuOpen} onClick={()=>setMenuOpen(true)}><MoreHorizontal size={20}/><span>{t('More')}</span></button></nav>
+      <nav className="mobile-floating-navigation" aria-label={t('Mobile navigation')}><NavLink to="/" end aria-label={t('Today')}><House size={20}/><span>{t('Today')}</span></NavLink><NavLink to="/library" aria-label={t('Hadith')}><BookOpen size={20}/><span>{t('Hadith')}</span></NavLink><NavLink to="/quran" aria-label={t('Quran')}><BookMarked size={20}/><span>{t('Quran')}</span></NavLink><NavLink to="/prayers" aria-label={t('Prayers')}><Moon size={20}/><span>{t('Prayers')}</span></NavLink><button aria-label={t('Reading settings')} aria-haspopup="dialog" aria-controls="reading-settings-dialog" aria-expanded={readingSettingsOpen} onClick={()=>dispatchAppEvent(APP_EVENTS.openReadingSettings)}><MoreHorizontal size={20}/><span>{t('More')}</span></button></nav>
     </div>
     <ReadingControlsSheet /><FeedbackModal />
   </div>

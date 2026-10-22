@@ -45,6 +45,7 @@ export function ReadingControlsSheet() {
     if (!preferencesLoaded) return
     document.documentElement.dataset.theme = preferences.theme
     document.documentElement.style.setProperty('--translation-size', `${preferences.translationSize}px`)
+    document.documentElement.style.setProperty('--arabic-size', `${preferences.arabicSize}px`)
     window.dispatchEvent(new CustomEvent<ReadingPreferences>(APP_EVENTS.readingPreferencesChange, { detail: preferences }))
   }, [preferences, preferencesLoaded])
 
@@ -65,7 +66,7 @@ export function ReadingControlsSheet() {
     document.addEventListener('keydown', handleKeys)
     return () => {
       document.removeEventListener('keydown', handleKeys)
-      returnFocusRef.current?.focus()
+      requestAnimationFrame(() => returnFocusRef.current?.focus())
     }
   }, [open])
 
@@ -93,7 +94,7 @@ export function ReadingControlsSheet() {
   return (
     <>
       <button className="reading-sheet-backdrop" tabIndex={-1} aria-label={t('Dismiss reading settings')} onClick={() => setOpen(false)} />
-      <section ref={dialogRef} className="reading-sheet" role="dialog" aria-modal="true" aria-labelledby="reading-settings-title">
+      <section id="reading-settings-dialog" ref={dialogRef} className="reading-sheet" role="dialog" aria-modal="true" aria-labelledby="reading-settings-title">
         <header>
           <div><h2 id="reading-settings-title">{t('Reading settings')}</h2></div>
           <button ref={closeRef} className="icon-button" aria-label={t('Close reading settings')} onClick={() => setOpen(false)}><X /></button>

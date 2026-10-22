@@ -1,5 +1,6 @@
 import { readFileSync,existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { QURAN_PAGE_SIZE } from '../shared/reading-pages.mjs'
 import { pageSeo } from '../shared/seo.mjs'
 const cache=new Map()
 function read(root,file){const path=resolve(root,file);if(!existsSync(path))return undefined;if(!cache.has(path))cache.set(path,JSON.parse(readFileSync(path,'utf8')));return cache.get(path)}
@@ -31,6 +32,6 @@ export function renderDocument(template,markup,data,nonce){
 export function sitemap({origin,contentDir,basePath=''}){
  const paths=['/','/library','/quran','/prayers','/about','/sources','/privacy','/terms'],collection=read(contentDir,'riyad-as-salihin/index.json'),quran=read(contentDir,'quran/index.json')
  for(const chapter of collection?.chapters||[]){const path=`/collection/riyad-as-salihin/chapter/${chapter.id}`;paths.push(path);for(const record of read(contentDir,`riyad-as-salihin/${chapter.file}`)?.records||[])paths.push(`${path}?hadith=${encodeURIComponent(record.id)}`)}
- for(const surah of quran?.chapters||[])for(let ayah=1;ayah<=surah.count;ayah+=10)paths.push(`/quran/${surah.id}${ayah>1?`?ayah=${ayah}`:''}`)
+ for(const surah of quran?.chapters||[])for(let ayah=1;ayah<=surah.count;ayah+=QURAN_PAGE_SIZE)paths.push(`/quran/${surah.id}${ayah>1?`?ayah=${ayah}`:''}`)
  return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(path=>`<url><loc>${escape(new URL(`${basePath}${path}`,origin).href)}</loc></url>`).join('')}</urlset>`
 }
