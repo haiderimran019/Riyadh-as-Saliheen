@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import { FolderPlus, Trash2 } from 'lucide-react'
+import { ArrowRight, Bookmark as BookmarkIcon, FolderPlus, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { db, type Bookmark, type BookmarkFolder } from '../data/db'
 import { useI18n } from '../i18n'
+import { loadHadithRecord } from '../data/loader'
+import type { HadithRecord } from '../types/hadith'
 
 export function SavedPage() {
   const { t } = useI18n()
@@ -10,6 +12,7 @@ export function SavedPage() {
   const [folders, setFolders] = useState<BookmarkFolder[]>([])
   const [folderName, setFolderName] = useState('')
   const [activeFolder, setActiveFolder] = useState('all')
+  const [passages, setPassages] = useState<Record<string, HadithRecord>>({})
   const [folderMessage, setFolderMessage] = useState('')
 
   const refresh = async () => {
@@ -24,6 +27,15 @@ export function SavedPage() {
   useEffect(() => {
     void refresh()
   }, [])
+
+  useEffect(() => {
+    let active = true
+    void Promise.all(bookmarks.map(async (item) => {
+      const dataset = await loadHadithRecord(item.collectionId, item.hadithId).catch(() => null)
+      return dataset?.record ? [item.hadithId, dataset.record] as const : null
+    })).then((items) => { if (active) setPassages(Object.fromEntries(items.filter((item) => item !== null))) })
+    return () => { active = false }
+  }, [bookmarks])
 
   const addFolder = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -65,9 +77,9 @@ export function SavedPage() {
   return (
     <main className="content-page narrow page-with-nav">
       <header className="page-heading compact">
-        <p className="eyebrow">{t('Stored only on this device')}</p>
-        <h1>{t('Saved')}</h1>
-        <p>{t('Bookmarks, folders, and reading progress never leave your browser.')}</p>
+
+        <h1>{t('Saved passages')}</h1>
+        <p>{t('Keep the words you want to return to.')}</p>
       </header>
       <form className="folder-form" onSubmit={addFolder}>
         <input aria-label={t('New folder name')} value={folderName} onChange={(event) => setFolderName(event.target.value)} placeholder={t('New folder name')} />
@@ -82,10 +94,10 @@ export function SavedPage() {
         </span>)}
       </div>
       <div className="saved-list">
-        {visible.length === 0 && <p className="empty-state">{t('No saved hadith here yet. Use the bookmark action while reading to add one.')}</p>}
+        {visible.length === 0 && <div className="empty-state saved-empty"><BookmarkIcon size={34} strokeWidth={1.25} /><h2>{t('Your saved collection')}</h2><p>{t('No saved hadith here yet. Use the bookmark action while reading to add one.')}</p><Link className="text-action" to="/library">{t('The collection')}<ArrowRight size={17} /></Link></div>}
         {visible.map((bookmark) => (
           <article className="saved-row" key={bookmark.hadithId}>
-            <Link className="saved-reference" to={`/collection/${bookmark.collectionId}/chapter/${bookmark.chapterId}#${bookmark.hadithId}`}><strong>{t('Hadith')} {bookmark.hadithId.split('-')[0]}</strong><small>{t('Chapter')} {bookmark.chapterId} · {t('Open reading')}</small></Link>
+            <Link className="saved-reference" to={`/collection/${bookmark.collectionId}/chapter/${bookmark.chapterId}#${bookmark.hadithId}`}><strong>{t('Hadith')} {passages[bookmark.hadithId]?.number ?? bookmark.hadithId.split('-')[0]}</strong>{passages[bookmark.hadithId] && <p className="saved-excerpt" lang="ar" dir="rtl">{passages[bookmark.hadithId].arabic}</p>}<small>{t('Chapter')} {bookmark.chapterId} · {t('Open reading')}</small></Link>
             <button aria-label={`${t('Remove saved reading')} ${bookmark.hadithId}`} onClick={async () => { await db.bookmarks.delete(bookmark.hadithId); await refresh() }}><Trash2 size={17} /></button>
           </article>
         ))}

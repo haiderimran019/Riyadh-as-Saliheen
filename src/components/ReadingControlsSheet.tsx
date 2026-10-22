@@ -11,13 +11,13 @@ export type ReadingPreferences = {
   theme: 'light' | 'dark'
 }
 
-const getDefaultArabicSize = () => window.matchMedia('(min-width: 721px)').matches ? 34 : 30
+const getDefaultArabicSize = () => typeof window !== 'undefined' && window.matchMedia('(min-width: 721px)').matches ? 34 : 30
 
 export function ReadingControlsSheet() {
   const { t, language } = useI18n()
   const [open, setOpen] = useState(false)
   const [preferencesLoaded, setPreferencesLoaded] = useState(false)
-  const [preferences, setPreferences] = useState<ReadingPreferences>(() => ({ arabicSize: getDefaultArabicSize(), translationSize: 17, showDiacritics: true, theme: 'dark' }))
+  const [preferences, setPreferences] = useState<ReadingPreferences>(() => ({ arabicSize: getDefaultArabicSize(), translationSize: 17, showDiacritics: true, theme: 'light' }))
   const closeRef = useRef<HTMLButtonElement>(null)
   const dialogRef = useRef<HTMLElement>(null)
   const returnFocusRef = useRef<HTMLElement | null>(null)
@@ -27,7 +27,7 @@ export function ReadingControlsSheet() {
       getSetting('arabicSizePx', getDefaultArabicSize()),
       getSetting('translationSizePx', 17).then((size) => Math.max(16, size)),
       getSetting('showDiacritics', true),
-      getSetting<string>('theme', 'dark'),
+      getSetting<string>('theme', 'light'),
     ]).then(([arabicSize, translationSize, showDiacritics, theme]) => {
       const normalizedTranslationSize = Math.max(16, translationSize)
       const normalizedTheme = theme === 'light' ? 'light' : 'dark'
@@ -80,7 +80,7 @@ export function ReadingControlsSheet() {
   }
 
   const reset = () => {
-    const defaults: ReadingPreferences = { arabicSize: getDefaultArabicSize(), translationSize: 17, showDiacritics: true, theme: 'dark' }
+    const defaults: ReadingPreferences = { arabicSize: getDefaultArabicSize(), translationSize: 17, showDiacritics: true, theme: 'light' }
     setPreferences(defaults)
     void Promise.all([
       setSetting('arabicSizePx', defaults.arabicSize), setSetting('translationSizePx', defaults.translationSize),
@@ -92,16 +92,16 @@ export function ReadingControlsSheet() {
 
   return (
     <>
-      <button className="reading-sheet-backdrop" aria-label={t('Close reading settings')} onClick={() => setOpen(false)} />
+      <button className="reading-sheet-backdrop" tabIndex={-1} aria-label={t('Dismiss reading settings')} onClick={() => setOpen(false)} />
       <section ref={dialogRef} className="reading-sheet" role="dialog" aria-modal="true" aria-labelledby="reading-settings-title">
         <header>
-          <div><p className="eyebrow">{t('Display')}</p><h2 id="reading-settings-title">{t('Reading settings')}</h2></div>
+          <div><h2 id="reading-settings-title">{t('Reading settings')}</h2></div>
           <button ref={closeRef} className="icon-button" aria-label={t('Close reading settings')} onClick={() => setOpen(false)}><X /></button>
         </header>
         <label className="range-setting"><span><strong>{t('Arabic size')}</strong><output>{preferences.arabicSize}px</output></span><input type="range" min="20" max="56" value={preferences.arabicSize} onChange={(event) => update('arabicSize', Number(event.target.value))} /></label>
         <label className="range-setting"><span><strong>{t('Translation size')}</strong><output>{preferences.translationSize}px</output></span><input type="range" min="16" max="28" value={preferences.translationSize} onChange={(event) => update('translationSize', Number(event.target.value))} /></label>
         <fieldset className="theme-options"><legend>{t('Theme')}</legend><div className="theme-buttons">{([
-          ['dark', 'Green', Sprout], ['light', 'White', Sun],
+          ['light', 'Day', Sun], ['dark', 'Night', Sprout],
         ] as const).map(([theme, label, Icon]) => <button type="button" key={theme} className="theme-choice" aria-label={t(label)} title={t(label)} aria-pressed={preferences.theme === theme} onClick={() => update('theme', theme)}><Icon size={20} aria-hidden="true" /><span>{t(label)}</span></button>)}</div></fieldset>
         <label className="switch-setting"><span><strong>{t('Diacritics')}</strong><small>{t('Show Arabic tashkeel where provided.')}</small></span><span className="switch-control"><input role="switch" aria-checked={preferences.showDiacritics} type="checkbox" checked={preferences.showDiacritics} onChange={(event) => update('showDiacritics', event.target.checked)} /><span className="switch-track" aria-hidden="true" /></span></label>
         <div className="reading-preview" aria-label={t('Live reading preview')}><p dir="rtl" lang="ar" style={{ fontSize: preferences.arabicSize }}>نص عربي للمعاينة</p><small className="preview-label">{t('Translation preview')}</small><p lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'} style={{ fontSize: preferences.translationSize }}>{t('A gentle moment for thoughtful reading.')}</p></div>

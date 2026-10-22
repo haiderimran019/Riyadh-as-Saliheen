@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#09271e" />
+    <meta name="theme-color" content="#f8f6f0" />
     <meta name="description" content="A calm Arabic reading space for Riyad as-Salihin by Imam al-Nawawi." />
     <meta property="og:title" content="Riyad as-Salihin — A quiet reading space" />
     <meta property="og:description" content="Explore the chapters of Riyad as-Salihin in a calm, private reading experience." />
@@ -12,16 +12,18 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Riyad as-Salihin — A quiet reading space" />
     <meta name="twitter:description" content="Explore Riyad as-Salihin in a calm, private Arabic reading experience." />
+    <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%icons/icon.svg" />
     <link rel="apple-touch-icon" href="%BASE_URL%icons/apple-touch-icon.png" />
     <title>Riyad as-Salihin</title>
     <style>
-      html, body { min-height: 100%; margin: 0; background: #09271e; }
-      #root:empty::before { content: 'رياض الصالحين'; display: grid; min-height: 100svh; place-items: center; color: #afd2b8; font: 500 2rem Georgia, serif; }
+      html, body { min-height: 100%; margin: 0; background: #f8f6f0; }
+      #root:empty::before { content: 'رياض الصالحين'; display: grid; min-height: 100svh; place-items: center; color: #353b31; font: 500 2rem Georgia, serif; }
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><!--ssr-outlet--></div>
+    <!--ssr-data-->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

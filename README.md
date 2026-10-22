@@ -1,73 +1,52 @@
-# Hadith Reader
+# Riyad as-Salihin
 
-A free, ad-free, online Riyad as-Salihin reading site. The app is static and has no backend, accounts, cookies, or analytics. It makes no third-party runtime requests except an optional feedback submission.
+A free, ad-free reading space for Riyad as-Salihin, the Quran with English translation, and location-based prayer times. The approved botanical reading design is preserved. Optional verified accounts support consented saved locations and daily/prayer push reminders.
 
-Bookmarks, bookmark folders, reading progress, themes, and reader settings are stored only in the browser with IndexedDB.
+The application now has a Node/SQLite backend and React server rendering. Name/email are collected at signup; saving a location and connecting notifications each require separate consent. Bookmarks, folders, progress and display settings remain in browser IndexedDB. Fonts and imported reading text are served by the app; there are no advertising trackers.
 
-The Arabic collection and English translation are supplied by IslamHouse.com / IslamEnc.com and displayed as published. See `DATA_SOURCES.md` and `NOTICE` for source and reuse details.
+Arabic/English Riyad text comes from IslamHouse / IslamEnc. Available Urdu is partial HadeethEnc matching narrations. Quran text, translation and notes come from QuranEnc with edition attribution. See [DATA_SOURCES.md](DATA_SOURCES.md) and NOTICE. Source wording is preserved.
 
-Every screen follows the shared responsive, accessible interface rules in `DESIGN_STANDARDS.md`.
+## Local development
 
-## Run locally
+Use Node 22.13 or newer:
 
-```bash
-npm install
-npm run data:import:riyad -- --languages=ar,en
-npm run data:import:quran-day
-VITE_DATA_MODE=real npm run dev
+```sh
+npm ci --legacy-peer-deps
+# For a fresh checkout, configure the ignored server/.env.local from server/.env.example.
+npm run dev:reader
 ```
 
-## Build and test
+Open http://127.0.0.1:5173. The launcher starts the API on loopback port 8787 and selects real data mode at the root path. Existing imported data is preserved. If it is missing, import it first:
 
-```bash
+```sh
+npm run data:import:riyad -- --languages=ar,en
+npm run data:import:quran-day
+npm run data:import:urdu
+npm run data:import:quran
+```
+
+Imports remain ignored under `data-local/generated`. Default Vite-only placeholder mode remains available with `npm run dev`; it does not pretend to contain real religious text. The complete app requires the backend launcher above.
+
+## Accounts and owner data
+
+See [the account, owner, notification and deployment guide](docs/ACCOUNTS-AND-REMINDERS.md). Register and verify your configured owner email, then run `npm run owner:grant` and open `/admin`. The dashboard has private CSV/JSON exports. No user is made an owner automatically.
+
+Locally, mail is stored privately rather than sent. Run `npm run mail:latest -- your-email@example.com` to open your own verification or reset link. Real SMTP is required for production. Google OAuth is prepared and remains disabled until genuine credentials/callbacks are configured. Secrets, account data and consented locations are never bundled into public output.
+
+## Build, validate and serve
+
+```sh
+npm run typecheck
+npm run lint
 npm test
-npm run build
-npm run test:overflow
-npm run verify
+npm run test:backend
+npm run build:server
+npm run test:ssr
+PLAYWRIGHT_BASE_URL=http://127.0.0.1:5173 npx playwright test --workers=2
 ```
 
-The production site requires an internet connection. It does not register a service worker or intentionally cache reading content for offline use.
+`npm run build:server` builds client assets and the React server renderer. `npm start` requires an HTTPS APP_ORIGIN, SMTP, VAPID contact and a persistent private database volume. Run one persistent Node process behind an HTTPS proxy; follow the deployment guide before public launch. The scheduler must remain running to send reminders. Delivery and vibration depend on device/browser support and notification permission.
 
-## Data modes
+Public pages ship reading HTML, route metadata, canonical links and structured data. Public reading URLs are listed in `/sitemap.xml`; personal pages are noindex. Localhost blocks indexing. The application does not provide offline reading.
 
-The default mode is `placeholder`, which shows an empty preview shell and never substitutes sample religious text. Import Riyad and daily Quran data into the ignored `data-local/generated` directory, then set `VITE_DATA_MODE=real` to read it locally or build it into static output. The Hadith of the Day uses the Riyad edition; the Ayah of the Day uses QuranEnc Arabic and English/Urdu meanings. The static site serves these data files over the internet. Riyad currently has no verified Urdu translation in this release. Urdu mode keeps the Arabic source visible and reports the gap instead of showing English as Urdu.
-
-Fetch the authorized stage 5a languages with at most two delayed, retrying requests at a time:
-
-```bash
-npm run data:import:riyad -- --languages=ar,en
-npm run data:import:quran-day
-```
-
-The import is resumable from cached raw pages. The reader bundles Arabic and English files into the build output; those files are generated locally and never committed.
-
-## Deploy
-
-### Cloudflare Pages
-
-- Build command: `npm run data:import:riyad -- --languages=ar,en && npm run data:import:quran-day && VITE_DATA_MODE=real npm run build`
-- Output directory: `dist`
-- Environment: fetch approved data in the build job; for feedback, set `VITE_FEEDBACK_ENDPOINT` and `VITE_FEEDBACK_KEY` and ensure the endpoint host appears in `public/_headers` under `connect-src`.
-- The tracked `wrangler.toml`, `public/_redirects`, and `public/_headers` provide the Pages output directory, SPA fallback, CSP, and security headers.
-
-### GitHub Pages
-
-Pushing `main` runs `.github/workflows/static.yml`, which imports the approved corpus, builds with the repository subpath, and deploys `dist` to the existing Pages site. To reproduce that build locally:
-
-```bash
-npm run data:import:riyad -- --languages=ar,en
-npm run data:import:quran-day
-VITE_DATA_MODE=real VITE_BASE_PATH=/Riyadh-as-Saliheen/ npm run build
-```
-
-For a user or organization site at the domain root, use `VITE_BASE_PATH=/`. The site is entirely static.
-
-GitHub Pages does not apply `public/_headers`; set equivalent headers at a proxy or custom domain if those controls are required. The separate CI workflow validates, tests, and builds without deploying. The Pages workflow publishes only after a push to `main` or a manual workflow dispatch.
-
-## Privacy and online behavior
-
-- No accounts, cookies, analytics, or external runtime requests.
-- Fonts are bundled with the app.
-- Bookmarks, folders, progress, and settings stay in IndexedDB on the device.
-- The app requires internet access to load its interface and reading content; it does not intentionally provide offline reading or installable offline behavior.
-- Bookmarks, folders, progress, and settings remain stored locally in the browser.
+Existing GitHub Pages/Cloudflare static publishing instructions and workflows apply to the earlier reader-only build. Static hosting cannot run this release's accounts, Quran API, prayer calculations, scheduler or per-request server rendering. Publishing source to GitHub does not deploy the Node backend.

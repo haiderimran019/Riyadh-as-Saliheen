@@ -10,9 +10,9 @@ export function SettingsPage() {
   return (
     <main className="content-page narrow page-with-nav">
       <header className="page-heading compact settings-heading">
-        <p className="eyebrow">{t('On-device preferences')}</p>
+
         <h1>{t('Settings')}</h1>
-        <p>{t('A gentle moment for thoughtful reading.')}</p>
+        <p>{t('Adjust the details. Make yourself at home.')}</p>
       </header>
       <section className="settings-group" aria-labelledby="settings-reader-title">
         <p id="settings-reader-title" className="settings-group-label">{t('Reading display')}</p>

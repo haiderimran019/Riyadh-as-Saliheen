@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { ArrowRight, BookOpen, Compass, Heart, MessageCircle, RotateCcw, Sparkles, Sprout } from 'lucide-react'
+import { useBootData } from '../ssr/BootData'
+import { ArrowRight, ArrowUpRight, BookOpen, Compass, Flower2, Heart, MessageCircle, RotateCcw, Sprout } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { DATA_MODE, DEFAULT_COLLECTION, SHOW_FEEDBACK } from '../config'
+import { DATA_MODE, DEFAULT_COLLECTION } from '../config'
 import { db, type ReadingProgress } from '../data/db'
 import { hadithRepository } from '../data/HadithRepository'
 import { loadDailyQuran, loadTranslation } from '../data/loader'
@@ -29,14 +30,18 @@ function withIsolatedFootnoteMarkers(text: string, language: string) {
 }
 
 export function HomePage() {
-  const [dailyMoment, setDailyMoment] = useState(() => new Date())
-  const [collection, setCollection] = useState<CollectionIndex | null>(null)
+  const boot=useBootData()
+  const [dailyMoment, setDailyMoment] = useState(() => new Date(boot.now || Date.now()))
+  const [collection, setCollection] = useState<CollectionIndex | null>(boot.collection || null)
   const [progress, setProgress] = useState<ReadingProgress | null>(null)
-  const [dailyHadith, setDailyHadith] = useState<Awaited<ReturnType<typeof hadithRepository.getDailyHadith>> | null>(null)
-  const [dailyTranslation, setDailyTranslation] = useState<TranslationChapterDataset | null>(null)
-  const [quran, setQuran] = useState<DailyQuranDataset | null>(null)
+  const [dailyHadith, setDailyHadith] = useState<Awaited<ReturnType<typeof hadithRepository.getDailyHadith>> | null>(boot.dailyHadith || null)
+  const [dailyTranslationSelection, setDailyTranslationSelection] = useState<{ language: string; hadithId: string; dataset: TranslationChapterDataset } | null>(boot.dailyHadith&&boot.dailyTranslation?{language:'en',hadithId:boot.dailyHadith.id,dataset:boot.dailyTranslation}:null)
+  const [quran, setQuran] = useState<DailyQuranDataset | null>(boot.dailyQuran || null)
   const showDiacritics = useShowDiacritics()
   const { language, t } = useI18n()
+  const dailyTranslation = dailyTranslationSelection?.language === language && dailyTranslationSelection.hadithId === dailyHadith?.id ? dailyTranslationSelection.dataset : null
+  const translatedDailyHadith = dailyHadith ? dailyTranslation?.translations[dailyHadith.id] : undefined
+  const isMatchedDailyUrdu = language === 'ur' && Boolean(translatedDailyHadith?.raw)
 
   useEffect(() => {
     const refresh = () => setDailyMoment(new Date())
@@ -51,17 +56,25 @@ export function HomePage() {
 
   useEffect(() => {
     if (DATA_MODE !== 'real') return
+    let active = true
+    setDailyTranslationSelection(null)
     void hadithRepository.getCollection(DEFAULT_COLLECTION).then(async (value) => {
+      if (!active) return
       setCollection(value)
       const record = await hadithRepository.getDailyHadith(dailyMoment)
+      if (!active) return
       setDailyHadith(record ?? null)
-      if (record && language === 'en') {
+      if (record && value.languages.includes(language)) {
         const chapter = value.chapters.find((item) => item.id === record.chapterId)
-        if (chapter) setDailyTranslation(await loadTranslation('en', DEFAULT_COLLECTION, chapter.file).catch(() => null))
+        if (chapter) {
+          const dataset = await loadTranslation(language, DEFAULT_COLLECTION, chapter.file).catch(() => null)
+          if (active && dataset) setDailyTranslationSelection({ language, hadithId: record.id, dataset })
+        }
       }
     }).catch(() => undefined)
-    void db.progress.get(DEFAULT_COLLECTION).then((value) => setProgress(value ?? null))
-    void loadDailyQuran().then(setQuran).catch(() => undefined)
+    void db.progress.get(DEFAULT_COLLECTION).then((value) => { if (active) setProgress(value ?? null) })
+    void loadDailyQuran().then((value) => { if (active) setQuran(value) }).catch(() => undefined)
+    return () => { active = false }
   }, [dailyMoment, language])
 
   const firstChapter = collection?.chapters[0]
@@ -70,81 +83,25 @@ export function HomePage() {
     ? `/collection/${DEFAULT_COLLECTION}/chapter/${progress.chapterId}#${progress.hadithId}`
     : firstChapter ? `/collection/${DEFAULT_COLLECTION}/chapter/${firstChapter.id}` : '/library'
 
-  return (
-    <main className="welcome page-with-nav riyad-home">
-      <section className="home-hero" aria-labelledby="home-title">
-        <div className="home-hero-text">
-          <p className="eyebrow"><span className="home-hero-kicker">{t('THE GARDENS OF THE RIGHTEOUS')}</span> <span className="home-hero-divider" aria-hidden="true">✦</span> <bdi className="home-hero-arabic" lang="ar" dir="rtl">رياض الصالحين</bdi></p>
-          <h1 id="home-title">{t('Riyad as-Salihin')}</h1>
-          <p className="home-intro">{t('Read Riyad as-Salihin with the Arabic text and English translation, one chapter and one hadith at a time.')}</p>
-          <div className="home-actions">
-            <Link className="primary-action" to={readUrl}><BookOpen size={19} /> {t(progress ? 'Continue reading' : 'Start reading')} <ArrowRight size={18} /></Link>
-            <Link className="home-secondary-action" to={`/collection/${DEFAULT_COLLECTION}`}>{t('Browse all chapters')} <ArrowRight size={17} /></Link>
-          </div>
-          <p className="home-hero-count">{collection ? `${new Intl.NumberFormat(numberLocale).format(collection.chapters.length)} ${t('Chapters')} · ${new Intl.NumberFormat(numberLocale).format(collection.recordIds?.length ?? 0)} ${t('hadith')}` : DATA_MODE === 'placeholder' ? t('Preview edition · text not included') : t('Loading the collection…')}</p>
-        </div>
-        <div className="home-hero-art" aria-hidden="true"><span className="garden-arch"><span lang="ar" dir="rtl">رياض<br />الصالحين</span></span><i>{t('IMAM AL-NAWAWI · A CLASSIC COLLECTION')}</i></div>
+  const ayah = quran?.ayahs.length ? selectDailyAyah(quran, dailyMoment) : null
+  const nextChapter = collection?.chapters.find((chapter) => chapter.id === progress?.chapterId)
+  return <main className="today-page">
+    <header className="today-heading"><div><h1>{t('A moment for meaning.')}</h1><p>{t('Come as you are. Leave with something to reflect on.')}</p></div><time dateTime={dailyMoment.toISOString()}>{new Intl.DateTimeFormat(language === 'ur' ? 'ur-PK' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone:'UTC' }).format(dailyMoment)}</time></header>
+    <section className="reading-invitation" aria-label={t('Explore Riyad as-Salihin')}>
+      <div className="invitation-copy"><span className="invitation-author">{t('Imam al-Nawawi’s Riyad as-Salihin')}</span><h2>{t('Timeless wisdom.')}<br /><em>{t('For everyday life.')}</em></h2><p>{t('The gardens of the righteous. A collection to read, reflect on, and return to — one hadith at a time.')}</p><Link className="primary-action" to={readUrl}>{t(progress ? 'Continue reading' : 'Begin your reading')}<ArrowRight size={18} /></Link><span className="edition-line">{collection ? `${collection.chapters.length.toLocaleString(numberLocale)} ${t('Chapters')} · ${(collection.recordIds?.length ?? 0).toLocaleString(numberLocale)} ${t('hadith')}` : t('Loading the collection…')}<span>·</span>{t('Arabic · English · Urdu')}</span></div>
+      <div className="invitation-art"><img src={`${import.meta.env.BASE_URL}images/reading-garden.png`} alt="" fetchPriority="high" /><span className="art-caption" lang="ar" dir="rtl">رياض الصالحين</span></div>
+    </section>
+    <div className="daily-desk">
+      <section className="daily-hadith daily-paper" aria-labelledby="daily-hadith-title"><header className="section-line"><h2 id="daily-hadith-title">{t('A hadith for today')}</h2><span><span className="live-dot" />{t('Daily reading')}</span></header>
+        {dailyHadith ? <><p className="daily-arabic" lang="ar" dir="rtl">{showDiacritics ? dailyHadith.arabic : stripArabicDiacritics(dailyHadith.arabic)}</p>{translatedDailyHadith ? <p className="daily-translation" lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'}>{translatedDailyHadith.text}</p> : <p className="daily-missing-translation">{t(language === 'ur' ? 'Urdu translation is not available for this narration; the Arabic text above is from the source edition.' : 'English translation is not available for this narration; the Arabic text above is from the source edition.')}</p>}
+        {isMatchedDailyUrdu && <small className="matching-note">{t('Urdu · matching narration')} · {t('This Urdu text translates HadeethEnc’s matching narration; additional wording in the Riyad edition may differ.')}</small>}
+        <footer className="daily-paper-foot"><div><span>{t('Riyad as-Salihin')} · {t('Hadith')} {dailyHadith.number}</span><small className="daily-source-line">{dailyTranslation?.metadata.sourceName ?? dailyHadith.sourceName ?? 'IslamHouse / IslamEnc'}{dailyTranslation?.metadata.version ? ` · ${dailyTranslation.metadata.version}` : ''}</small></div><Link className="circle-link" to={`/collection/${DEFAULT_COLLECTION}/chapter/${dailyHadith.chapterId}#${dailyHadith.id}`} aria-label={t('Read hadith')}><ArrowUpRight size={21} /></Link></footer></> : <p className="loading-copy">{t('Opening today’s reading…')}</p>}
       </section>
-
-      {(dailyHadith || quran) && <section className="daily-reading" aria-labelledby="daily-reading-title">
-        <header className="daily-reading-heading"><p className="eyebrow">{t('TODAY’S READINGS')}</p><span id="daily-reading-title">{t('Hadith of the day')} <i aria-hidden="true">·</i> {t('Ayah of the day')}</span></header>
-        <div className="daily-reading-grid">
-          {dailyHadith && <section className="daily-card daily-hadith" aria-labelledby="daily-hadith-title">
-            <p className="eyebrow"><Sparkles size={14} /> {t('Hadith of the day')}</p>
-            <p className="daily-arabic" lang="ar" dir="rtl">{showDiacritics ? dailyHadith.arabic : stripArabicDiacritics(dailyHadith.arabic)}</p>
-            {language === 'en' && dailyTranslation?.translations[dailyHadith.id] && <p className="daily-translation" lang="en" dir="ltr">{dailyTranslation.translations[dailyHadith.id].text}</p>}
-            {language === 'en' && !dailyTranslation?.translations[dailyHadith.id] && <p className="daily-missing-translation">{t('English translation is not available for this narration; the Arabic text above is from the source edition.')}</p>}
-            {language === 'ur' && <p className="daily-missing-translation" lang="ur">{t('The Urdu translation for this collection is not available yet. The Arabic source text is shown.')}</p>}
-            <div className="daily-card-footer">
-              <span id="daily-hadith-title" className="daily-reference"><bdi dir={language === 'ur' ? 'rtl' : 'ltr'}>{t('Riyad as-Salihin')}</bdi><span className="reference-separator">·</span><span dir="rtl">{t('Hadith')} <bdi dir="ltr">{dailyHadith.chapterNumber || dailyHadith.number}</bdi></span></span>
-              <Link to={`/collection/${DEFAULT_COLLECTION}/chapter/${dailyHadith.chapterId}#${dailyHadith.id}`}>{t('Read hadith')} <ArrowRight size={16} /></Link>
-            </div>
-          </section>}
-          {quran && quran.ayahs.length > 0 && (() => {
-            const ayah = selectDailyAyah(quran, dailyMoment)
-            const localized = ayah.translations[language]
-            const direction = language === 'ur' ? 'rtl' : 'ltr'
-            return <section className="daily-card daily-ayah" aria-labelledby="daily-ayah-title">
-              <p className="eyebrow"><Sparkles size={14} /> {t('Ayah of the day')}</p>
-              <p className="daily-arabic" lang="ar" dir="rtl">{ayah.arabic_text}</p>
-              <p className="daily-translation" lang={language} dir={direction}>{withIsolatedFootnoteMarkers(localized.translation, language)}</p>
-              {localized.footnotes && <details className="daily-footnotes"><summary>{t('Translation notes')}</summary><p lang={language} dir={direction}>{withIsolatedFootnoteMarkers(localized.footnotes, language)}</p></details>}
-              <div className="daily-card-footer">
-                <span id="daily-ayah-title" className="daily-reference"><bdi dir="rtl">{t('Qur’an')}</bdi><span className="reference-separator">·</span><bdi dir="ltr">{ayah.sura}:{ayah.aya}</bdi></span>
-                <bdi className="daily-source-line" dir="ltr">QuranEnc.com · {quran.translations[language].title} · v{quran.translations[language].version}</bdi>
-              </div>
-            </section>
-          })()}
-        </div>
-      </section>}
-
-      {collection && <section className="everyday-section" aria-labelledby="everyday-title">
-        <div className="everyday-heading">
-          <div><p className="eyebrow">{t('A READING PATH FOR EVERYDAY LIFE')}</p><h2 id="everyday-title">{t('Choose a theme. Read at your pace.')}</h2></div>
-          <p>{t('Thoughtful starting points, each opening an original chapter of Riyad as-Salihin.')}</p>
-        </div>
-        <div className="everyday-grid">
-          {everydayThemes.map(({ chapterId, title, Icon }, index) => {
-            const chapter = collection.chapters.find((item) => item.id === chapterId)
-            if (!chapter) return null
-            return <Link className="everyday-card" key={chapterId} to={`/collection/${DEFAULT_COLLECTION}/chapter/${chapter.id}`}>
-              <span className="everyday-card-top"><span className="everyday-icon"><Icon size={19} strokeWidth={1.8} /></span><span className="everyday-index">{String(index + 1).padStart(2, '0')}</span></span>
-              <strong>{t(title)}</strong>
-              <span className="everyday-card-foot"><span>{t('Chapter')} <bdi dir="ltr">{chapter.id}</bdi> · {chapter.count.toLocaleString(language === 'ur' ? 'ur-PK' : 'en-US')} {t('hadith')}</span><ArrowRight size={16} aria-hidden="true" /></span>
-            </Link>
-          })}
-        </div>
-      </section>}
-
-      <section className="home-explore" aria-label={t('Explore Riyad as-Salihin')}>
-        <div className="section-title"><div><p className="eyebrow">{t('THE COLLECTION')}</p><h2>{t('Browse chapters')}</h2></div><Link to={`/collection/${DEFAULT_COLLECTION}`}>{t('All chapters')} <ArrowRight size={17} /></Link></div>
-        <div className="home-link-grid">
-          {progress && <Link className="home-link-card home-progress-card" to={readUrl}><span className="home-link-icon"><BookOpen size={22} /></span><span><strong>{t('Continue reading')}</strong><small>{t('Chapter')} {progress.chapterId} · {t('Hadith')} {progress.hadithId.split('-')[0]}</small></span><ArrowRight size={19} /></Link>}
-          {collection?.chapters.slice(0, 4).map((chapter) => <Link className="home-link-card home-chapter-card" key={chapter.id} to={`/collection/${DEFAULT_COLLECTION}/chapter/${chapter.id}`}><span className="home-chapter-index">{chapter.id.padStart(2, '0')}</span><span><strong dir="auto">{getChapterTitle(chapter, language)}</strong><small>{chapter.count.toLocaleString('en-US')} {t('hadith')}</small></span><ArrowRight size={19} /></Link>)}
-          {!collection && <div className="home-data-note"><BookOpen size={19} /><span>{DATA_MODE === 'placeholder' ? t('Reading text is not bundled in this preview yet.') : t('The chapter list could not be loaded right now.')}</span></div>}
-        </div>
-      </section>
-      <div className="home-bottomline"><span>{t('No account. No ads. No tracking.')}</span><span><Link to="/sources">{t('Text & sources')}</Link>{SHOW_FEEDBACK && <> · <Link to="/feedback">{t('Feedback')}</Link></>}</span></div>
-    </main>
-  )
+      <aside className="reading-margin"><section className="return-reading"><BookOpen size={23} strokeWidth={1.5} /><h2>{t(progress ? 'Pick up where you paused.' : 'Every journey begins with intention.')}</h2><p>{nextChapter ? getChapterTitle(nextChapter, language) : t('Open the first chapter and take your time. Your place is saved as you read.')}</p><Link className="text-action" to={readUrl}>{t(progress ? 'Continue reading' : 'Start with chapter one')}<ArrowRight size={17} /></Link>{progress && <small>{t('Chapter')} {progress.chapterId} · {t('Hadith')} {progress.hadithId.split('-').at(-1)}</small>}</section>
+      {ayah && quran && <section className="daily-ayah"><header className="section-line"><h2>{t('An ayah to reflect on')}</h2></header><p className="daily-arabic" dir="rtl" lang="ar">{ayah.arabic_text}</p><p className="daily-translation" lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'}>{withIsolatedFootnoteMarkers(ayah.translations[language].translation, language)}</p>{ayah.translations[language].footnotes && <details className="daily-footnotes"><summary>{t('Translation notes')}</summary><p lang={language} dir={language === 'ur' ? 'rtl' : 'ltr'}>{withIsolatedFootnoteMarkers(ayah.translations[language].footnotes, language)}</p></details>}<footer><span>{t('Qur’an')} {ayah.sura}:{ayah.aya}</span><small>QuranEnc.com · {quran.translations[language].title} · v{quran.translations[language].version}</small></footer></section>}
+      </aside>
+    </div>
+    <section className="paths-section" aria-labelledby="paths-title"><header className="section-line"><div><h2 id="paths-title">{t('What’s on your mind?')}</h2><p>{t('Find a chapter that speaks to your day.')}</p></div><Link className="text-action" to="/library">{t('All chapters')}<ArrowRight size={17} /></Link></header><div className="reading-paths">{everydayThemes.map(({ chapterId, title, Icon }) => { const chapter = collection?.chapters.find((item) => item.id === chapterId); return chapter && <Link className="reading-path" key={chapterId} to={`/collection/${DEFAULT_COLLECTION}/chapter/${chapter.id}`}><Icon size={24} strokeWidth={1.3} /><span><strong>{t(title)}</strong><small>{t('Chapter')} {chapter.id} · {chapter.count} {t('hadith')}</small></span><ArrowUpRight size={17} /></Link> })}</div></section>
+    <div className="home-colophon"><Flower2 size={18} strokeWidth={1.2} /><span>{t('A little time. A little reflection. An everyday companion.')}</span><Link to="/sources">{t('Explore the sources')}<ArrowUpRight size={14} /></Link></div>
+  </main>
 }

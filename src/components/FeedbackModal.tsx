@@ -71,11 +71,11 @@ export function FeedbackModal() {
 
   return (
     <>
-      <button className="feedback-backdrop" aria-label={t('Close feedback')} onClick={close} />
+      <button className="feedback-backdrop" tabIndex={-1} aria-label={t('Dismiss feedback')} onClick={close} />
       <section ref={dialogRef} className="feedback-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
-        <header><div><p className="eyebrow">{t('Help improve the app')}</p><h2 id="feedback-title">{t('Send feedback')}</h2></div><button className="icon-button" aria-label={t('Close feedback')} onClick={close}><X /></button></header>
+        <header><div><h2 id="feedback-title">{t('Send feedback')}</h2></div><button className="icon-button" aria-label={t('Close feedback')} onClick={close}><X /></button></header>
         {!FEEDBACK_ENABLED ? (import.meta.env.DEV ? <p className="notice">{t('Feedback is unavailable in development until the feedback service is configured.')}</p> : null) : status === 'success' ? <div className="feedback-result" role="status"><h3>{t('Thank you')}</h3><p>{t('Your feedback was sent.')}</p><button onClick={close}>{t('Close')}</button></div> : (
-          <form onSubmit={submit}>
+          <form className="feedback-form" onSubmit={submit}>
             <label><span>{t('Type')}</span><select value={type} onChange={(event) => setType(event.target.value)}>{['Mistake in hadith or translation', 'Bug', 'Suggestion', 'Other'].map((option) => <option key={option} value={option}>{t(option)}</option>)}</select></label>
             <label><span>{t('Message')} <strong>{t('Required')}</strong></span><textarea ref={messageRef} required maxLength={2000} rows={7} value={message} onChange={(event) => setMessage(event.target.value)} /><small>{message.length}/2000</small></label>
             <label><span>{t('Reply email')} <small>{t('Optional')}</small></span><input type="email" autoComplete="email" value={replyEmail} onChange={(event) => setReplyEmail(event.target.value)} /></label>

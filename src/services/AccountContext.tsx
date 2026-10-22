@@ -1,0 +1,15 @@
+import { createContext,useCallback,useContext,useEffect,useState,type ReactNode } from 'react'
+import { useBootData } from '../ssr/BootData'
+import { api,type AccountData,type Capabilities } from './api'
+type AccountContextValue={account:AccountData|null;capabilities:Capabilities|null;loading:boolean;connectionError:string;refresh:()=>Promise<void>}
+const AccountContext=createContext<AccountContextValue|null>(null)
+export function AccountProvider({children}:{children:ReactNode}) {
+  const boot=useBootData()
+  const [account,setAccount]=useState<AccountData|null>(null),[capabilities,setCapabilities]=useState<Capabilities|null>(boot.capabilities || null),[loading,setLoading]=useState(!boot.capabilities),[connectionError,setConnectionError]=useState('')
+  const refresh=useCallback(async()=>{
+    try { const session=await api<{user:unknown}|null>('/auth/get-session');if(session?.user)setAccount(await api<AccountData>('/account'));else setAccount(null);setConnectionError('') }catch{setConnectionError('The account server is not available. Your reading collection is still available.');setAccount(null)}finally{setLoading(false)}
+  },[])
+  useEffect(()=>{void api<Capabilities>('/health').then(setCapabilities).catch(()=>setConnectionError('The account server is not available.'));void refresh()},[refresh])
+  return <AccountContext.Provider value={{account,capabilities,loading,connectionError,refresh}}>{children}</AccountContext.Provider>
+}
+export function useAccount(){const value=useContext(AccountContext);if(!value)throw new Error('Account provider is missing.');return value}

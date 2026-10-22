@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Bookmark, Copy, Info, Share2 } from 'lucide-react'
+import { Bookmark, Check, Copy, Info, Share2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { db, type BookmarkFolder } from '../data/db'
 import type { DatasetMetadata, HadithRecord, Translation } from '../types/hadith'
@@ -29,6 +29,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
   const [folders, setFolders] = useState<BookmarkFolder[]>([])
   const [copied, setCopied] = useState(false)
   const arabic = showDiacritics ? hadith.arabic : stripArabicDiacritics(hadith.arabic)
+  const isMatchedUrdu = language === 'ur' && Boolean(translation?.raw)
 
   useEffect(() => {
     Promise.all([db.bookmarks.get(hadith.id), db.folders.orderBy('createdAt').toArray()]).then(([bookmark, values]) => {
@@ -58,7 +59,10 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
 
   const copyReading = async () => {
     try {
-      await navigator.clipboard.writeText(`${hadith.arabic}${translation ? `\n\n${translation.text}` : ''}\n\nRiyad as-Salihin · Chapter ${hadith.chapter}, hadith ${displayNumber} · source reference ${hadith.number} · ${hadith.sourceName ?? 'IslamHouse.com / IslamEnc.com'}`)
+      const copiedArabic = isMatchedUrdu && translation?.raw ? translation.raw.hadeeth_ar : hadith.arabic
+      const qualification = isMatchedUrdu ? `\n\n${t('This Urdu text translates HadeethEnc’s matching narration; additional wording in the Riyad edition may differ.')}` : ''
+      const translationCredit = translation && translationMetadata ? `\n\n${t('Translation source:')} ${translationMetadata.sourceName}${translationMetadata.version ? ` · ${translationMetadata.version}` : ''}` : ''
+      await navigator.clipboard.writeText(`${copiedArabic}${translation ? `\n\n${translation.text}` : ''}${qualification}${translationCredit}\n\nRiyad as-Salihin · Chapter ${hadith.chapter}, hadith ${displayNumber} · source reference ${hadith.number} · ${hadith.sourceName ?? 'IslamHouse.com / IslamEnc.com'}`)
       setCopied(true)
       window.setTimeout(() => setCopied(false), 2200)
     } catch { setCopied(false) }
@@ -69,11 +73,11 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
       <header className="hadith-meta">
         <div>
           <span className="hadith-number">{t('Hadith')} {displayNumber}</span>
-          <p>{t('Riyad as-Salihin')} · {t('Chapter')} {hadith.chapter}</p>
+          <p>{t('Reference:')} {hadith.number}</p>
         </div>
         <div className="hadith-quick-actions">
           <button type="button" aria-label={saved ? `${t('Remove hadith from saved')} ${displayNumber}` : `${t('Save hadith')} ${displayNumber}`} aria-pressed={saved} onClick={() => void toggleBookmark()}><Bookmark size={20} fill={saved ? 'currentColor' : 'none'} /></button>
-          <button type="button" aria-label={copied ? t('Copied') : `${t('Copy')} ${t('Hadith')} ${displayNumber}`} onClick={() => void copyReading()}><Copy size={19} /></button>
+          <button type="button" aria-label={copied ? t('Copied') : `${t('Copy')} ${t('Hadith')} ${displayNumber}`} onClick={() => void copyReading()}>{copied ? <Check size={19} /> : <Copy size={19} />}</button>
           <button type="button" aria-label={`${t('Share')} ${t('Hadith')} ${displayNumber}`} onClick={() => void shareHadithImage(hadith, translation, translationMetadata)}><Share2 size={19} /></button>
         </div>
       </header>
@@ -82,12 +86,18 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
 
       {translation && translationMetadata && (
         <section className="translation-block" lang={language} dir={language === 'ur' ? 'rtl' : 'auto'}>
-          <span className="translation-label">{t(LANGUAGE_NAMES[language] ?? language.toUpperCase())} {t('translation')}</span>
+          <span className="translation-label">{isMatchedUrdu ? t('Urdu · matching narration') : <>{t(LANGUAGE_NAMES[language] ?? language.toUpperCase())} {t('translation')}</>}</span>
           <p>{translation.text}</p>
+          {isMatchedUrdu && <small>{t('This Urdu text translates HadeethEnc’s matching narration; additional wording in the Riyad edition may differ.')}</small>}
           <details className="translation-about">
             <summary><Info size={16} /> {t('About this translation')}</summary>
             <div>
               <p><strong>{t('Language:')}</strong> {t(LANGUAGE_NAMES[language] ?? language.toUpperCase())}</p>
+              <p><strong>{t('Translation source:')}</strong> <bdi dir="auto">{translationMetadata.sourceName}{translationMetadata.version ? ` · ${translationMetadata.version}` : ''}</bdi></p>
+              {isMatchedUrdu && translation.raw?.hadeeth_ar && <details>
+                <summary>{t('Arabic wording for this translation')}</summary>
+                <p className="arabic-text" lang="ar" dir="rtl" style={{ fontSize: `${arabicSize}px`, padding: '12px 0' }}>{showDiacritics ? translation.raw.hadeeth_ar : stripArabicDiacritics(translation.raw.hadeeth_ar)}</p>
+              </details>}
               <p>{t('Not reviewed by this app’s team.')}</p>
               <p><Link to="/sources">{t('Sources')}</Link>{SHOW_FEEDBACK && <> · <Link to={`/feedback?type=mistake&hadith=${encodeURIComponent(hadith.id)}`}>{t('Report an error')}</Link></>}</p>
             </div>
@@ -95,10 +105,11 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
         </section>
       )}
 
-      {language !== 'ar' && !translation && <p className="notice">{t(language === 'ur' ? 'The Urdu translation for this collection is not available yet. The Arabic source text is shown.' : 'English translation is not available for this narration; the Arabic text above is from the source edition.')}</p>}
+      {language !== 'ar' && !translation && <p className="notice">{t(language === 'ur' ? 'Urdu translation is not available for this narration; the Arabic text above is from the source edition.' : 'English translation is not available for this narration; the Arabic text above is from the source edition.')}</p>}
 
+      <p className="passage-status" role="status" aria-live="polite">{copied ? t('Copied with source attribution') : saved ? t('Saved to your passages') : ''}</p>
       <footer className="hadith-footer">
-        <div className="trust-summary">
+        <div className="trust-summary"><span className="passage-source">{hadith.sourceName ?? 'IslamHouse / IslamEnc'}</span>
           {hadith.grades.map((grade) => <span className={`grade grade-${grade.grade.toLocaleLowerCase().replace(/[^a-z]+/g, '-')}`} key={`${grade.grader}-${grade.grade}`}>{grade.grade} <small>· per {grade.grader}</small></span>)}
           {hadith.grades.length === 0 && <span className="grade grade-unavailable">{t('Grade not supplied by this edition')}</span>}
         </div>

@@ -1,0 +1,208 @@
+.feature-page { max-width:1320px; margin:auto; padding:42px 46px 45px; }
+.feature-heading { display:flex; align-items:center; justify-content:space-between; gap:24px; margin-bottom:32px; }
+.feature-heading h1 { font-family:var(--serif); font-size:42px; font-weight:440; letter-spacing:-.025em; line-height:1.16; }
+.feature-heading p { color:var(--muted); font-size:13px; margin-top:12px; max-width:65ch; }
+.feature-heading-script { font-size:41px; color:var(--accent); }
+.feature-heading > svg { color:var(--accent); }
+.feature-footnote { font-size:11px; color:var(--muted); line-height:1.9; margin:23px 0 10px; }
+.feature-footnote a { text-decoration:underline; }
+.feature-loading { padding:60px 20px; color:var(--muted); text-align:center; font-size:13px; }
+.field-label { display:flex; flex-direction:column; gap:9px; font-size:12px; margin:17px 0; font-weight:500; }
+.field-label input,.field-label select,.field-label textarea { border:1px solid var(--border); border-radius:6px; padding:0 12px; min-height:46px; min-width:0; width:100%; background:var(--surface); color:var(--text); font-size:13px; }
+.field-label small { font-size:11px; line-height:1.7; color:var(--muted); font-weight:400; }
+.outlined-action { display:inline-flex; min-height:44px; align-items:center; justify-content:center; gap:9px; border:1px solid var(--border); border-radius:6px; padding:9px 16px; font-size:12px; font-weight:550; background:var(--surface); }
+.outlined-action:hover { border-color:var(--accent); color:var(--accent-strong); }
+.consent-check { display:flex; align-items:flex-start; gap:10px; font-size:12px; font-weight:400; line-height:1.9; margin:20px 0; }
+.consent-check input { width:18px; min-width:18px; height:18px; min-height:18px; margin:4px 0 0; accent-color:var(--accent); }
+.consent-check a { text-decoration:underline; }
+.success-message { color:var(--accent-strong); background:var(--surface-soft); padding:15px 18px; border-radius:7px; font-size:13px; line-height:1.8; margin-top:22px; }
+.feature-page > .notice { margin-top:25px; }
+.account-topbar-link { width:34px; }
+.account-topbar-link > span { border-radius:50%; background:var(--surface-soft); height:30px; width:30px; display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-size:19px; }
+.mobile-floating-navigation { display:none; }
+.prayer-workspace { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(260px,.85fr); gap:42px; }
+.prayer-timetable { min-width:0; }
+.prayer-place { display:flex; align-items:center; gap:10px; padding:0 0 20px; border-bottom:1px solid var(--border); font-size:13px; }
+.prayer-place strong { font-weight:550; }
+.prayer-place > span { margin-inline-start:auto; color:var(--muted); font-size:10px; }
+.next-prayer { display:flex; align-items:center; position:relative; overflow:hidden; padding:28px; margin-top:24px; border-radius:10px; background:var(--surface-soft); gap:20px; }
+.next-prayer p { font-size:11px; color:var(--muted); }
+.next-prayer h2 { font-family:var(--serif); font-size:37px; font-weight:450; line-height:1.2; margin-top:6px; }
+.next-prayer > span { margin-inline-start:auto; font-size:26px; font-family:var(--serif); white-space:nowrap; }
+.next-prayer > svg { color:var(--accent); opacity:.24; margin-inline-start:7px; }
+.prayer-date { display:flex; align-items:center; gap:9px; font-size:12px; padding:17px 0; border-bottom:1px solid var(--border); }
+.prayer-date input { margin-inline-start:auto; border:0; background:transparent; color:var(--text); font-size:12px; max-width:160px; }
+.prayer-empty { display:flex; align-items:center; flex-direction:column; gap:15px; padding:65px 24px; text-align:center; }
+.prayer-empty > svg { color:var(--accent); }
+.prayer-empty h2 { font-family:var(--serif); font-size:32px; font-weight:450; }
+.prayer-empty p { font-size:13px; max-width:38ch; color:var(--muted); }
+.prayer-empty .primary-action { margin-top:5px; }
+.prayer-time-list > div { display:flex; align-items:center; gap:18px; padding:21px 15px; border-bottom:1px solid var(--border); min-height:83px; }
+.prayer-time-list > div > svg { color:var(--accent); }
+.prayer-time-list > div > span:nth-child(2) { display:flex; flex-direction:column; gap:6px; }
+.prayer-time-list strong { font-size:14px; font-weight:550; }
+.prayer-time-list small { font-size:10px; color:var(--muted); }
+.prayer-arabic { font-size:24px; color:var(--muted); margin-inline-start:auto; }
+.prayer-time-list time { min-width:100px; text-align:end; font-family:var(--serif); font-size:26px; font-variant-numeric:tabular-nums; }
+.prayer-time-list > .next-prayer-row { background:var(--surface-soft); }
+.prayer-options { border-inline-start:1px solid var(--border); padding-inline-start:30px; }
+.prayer-options section { padding-bottom:26px; margin-bottom:25px; border-bottom:1px solid var(--border); }
+.prayer-options h2 { font-family:var(--serif); font-size:26px; font-weight:450; line-height:1.25; }
+.prayer-options p { font-size:12px; color:var(--muted); margin:14px 0; }
+.location-button { display:flex; align-items:center; justify-content:center; gap:9px; background:var(--accent); color:var(--bg); width:100%; padding:10px; border-radius:6px; font-size:12px; margin-top:18px; }
+.manual-location { font-size:12px; margin-top:20px; color:var(--muted); }
+.manual-location summary { cursor:pointer; padding-block:8px; }
+.manual-location form { margin-top:8px; }
+.location-account > svg { color:var(--accent); margin-bottom:14px; }
+.location-account .text-action { display:flex; }
+.clear-location { font-size:11px; text-decoration:underline; color:var(--muted); padding:8px 0; margin-top:10px; }
+.quran-introduction { display:flex; gap:17px; align-items:center; background:var(--surface-soft); border-radius:8px; padding:24px; }
+.quran-introduction strong { font-family:var(--serif); font-size:25px; font-weight:450; }
+.quran-introduction p { font-size:11px; color:var(--muted); margin-top:7px; }
+.quran-introduction > span { display:flex; gap:9px; font-size:11px; margin-inline-start:auto; white-space:nowrap; color:var(--accent); }
+.quran-search { margin-top:25px; }
+.surah-catalogue { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:34px; margin-top:15px; }
+.surah-row { display:flex; align-items:center; gap:13px; padding:22px 0; min-width:0; min-height:99px; border-bottom:1px solid var(--border); }
+.surah-row > span:nth-child(2) { display:flex; flex-direction:column; gap:8px; }
+.surah-row strong { font-family:var(--serif); font-size:23px; font-weight:450; }
+.surah-row small { font-size:10px; color:var(--muted); line-height:1.7; }
+.surah-arabic { margin-inline-start:auto; font-family:'Amiri',serif; font-size:24px; color:var(--accent); }
+.surah-row > svg { width:13px; color:var(--muted); }
+.surah-row:hover strong { color:var(--accent); text-decoration:underline; }
+.quran-reader-heading { margin-top:25px; }
+.quran-reader-heading h1 { font-size:45px; }
+.quran-reader-toolbar { display:flex; align-items:center; gap:20px; border-block:1px solid var(--border); padding:12px 0; }
+.quran-reader-toolbar > label { display:flex; gap:10px; align-items:center; font-size:11px; }
+.quran-reader-toolbar select { background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:5px; padding-inline:10px; font-size:12px; max-width:220px; }
+.quran-reader-toolbar > button { display:flex; align-items:center; gap:9px; margin-inline-start:auto; font-size:12px; padding-inline:8px; }
+.translation-toggle-mark { color:var(--muted); font-size:10px; padding:3px 6px; border-radius:4px; background:var(--surface-soft); }
+.quran-reader-toolbar > button[aria-pressed='true'] .translation-toggle-mark { color:var(--bg); background:var(--accent); }
+.quran-edition { font-size:10px; color:var(--muted); margin-top:18px; line-height:1.8; }
+.quran-ayahs { max-width:880px; margin:auto; }
+.quran-ayah { padding:32px 0; border-bottom:1px solid var(--border); scroll-margin-top:25px; }
+.quran-ayah > header { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:10px; color:var(--muted); }
+.quran-ayah > header a { padding:6px 10px; min-width:40px; background:var(--surface-soft); color:var(--accent-strong); border-radius:5px; }
+.quran-arabic { font-family:'Amiri',serif; font-size:34px; line-height:2.2; margin:20px 0 18px; }
+.quran-translation > p { font-family:var(--serif); font-size:21px; font-weight:390; line-height:1.8; white-space:pre-line; }
+.quran-translation details { color:var(--muted); margin-top:15px; font-size:12px; }
+.quran-translation summary { cursor:pointer; padding:8px 0; }
+.quran-translation details p { font-size:13px; line-height:1.9; white-space:pre-line; padding-top:12px; }
+.quran-pagination { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:23px 0; font-size:11px; }
+.quran-pagination button { display:flex; gap:8px; align-items:center; }
+.quran-pagination > span { color:var(--muted); }
+.quran-surah-navigation { display:flex; align-items:center; justify-content:space-between; gap:20px; border-top:1px solid var(--border); padding:20px 0; }
+.quran-surah-navigation a { display:flex; align-items:center; gap:10px; font-size:12px; min-height:44px; }
+.quran-surah-navigation a:last-child { margin-inline-start:auto; }
+.reminder-layout { display:grid; grid-template-columns:1.5fr 1fr; gap:45px; }
+.reminder-option { display:flex; align-items:center; gap:17px; min-height:115px; padding:21px 0; border-bottom:1px solid var(--border); }
+.reminder-option > svg { color:var(--accent); }
+.reminder-option > div { flex:1; }
+.reminder-option h2 { font-family:var(--serif); font-size:26px; font-weight:450; }
+.reminder-option p { font-size:12px; color:var(--muted); margin-top:8px; }
+.reminder-option a { display:inline-block; text-decoration:underline; font-size:11px; margin-top:9px; }
+.reminder-option input[role='switch'] { width:35px; height:22px; accent-color:var(--accent); flex-shrink:0; cursor:pointer; }
+.reminder-time-settings { padding:30px 0; }
+.reminder-time-settings > h2,.upcoming-reminders h2 { font-family:var(--serif); font-size:28px; font-weight:450; margin-bottom:18px; }
+.reminder-time-settings > p { font-size:11px; color:var(--muted); }
+.reminder-time-pair { display:flex; align-items:center; gap:22px; padding-bottom:13px; }
+.reminder-time-pair > .field-label { flex:1; margin:0; }
+.reminder-time-pair > div { flex:1; }
+.reminder-time-pair > div > span { display:block; font-size:12px; margin-bottom:14px; }
+.reminder-time-pair strong { font-family:var(--serif); font-size:29px; font-weight:450; }
+.reminder-time-pair small { font-family:inherit; font-size:11px; color:var(--muted); margin-inline-start:8px; }
+.notification-devices { background:var(--surface-soft); padding:28px; border-radius:10px; align-self:start; }
+.notification-devices > svg { color:var(--accent); }
+.notification-devices h2 { font-family:var(--serif); font-size:29px; font-weight:450; margin-top:20px; }
+.notification-devices > p { color:var(--muted); font-size:12px; margin-top:15px; }
+.notification-devices .outlined-action { width:100%; }
+.notification-devices .text-action { margin-top:12px; }
+.notification-devices h3 { font-weight:550; font-size:13px; padding-top:25px; margin-top:23px; border-top:1px solid var(--border); }
+.device-row { display:flex; align-items:center; gap:15px; border-bottom:1px solid var(--border); padding:16px 0; font-size:12px; }
+.device-row > span { display:flex; flex-direction:column; gap:7px; }
+.device-row small { font-size:10px; color:var(--muted); }
+.device-row button { margin-inline-start:auto; }
+.upcoming-reminders { margin-top:40px; padding-top:27px; border-top:1px solid var(--border); max-width:650px; }
+.upcoming-reminders > div { display:flex; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid var(--border); padding:16px 0; font-size:12px; }
+.upcoming-reminders time { color:var(--muted); }
+.account-invitation { text-align:center; padding:75px 30px; background:var(--surface-soft); border-radius:10px; }
+.account-invitation h2 { font-family:var(--serif); font-size:35px; font-weight:450; margin:20px 0 15px; }
+.account-invitation p { font-size:13px; color:var(--muted); max-width:52ch; margin:auto; }
+.account-invitation .primary-action { margin-top:25px; }
+.auth-layout { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:60px; }
+.auth-form-panel { max-width:460px; }
+.auth-form-panel h2 { font-family:var(--serif); font-size:32px; font-weight:450; }
+.auth-form-panel > p { font-size:12px; color:var(--muted); margin-top:13px; }
+.auth-tabs { display:flex; border-bottom:1px solid var(--border); gap:28px; margin:25px 0; }
+.auth-tabs button { position:relative; font-size:12px; min-height:46px; padding:0 0 14px; color:var(--muted); }
+.auth-tabs button[aria-pressed='true'] { color:var(--text); }
+.auth-tabs button[aria-pressed='true']:after { content:''; background:var(--accent); height:2px; position:absolute; bottom:-1px; inset-inline:0; }
+.account-form .primary-action { width:100%; margin-top:9px; }
+.password-input { position:relative; display:flex; align-items:center; }
+.password-input input { padding-inline-end:45px; }
+.password-input button { position:absolute; inset-inline-end:2px; width:40px; color:var(--muted); }
+.auth-provider-note,.local-mail-note { font-size:11px !important; color:var(--muted); line-height:1.9; margin-top:24px !important; }
+.local-mail-note { display:flex; align-items:flex-start; gap:9px; border-top:1px solid var(--border); padding-top:18px; }
+.local-mail-note > svg { margin-top:4px; }
+.auth-or { display:flex; justify-content:center; color:var(--muted); font-size:11px; margin:20px 0; }
+.google-action { width:100%; }
+.account-principles { background:var(--surface-soft); padding:35px; border-radius:10px; align-self:start; }
+.account-principles > svg { color:var(--accent); }
+.account-principles h2 { font-family:var(--serif); font-size:34px; font-weight:450; line-height:1.15; margin:25px 0 20px; }
+.account-principles ul { padding-inline-start:18px; font-size:12px; line-height:2; color:var(--muted); }
+.account-principles li { padding:6px 0; }
+.profile-panel { display:flex; align-items:center; gap:20px; padding:25px; border-radius:9px; background:var(--surface-soft); }
+.profile-initial { width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-size:35px; border:1px solid var(--border); }
+.profile-panel h2 { font-family:var(--serif); font-size:29px; font-weight:450; }
+.profile-panel p { font-size:13px; color:var(--muted); overflow-wrap:anywhere; }
+.profile-panel > div > span { display:block; margin-top:8px; color:var(--accent); font-size:10px; }
+.profile-panel button { margin-inline-start:auto; }
+.account-consent-update { padding:25px 0; border-bottom:1px solid var(--border); }
+.account-consent-update h2 { font-family:var(--serif); font-size:29px; font-weight:450; }
+.account-consent-update p { font-size:13px; margin-top:12px; }
+.data-inventory { padding:35px 0; }
+.data-inventory h2 { font-family:var(--serif); font-weight:450; font-size:31px; }
+.data-inventory dl { margin-top:23px; }
+.data-inventory dl > div { display:grid; grid-template-columns:180px 1fr; gap:23px; padding:19px 0; border-bottom:1px solid var(--border); }
+.data-inventory dt { margin:0; font-size:12px; font-weight:550; }
+.data-inventory dd { margin:0; font-size:12px; }
+.data-inventory dd a { text-decoration:underline; }
+.data-inventory details { margin-top:10px; font-size:11px; }
+.data-inventory summary { cursor:pointer; padding-block:8px; }
+.data-inventory details p { margin-top:10px; }
+.data-inventory .outlined-action { margin-top:10px; }
+.owner-console-link { display:flex; gap:17px; padding:23px; align-items:center; background:var(--surface-soft); border-radius:8px; }
+.owner-console-link > span { display:flex; flex-direction:column; gap:9px; }
+.owner-console-link strong { font-family:var(--serif); font-size:25px; font-weight:450; }
+.owner-console-link small { font-size:11px; color:var(--muted); }
+.delete-account { border-top:1px solid var(--border); padding-top:23px; margin-top:35px; max-width:650px; }
+.delete-account summary { color:var(--danger); display:flex; align-items:center; gap:9px; cursor:pointer; font-size:12px; min-height:44px; }
+.delete-account p { font-size:12px; color:var(--muted); margin-top:16px; }
+.danger-action { color:var(--surface); background:var(--danger); border-radius:6px; padding:10px 18px; font-size:12px; }
+.danger-text { color:var(--danger); }
+.owner-summary { display:flex; gap:45px; padding:25px 0; border-block:1px solid var(--border); margin-bottom:24px; }
+.owner-summary > span { display:flex; align-items:baseline; gap:12px; font-size:12px; color:var(--muted); }
+.owner-summary strong { font-family:var(--serif); font-size:33px; color:var(--text); font-weight:450; }
+.owner-tools { display:flex; align-items:center; gap:15px; }
+.owner-tools .field-label { flex:1; }
+.owner-table-wrap { width:100%; overflow-x:auto; border:1px solid var(--border); border-radius:8px; margin-top:10px; }
+.owner-table { border-collapse:collapse; width:100%; min-width:660px; font-size:12px; }
+.owner-table th { text-align:start; background:var(--surface-soft); color:var(--muted); font-weight:500; font-size:11px; padding:16px; }
+.owner-table td { border-top:1px solid var(--border); padding:19px 16px; vertical-align:top; }
+.owner-table td strong,.owner-table td span,.owner-table td small { display:block; overflow-wrap:anywhere; }
+.owner-table td strong { font-weight:550; }
+.owner-table td span { margin-top:6px; }
+.owner-table td small { font-size:10px; color:var(--muted); margin-top:7px; }
+.privacy-page h2 { font-family:var(--serif); font-size:28px; font-weight:450; margin:30px 0 14px; }
+.privacy-page p,.privacy-page li { font-size:13px; line-height:1.95; color:var(--muted); }
+.privacy-page a { text-decoration:underline; }
+.privacy-inventory { border-collapse:collapse; width:100%; font-size:12px; }
+.privacy-inventory th { text-align:start; padding:15px 10px; font-weight:550; background:var(--surface-soft); }
+.privacy-inventory td { border-bottom:1px solid var(--border); padding:17px 10px; vertical-align:top; line-height:1.9; }
+.privacy-inventory td:first-child { font-weight:550; }
+html[lang='ur'] .feature-heading h1,html[lang='ur'] .feature-page h2 { font-family:'Noto Nastaliq Urdu',serif; line-height:2.2; font-size:29px; }
+html[lang='ur'] .feature-heading p,html[lang='ur'] .feature-page label,html[lang='ur'] .feature-page small { line-height:2.5; }
+@media (max-width:1200px) { .feature-page { padding:35px 30px; } .prayer-workspace { gap:25px; grid-template-columns:1.25fr 1fr; } .prayer-options { padding-inline-start:22px; } .reminder-layout { gap:28px; } .auth-layout { gap:35px; } .next-prayer > svg { display:none; } .next-prayer { padding:24px; } .next-prayer > span { font-size:23px; } .workspace-navigation a { gap:8px; padding-inline:10px; font-size:12px; } .workspace-navigation a > span { white-space:nowrap; } .sidebar-note { margin-top:25px; margin-bottom:20px; } }
+@media (max-width:1000px) and (min-width:701px) { .workspace-navigation { margin-top:45px; } .workspace-navigation a { width:48px; padding:0; } .workspace-sidebar { align-items:center; } }
+@media (max-width:900px) { .feature-page { padding:30px 28px; } .prayer-workspace { grid-template-columns:1fr; } .prayer-options { border:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:25px; } .prayer-options .location-account { grid-column:1/-1; } .prayer-options section { margin-bottom:0; } .reminder-layout { grid-template-columns:1fr; } .notification-devices { max-width:unset; } .auth-layout { grid-template-columns:1fr; } .auth-form-panel { max-width:unset; } .account-principles { padding:30px; } .surah-catalogue { gap:0 24px; } .surah-row { gap:9px; } .surah-row strong { font-size:21px; } .surah-arabic { font-size:22px; } .surah-row > svg { display:none; } .owner-summary { gap:25px; } .owner-summary > span { font-size:11px; flex-direction:column; gap:7px; } .quran-reader-toolbar { gap:12px; flex-wrap:wrap; } .quran-reader-toolbar > button { font-size:11px; } }
+@media (max-width:700px) { .feature-page { padding:29px 22px 30px; } .feature-heading { align-items:flex-start; gap:15px; margin-bottom:26px; } .feature-heading h1 { font-size:34px; line-height:1.15; } .feature-heading p { font-size:12px; line-height:1.9; margin-top:12px; } .feature-heading-script { font-size:29px; line-height:1.8; } .feature-heading > svg { width:28px; margin-top:6px; } .mobile-floating-navigation { display:flex; align-items:center; justify-content:space-around; gap:2px; position:fixed; inset-inline:18px; bottom:calc(15px + env(safe-area-inset-bottom)); z-index:40; height:68px; padding:5px 7px; border-radius:16px; background:#303b2f; color:#cdd5c1; box-shadow:0 8px 30px #18221730; } .mobile-floating-navigation > a,.mobile-floating-navigation > button { display:flex; align-items:center; justify-content:center; flex-direction:column; gap:6px; width:20%; min-width:44px; min-height:54px; font-size:9px; border-radius:10px; color:inherit; } .mobile-floating-navigation .active { background:#515e45; color:#fffbea; } .mobile-floating-navigation > button:hover { background:#46533e; } .workspace-body { padding-bottom:calc(99px + env(safe-area-inset-bottom)); } .reader-focus .mobile-floating-navigation { display:none; } .reader-focus .workspace-body { padding-bottom:0; } .workspace-topbar-actions { gap:0; } .workspace-topbar { gap:5px; padding-inline:13px; } .settings-language-control button { min-width:34px; } .account-topbar-link { width:30px; } .workspace-breadcrumb { gap:3px; font-size:11px; } .workspace-topbar .display-button { width:31px; } .prayer-options { grid-template-columns:1fr; gap:23px; } .prayer-workspace { gap:25px; } .prayer-place { flex-wrap:wrap; font-size:12px; gap:8px; } .prayer-place > span { font-size:10px; } .prayer-time-list > div { padding:18px 9px; gap:12px; min-height:80px; } .prayer-time-list strong { font-size:13px; } .prayer-time-list time { min-width:84px; font-size:24px; } .prayer-arabic { font-size:22px; } .prayer-time-list > div > svg { width:20px; } .next-prayer { padding:23px; margin-top:20px; } .next-prayer h2 { font-size:33px; } .next-prayer > span { font-size:28px; } .prayer-date { font-size:11px; } .prayer-date input { font-size:12px; } .prayer-empty { padding:43px 15px; } .field-label input,.field-label select { font-size:16px; } .field-label { font-size:12px; } .field-label select { min-height:48px; } .quran-introduction { flex-wrap:wrap; padding:22px; gap:13px; } .quran-introduction > span { margin-inline-start:37px; font-size:11px; } .quran-introduction strong { font-size:26px; } .quran-introduction p { font-size:10px; } .surah-catalogue { grid-template-columns:1fr; } .surah-row { gap:14px; min-height:96px; } .surah-row strong { font-size:24px; } .surah-row small { font-size:11px; } .surah-arabic { font-size:26px; } .quran-search input { font-size:16px; } .quran-search input::placeholder { font-size:11px; } .quran-reader-toolbar { gap:10px; justify-content:space-between; } .quran-reader-toolbar label { font-size:10px; gap:6px; } .quran-reader-toolbar select { font-size:14px; max-width:170px; padding-inline:7px; } .quran-reader-toolbar > button { margin-inline-start:0; flex-basis:100%; justify-content:center; background:var(--surface-soft); border-radius:5px; } .quran-edition { font-size:10px; } .quran-ayah { padding-block:26px; } .quran-arabic { font-size:30px; line-height:2.2; } .quran-translation > p { font-size:20px; } .quran-reader-heading .feature-heading-script { font-size:33px; } .quran-pagination { font-size:11px; } .quran-pagination button { gap:5px; } .reminder-option { gap:13px; padding-block:22px; } .reminder-option h2 { font-size:25px; } .reminder-option p { font-size:12px; } .reminder-option > svg { width:21px; } .notification-devices { padding:25px 23px; } .reminder-time-pair { gap:15px; } .account-invitation { padding:50px 23px; } .account-invitation h2 { font-size:31px; } .account-invitation p { font-size:12px; } .auth-layout { gap:30px; } .account-principles { padding:27px; } .account-principles h2 { font-size:31px; } .auth-form-panel h2 { font-size:31px; } .consent-check { font-size:12px; } .profile-panel { flex-wrap:wrap; padding:22px; gap:15px; } .profile-panel > div:nth-child(2) { width:calc(100% - 80px); } .profile-panel h2 { font-size:26px; } .profile-panel p { font-size:11px; } .profile-panel .outlined-action { margin-inline-start:79px; } .data-inventory dl > div { grid-template-columns:1fr; gap:9px; padding-block:21px; } .data-inventory dd { font-size:12px; } .data-inventory h2 { font-size:29px; } .owner-tools { flex-wrap:wrap; gap:9px; } .owner-tools .field-label { flex-basis:calc(100% - 60px); } .owner-summary { gap:25px; justify-content:space-between; } .owner-summary > span { font-size:10px; } .owner-summary strong { font-size:31px; } .privacy-inventory { font-size:11px; } .privacy-inventory th,.privacy-inventory td { padding:13px 8px; } .privacy-page p { font-size:12px; } html[lang='ur'] .mobile-floating-navigation { height:75px; } html[lang='ur'] .mobile-floating-navigation a,html[lang='ur'] .mobile-floating-navigation button { font-size:9px; gap:1px; line-height:2.4; } html[lang='ur'] .feature-heading h1 { font-size:27px; } html[lang='ur'] .feature-heading-script { font-size:25px; } }
+@media (max-width:370px) { .feature-page { padding-inline:17px; } .mobile-floating-navigation { inset-inline:12px; padding-inline:5px; } .feature-heading-script { font-size:25px; } .feature-heading h1 { font-size:31px; } .prayer-time-list time { font-size:23px; min-width:80px; } .prayer-arabic { font-size:19px; } .prayer-place > span { flex-basis:100%; margin-inline-start:27px; } .quran-reader-toolbar select { max-width:154px; font-size:13px; } .surah-arabic { font-size:24px; } .reminder-option > svg { display:none; } .profile-panel .outlined-action { margin-inline-start:0; } .workspace-breadcrumb { font-size:10px; } }

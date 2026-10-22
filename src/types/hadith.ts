@@ -5,6 +5,8 @@ export type DatasetMetadata = {
   contributorRole: 'editor' | 'translator'
   license: string
   dateRetrieved: string
+  version?: string
+  coverage?: 'partial' | 'complete'
 }
 
 export type HadeethEncRecord = {
@@ -24,7 +26,7 @@ export type HadeethEncRecord = {
   [key: string]: unknown
 }
 
-export type Translation = { text: string; raw?: HadeethEncRecord; language?: string }
+export type Translation = { text: string; raw?: HadeethEncRecord; language?: string; sourceUrl?: string }
 
 export type HadithGrade = {
   grader: string

@@ -27,3 +27,11 @@ scripts/source-data/real/
 /android/app-release*.aab
 /android/app-release*.apk
 /android/service-account*.json
+
+# Private accounts, auth secrets, GPS data, mail and push credentials.
+/.data/
+/server/.env.local
+/backend-test-data/
+!/server/.env.example
+
+/.server-dist/

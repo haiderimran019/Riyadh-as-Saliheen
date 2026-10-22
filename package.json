@@ -5,17 +5,27 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run data:validate && tsc -b && vite build",
+    "build": "npm run data:validate && tsc -b && vite build && vite build --ssr src/entry-server.tsx --outDir .server-dist --emptyOutDir",
     "preview": "vite preview",
     "test": "vitest run",
     "test:overflow": "playwright test e2e/overflow.e2e.ts",
     "data:fetch:hadeethenc": "node scripts/fetch-hadeethenc.mjs",
     "data:import:riyad": "node scripts/import-islamenc-riyad.mjs",
+    "data:import:urdu": "node scripts/import-riyad-urdu.mjs",
     "data:import:quran-day": "node scripts/import-quranenc-daily.mjs",
     "data:validate": "node scripts/validate-data.mjs",
     "typecheck": "tsc -b --pretty false",
     "lint": "node scripts/check-boundaries.mjs",
-    "verify": "npm run typecheck && npm run lint && npm test && npm run data:validate && npm run build && npm run test:overflow"
+    "verify": "npm run typecheck && npm run lint && npm test && npm run data:validate && npm run build && npm run test:overflow",
+    "dev:reader": "node scripts/dev-reader.mjs",
+    "server": "node server/index.mjs",
+    "start": "NODE_ENV=production node server/index.mjs",
+    "data:import:quran": "node scripts/import-quran-reader.mjs",
+    "test:backend": "node --test server/api.test.mjs server/scheduler.test.mjs",
+    "mail:latest": "node scripts/owner-tools.mjs mail",
+    "owner:grant": "node scripts/owner-tools.mjs grant",
+    "build:server": "VITE_DATA_MODE=real VITE_BASE_PATH=/ npm run build",
+    "test:ssr": "node --test server/rendering.test.mjs"
   },
   "dependencies": {
     "@fontsource-variable/manrope": "^5.3.0",
@@ -26,12 +36,18 @@
     "@fontsource/noto-sans-devanagari": "^5.3.0",
     "@fontsource/noto-serif-kr": "^5.3.0",
     "@tanstack/react-virtual": "^3.13.12",
+    "adhan": "4.4.6",
+    "better-auth": "1.7.12",
     "dexie": "^4.2.0",
+    "express": "5.3.0",
     "lucide-react": "^0.468.0",
+    "luxon": "3.7.2",
     "minisearch": "^7.1.2",
+    "nodemailer": "10.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.1"
+    "react-router-dom": "^7.1.1",
+    "web-push": "3.6.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
@@ -43,8 +59,11 @@
     "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^25.0.1",
     "typescript": "~5.7.2",
-    "vite": "^6.0.5",
-    "vitest": "^2.1.8",
+    "vite": "6.4.5",
+    "vitest": "4.1.12",
     "zod": "^4.6.5"
+  },
+  "engines": {
+    "node": ">=22.13.0"
   }
 }

@@ -1,16 +1,14 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { createRoot,hydrateRoot } from 'react-dom/client'
+import { BootProvider,readBootData } from './ssr/BootData'
 import { BrowserRouter } from 'react-router-dom'
 import { App } from './App'
 import '@fontsource/noto-nastaliq-urdu/400.css'
 import './styles.css'
-import './edition.css'
-import './gravitas.css'
+import './features.css'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <App />
-    </BrowserRouter>
-  </StrictMode>,
-)
+const root=document.getElementById('root')!
+const data=readBootData()
+const app=<StrictMode><BrowserRouter basename={import.meta.env.BASE_URL}><BootProvider data={data}><App/></BootProvider></BrowserRouter></StrictMode>
+if(data.pathname && root.children.length)hydrateRoot(root,app)
+else createRoot(root).render(app)

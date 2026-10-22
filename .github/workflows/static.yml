@@ -1,8 +1,6 @@
-name: Deploy Vite site to Pages
+name: Legacy static reader (manual only)
 
 on:
-  push:
-    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -27,7 +25,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
@@ -38,6 +36,9 @@ jobs:
 
       - name: Import versioned QuranEnc daily verse data
         run: npm run data:import:quran-day
+
+      - name: Import verified Urdu matching narrations
+        run: npm run data:import:urdu
 
       - name: Build the real-data project site
         env:
