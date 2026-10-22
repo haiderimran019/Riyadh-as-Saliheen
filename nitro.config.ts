@@ -20,6 +20,6 @@ export default defineNitroConfig({
   })
  }],
  routes:{'/**':{handler:'./server/cloud.mjs',format:'node'}},
- publicAssets:[{dir:resolve('dist'),ignore:['index.html','404.html'],maxAge:3600}],
+ publicAssets:[{dir:resolve('dist'),ignore:['**/index.html','**/404.html'],maxAge:3600}],
  vercel:{entryFormat:'node',functions:{runtime:'nodejs22.x',regions:['sin1'],maxDuration:60},config:{version:3,crons:[{path:'/api/internal/reconcile',schedule:'15 0 * * *'}]}},
 })

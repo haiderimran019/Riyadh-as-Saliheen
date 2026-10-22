@@ -17,3 +17,4 @@ for(const [file,script,args] of [
 command('npm',['run','build:server'])
 if(process.env.VERCEL_ENV==='production')command(process.execPath,['scripts/cloud-migrate.mjs'])
 command('npx',['--no-install','nitro','build'])
+if(existsSync('.vercel/output/static/index.html'))throw new Error('The home page must pass through server rendering and its security headers, rather than a static HTML fallback.')
