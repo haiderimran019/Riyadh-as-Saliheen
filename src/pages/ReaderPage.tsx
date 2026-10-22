@@ -17,11 +17,10 @@ export function ReaderPage() {
   const { collectionId = '', chapterId = '' } = useParams()
   const location = useLocation(), navigate = useNavigate()
   const [collection, setCollection] = useState<CollectionIndex | null>(boot.collection || null)
-  const [chapter, setChapter] = useState<ArabicChapterDataset | null>(boot.chapter || null)
+  const [chapterData, setChapter] = useState<ArabicChapterDataset | null>(boot.chapter || null)
   const [translation, setTranslation] = useState<TranslationChapterDataset | null>(boot.translation || null)
   const [showDiacritics, setShowDiacritics] = useState(true)
   const [arabicSize, setArabicSize] = useState(32)
-  const [activeIndex, setActiveIndex] = useState(()=>Math.max(0,boot.chapter?.records.findIndex(x=>x.id===boot.hadithId)??0))
   const [chaptersOpen, setChaptersOpen] = useState(false)
   const [chapterQuery, setChapterQuery] = useState('')
   const [layout, setLayout] = useState<'parallel' | 'arabic' | 'translation'>('parallel')
@@ -32,6 +31,10 @@ export function ReaderPage() {
   const chapterIndex = useMemo(() => collection?.chapters.find((item) => item.id === chapterId), [collection, chapterId])
   const ordinal = collection?.chapters.findIndex((item) => item.id === chapterId) ?? -1
   const previousChapter = collection?.chapters[ordinal - 1], nextChapter = collection?.chapters[ordinal + 1]
+  const chapter = chapterData?.records[0]?.chapter === chapterId ? chapterData : null
+  let targetId = new URLSearchParams(location.search).get('hadith') || ''
+  try { targetId = decodeURIComponent(location.hash.slice(1)) || targetId } catch { /* Keep the query target if the fragment is malformed. */ }
+  const activeIndex = Math.max(0, chapter?.records.findIndex(item => item.id === targetId) ?? 0)
   const record = chapter?.records[activeIndex]
   useEffect(() => {
     let active = true
@@ -43,7 +46,7 @@ export function ReaderPage() {
     if (!collection) return
     if (!chapterIndex) { setLoading(false); setError('This chapter could not be found. Choose another chapter from the collection.'); return }
     let active = true
-    setError(''); if(boot.chapterId!==chapterId||retry){setLoading(true);setChapter(null);setActiveIndex(0)} setChaptersOpen(false)
+    setError(''); if(boot.chapterId!==chapterId||retry){setLoading(true);setChapter(null)} setChaptersOpen(false)
     void hadithRepository.getChapter(collectionId, chapterIndex.file).then((value) => { if (active) setChapter(value) }).catch(() => { if (active) setError('This chapter could not be loaded. Check your connection and try again.') }).finally(() => { if (active) setLoading(false) })
     return () => { active = false }
   }, [collection, chapterIndex, collectionId, retry])
@@ -52,13 +55,6 @@ export function ReaderPage() {
     if (chapterIndex && collection?.languages.includes(language)) void hadithRepository.getTranslation(language, collectionId, chapterIndex.file).then((value) => { if (active) setTranslation({ ...value, translations: Object.fromEntries(Object.entries(value.translations).map(([id, item]) => [id, { ...item, language }])) }) }).catch(() => undefined)
     return () => { active = false }
   }, [chapterIndex, collectionId, collection, language])
-  useEffect(() => {
-    if (!chapter) return
-    let targetId = ''
-    try { targetId = decodeURIComponent(location.hash.slice(1)) || new URLSearchParams(location.search).get('hadith') || '' } catch { /* Invalid fragments open the first passage. */ }
-    const index = chapter.records.findIndex((item) => item.id === targetId)
-    setActiveIndex(index >= 0 ? index : 0)
-  }, [chapter, location.hash, location.search])
   useEffect(() => {
     if (record && record.chapter === chapterId) void db.progress.put({ collectionId, chapterId, hadithId: record.id, updatedAt: Date.now() }).catch(() => undefined)
   }, [record, collectionId, chapterId])
