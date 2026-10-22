@@ -3,15 +3,15 @@ import { useBootData,type QuranIndex,type QuranSura as Sura } from '../ssr/BootD
 import { ArrowLeft,ArrowRight,ArrowUpRight,BookOpen,ChevronLeft,ChevronRight,Languages,Search } from 'lucide-react'
 import { Link,useParams,useSearchParams } from 'react-router-dom'
 import { useI18n } from '../i18n'
-import { api } from '../services/api'
+import { quranIndex,quranSurah } from '../services/reading'
 import { getSetting,setSetting } from '../data/db'
 export function QuranPage(){
   const boot=useBootData()
   const {t}=useI18n(),{surah}=useParams(),[params,setParams]=useSearchParams()
   const [index,setIndex]=useState<QuranIndex|null>(boot.quranIndex || null),[dataset,setDataset]=useState<Sura|null>(boot.quranSurah || null),[query,setQuery]=useState(''),[english,setEnglish]=useState(true),[error,setError]=useState(''),[retry,setRetry]=useState(0),[loading,setLoading]=useState(!boot.quranSurah)
   const id=Number(surah),chapter=index?.chapters.find(x=>x.id===id),requested=Math.min(chapter?.count||286,Math.max(1,parseInt(params.get('ayah')||'1',10)||1)),pageStart=Math.floor((requested-1)/10)*10
-  useEffect(()=>{let active=true;void api<QuranIndex>('/quran').then(x=>{if(active)setIndex(x)}).catch(e=>{if(active)setError(e.message)});void getSetting('quran-english',true).then(x=>{if(active)setEnglish(x)});return()=>{active=false}},[retry])
-  useEffect(()=>{setError('');if(!surah){setLoading(false);return}let active=true;if(boot.pathname!==`/quran/${surah}`||retry){setDataset(null);setLoading(true)}void api<Sura>(`/quran/${surah}`).then(x=>{if(active)setDataset(x)}).catch(e=>{if(active)setError(e.message)}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[surah,retry])
+  useEffect(()=>{let active=true;void quranIndex().then(x=>{if(active)setIndex(x)}).catch(e=>{if(active)setError(e.message)});void getSetting('quran-english',true).then(x=>{if(active)setEnglish(x)});return()=>{active=false}},[retry])
+  useEffect(()=>{setError('');if(!surah){setLoading(false);return}let active=true;if(boot.pathname!==`/quran/${surah}`||retry){setDataset(null);setLoading(true)}void quranSurah(Number(surah)).then(x=>{if(active)setDataset(x)}).catch(e=>{if(active)setError(e.message)}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[surah,retry])
   useEffect(()=>{if(dataset){void setSetting('quran-last-surah',id);const element=document.getElementById(`ayah-${requested}`);element?.scrollIntoView({block:'start'})}},[dataset,requested,id])
   const visible=index?.chapters.filter(x=>`${x.id} ${x.name} ${x.arabic} ${x.meaning}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))||[]
   const jump=(ayah:number)=>{setParams({ayah:String(ayah)});window.scrollTo({top:0,behavior:'instant'})}

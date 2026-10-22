@@ -26,7 +26,8 @@ export function App() { return <AppLocaleProvider><AccountProvider><AppShell /><
 function AppShell() {
   const { t } = useI18n()
   const { account } = useAccount()
-  const location = useLocation()
+  const routeLocation = useLocation()
+  const location = {...routeLocation,pathname:routeLocation.pathname.replace(/\/+$/,'')||'/'}
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -40,6 +41,7 @@ function AppShell() {
   useEffect(() => {
     const media = window.matchMedia('(max-width:700px)')
     const update = () => { setIsMobile(media.matches); if (!media.matches) setMenuOpen(false) }
+    update()
     media.addEventListener('change', update)
     return () => media.removeEventListener('change', update)
   }, [])

@@ -17,7 +17,7 @@ const buckets=new Map()
 app.use('/api',(req,res,next)=>{
   if(Number(req.headers['content-length']||0)>32768)return res.status(413).json({error:'This request is too large.'})
   if(!['GET','HEAD','OPTIONS'].includes(req.method)&&req.headers.origin!==config.origin)return res.status(403).json({error:'This request did not come from this reading app.'})
-  const ip=req.socket.remoteAddress||'local',sensitive=/^\/auth\/(sign-in|sign-up|request-password-reset)/.test(req.path),key=sensitive?`${ip}:${req.path}`:ip,now=Date.now(),bucket=buckets.get(key),limit=sensitive?10:(config.production?200:1200)
+  const ip=req.socket.remoteAddress||'local',sensitive=/^\/auth\/(sign-in|sign-up|request-password-reset|send-verification-email)/.test(req.path),key=sensitive?`${ip}:${req.path}`:ip,now=Date.now(),bucket=buckets.get(key),limit=sensitive?10:(config.production?200:1200)
   if(bucket&&bucket.until>now){if(++bucket.count>limit)return res.status(429).json({error:'Please wait a minute before trying again.'})}else buckets.set(key,{until:now+60000,count:1})
   if(buckets.size>5000)for(const [k,v]of buckets)if(v.until<now)buckets.delete(k)
   next()

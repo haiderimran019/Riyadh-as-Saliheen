@@ -25,7 +25,10 @@
     "mail:latest": "node scripts/owner-tools.mjs mail",
     "owner:grant": "node scripts/owner-tools.mjs grant",
     "build:server": "VITE_DATA_MODE=real VITE_BASE_PATH=/ npm run build",
-    "test:ssr": "node --test server/rendering.test.mjs"
+    "test:ssr": "node --test server/rendering.test.mjs",
+    "build:pages": "VITE_STATIC_READING=true VITE_DATA_MODE=real VITE_BASE_PATH=/Riyadh-as-Saliheen/ npm run build && node scripts/prerender-pages.mjs",
+    "mail:verify": "node scripts/owner-tools.mjs verify",
+    "test:pages": "node --test server/static-pages.test.mjs"
   },
   "dependencies": {
     "@fontsource-variable/manrope": "^5.3.0",

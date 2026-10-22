@@ -5,6 +5,24 @@ import { APP_EVENTS } from './core/appEvents'
 export type AppLanguage = 'en' | 'ur'
 
 const urdu: Record<string, string> = {
+  'Your account is waiting for verification.':'آپ کا اکاؤنٹ تصدیق کا منتظر ہے۔',
+  'You do not need to create it again. Verify your email, then sign in with your password.':'اکاؤنٹ دوبارہ بنانے کی ضرورت نہیں۔ ای میل کی تصدیق کریں، پھر اپنے پاس ورڈ سے داخل ہوں۔',
+  'This local preview does not send email to your inbox.':'یہ مقامی پیش منظر آپ کے ان باکس میں ای میل نہیں بھیجتا۔',
+  'Open Terminal in the Riyad repository and run this command. It opens your verification link privately in your browser.':'ریاض کے فولڈر میں ٹرمینل کھول کر یہ کمانڈ چلائیں۔ تصدیق کا نجی لنک آپ کے براؤزر میں کھلے گا۔',
+  'Copy verification command':'تصدیق کی کمانڈ کاپی کریں',
+  'Resend verification email':'تصدیقی ای میل دوبارہ بھیجیں', 'Back to sign in':'واپس داخل ہوں',
+  'Already registered but not verified?':'اکاؤنٹ بن چکا ہے مگر تصدیق باقی ہے؟',
+  'Open the verification message in your inbox. Check spam too, or request a new message below.':'اپنے ان باکس میں تصدیقی پیغام کھولیں۔ اسپیم بھی دیکھیں یا نیچے نیا پیغام منگوائیں۔',
+  'Account created. Open your local verification link to finish.':'اکاؤنٹ بن گیا۔ مکمل کرنے کے لیے مقامی تصدیقی لنک کھولیں۔',
+  'Account created. Check your email to finish verification.':'اکاؤنٹ بن گیا۔ تصدیق کے لیے اپنی ای میل دیکھیں۔',
+  'A new verification link is ready in your private local outbox.':'آپ کے نجی مقامی آؤٹ باکس میں نیا تصدیقی لنک تیار ہے۔',
+  'If verification is needed for this email, a new message has been requested.':'اگر اس ای میل کی تصدیق باقی ہے تو نیا پیغام منگوا دیا گیا ہے۔',
+  'Reading is open to everyone.':'مطالعہ سب کے لیے دستیاب ہے۔',
+  'Hadith, Quran, bookmarks and prayer times are available here without an account.':'حدیث، قرآن، محفوظ مطالعہ اور نماز کے اوقات اکاؤنٹ کے بغیر دستیاب ہیں۔',
+  'Accounts and scheduled notifications need the connected account service, which is not hosted on this GitHub Pages website yet.':'اکاؤنٹس اور مقررہ اطلاعات کے لیے سرور درکار ہے، جو اس GitHub Pages ویب سائٹ پر ابھی دستیاب نہیں۔',
+  'Explore the collection':'مجموعہ کھولیں',
+  'Google sign-in could not finish. If you already registered this email, verify it first. Then try Google again. You can also sign in with your password.':'گوگل سے داخلہ مکمل نہیں ہوا۔ اگر یہ ای میل پہلے سے رجسٹر ہے تو پہلے اس کی تصدیق کریں، پھر گوگل دوبارہ آزمائیں۔ آپ پاس ورڈ سے بھی داخل ہو سکتے ہیں۔',
+
   'Home': 'صفحۂ اول', 'Library': 'کتب خانہ', 'Search': 'تلاش', 'Saved': 'محفوظ', 'Settings': 'ترتیبات',
   'Skip to content': 'اصل مواد پر جائیں', 'Send feedback': 'رائے بھیجیں', 'Feedback': 'رائے',
   'About': 'تعارف', 'Sources & credits': 'ماخذ اور حوالہ', 'Privacy': 'رازداری', 'Terms': 'شرائط',

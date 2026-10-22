@@ -13,3 +13,5 @@ export const FEEDBACK_ENABLED = Boolean(FEEDBACK_ENDPOINT && FEEDBACK_KEY)
 export const SHOW_FEEDBACK = FEEDBACK_ENABLED || Boolean(clientEnv.DEV)
 export const DEFAULT_COLLECTION = 'riyad-as-salihin'
 export const getDataRoot = () => DATA_MODE === 'real' ? `${clientEnv.BASE_URL ?? '/'}data-local/generated` : `${clientEnv.BASE_URL ?? '/'}data`
+
+export const STATIC_READING = clientEnv.VITE_STATIC_READING === 'true'

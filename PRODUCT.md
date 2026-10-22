@@ -7,7 +7,7 @@ A calm Arabic, English and Urdu reading space for Riyad as-Salihin, with Quran r
 ## Users
 People reading and studying on phones, tablets and computers.
 ## Capabilities and Constraints
-Preserve the approved home layout and exact source religious wording. Extend its visual language to Quran, GPS/city prayer times, floating mobile navigation, verified email accounts, consented approximate locations, owner-only exports and daily/prayer push. Hadith and Quran reminders are five elapsed hours apart. Google is prepared for credentials, not represented as configured. Local browser reading data remains local. Public pages server-render and carry SEO metadata; private data is authenticated and excluded from indexing. No deployment or publishing is authorized.
+Preserve the approved home layout and exact source religious wording. Extend its visual language to Quran, GPS/city prayer times, floating mobile navigation, verified email accounts, consented approximate locations, owner-only exports and daily/prayer push. Hadith and Quran reminders are five elapsed hours apart. Google is prepared for credentials, not represented as configured. Local browser reading data remains local. Public pages server-render and carry SEO metadata; private data is authenticated and excluded from indexing. The user authorized source pushes to main and publishing the new public reading website. Accounts require a hosted backend; Google must use real OAuth credentials.
 ## Brand Commitments
 Riyad as-Salihin / رياض الصالحين. Retain the approved botanical reading desk identity, typography, garden artwork and home composition. Different icons distinguish Hadith and Quran navigation.
 ## Evidence on Hand

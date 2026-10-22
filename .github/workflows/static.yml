@@ -1,6 +1,8 @@
-name: Legacy static reader (manual only)
+name: Publish Riyad reading website
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -40,11 +42,17 @@ jobs:
       - name: Import verified Urdu matching narrations
         run: npm run data:import:urdu
 
-      - name: Build the real-data project site
+      - name: Import the full Quran reader
+        run: npm run data:import:quran
+
+      - name: Build and prerender the public reading site
         env:
           VITE_DATA_MODE: real
           VITE_BASE_PATH: /Riyadh-as-Saliheen/
-        run: npm run build
+        run: npm run build:pages
+
+      - name: Verify the public artifact
+        run: npm run test:pages
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

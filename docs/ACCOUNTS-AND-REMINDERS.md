@@ -20,10 +20,10 @@ The UI opens at http://127.0.0.1:5173, with its API on loopback port 8787. `serv
 3. In local development, verification email is written to `.data/mail`, not sent to an inbox. On your computer run:
 
    ```sh
-   npm run mail:latest -- your-owner-email@example.com
+   npm run mail:verify -- your-owner-email@example.com
    ```
 
-   Open the resulting private verification link yourself. This tool also opens the latest password-reset link for an email. Do not share its output or screenshots of links. Links expire after one hour; local outbox messages are removed after 24 hours or account deletion.
+   Run this command yourself; it opens your own current verification link privately in your default browser. If an account is waiting for verification, use Account → Already registered but not verified? → Resend verification email first. `npm run mail:latest -- your-owner-email@example.com` can display the latest private verification/reset message when needed. Do not share its output or screenshots of links. Links expire after one hour; local outbox messages are removed after 24 hours or account deletion.
 4. Run `npm run owner:grant`. The CLI grants only the configured owner email and requires an existing, verified account that accepted the current privacy notice. The first registered user never becomes an administrator automatically.
 5. Refresh Account and open Owner dashboard at `/admin`. Name, email, account dates, consented approximate location, notification device count, and reminder preferences are available. Export CSV or JSON from that screen. Owner access is checked on every API request and exports are audited. Password hashes, session tokens, OAuth tokens and push encryption keys are excluded.
 
@@ -67,7 +67,7 @@ Google is prepared but deliberately unavailable until GOOGLE_CLIENT_ID and GOOGL
 - Local: `http://127.0.0.1:5173/api/auth/callback/google`
 - Public: `https://your-domain.example/api/auth/callback/google`
 
-Use the actual APP_ORIGIN and the same host throughout login; localhost and 127.0.0.1 are different origins. Configure Google publishing/test-user settings as appropriate. Never put secrets in VITE_ variables. Restart the backend after changing its environment. Google-created accounts review the app privacy notice before saving data. Cross-provider account linking is disabled.
+Use the actual APP_ORIGIN and the same host throughout login; localhost and 127.0.0.1 are different origins. Configure Google publishing/test-user settings as appropriate. Never put secrets in VITE_ variables. Restart the backend after changing its environment. Google-created accounts review the app privacy notice before saving data. Same-email Google linking requires the local account email to have been verified first. An unverified password account cannot be silently linked. Provider tokens are encrypted in storage; profile images are not retained. Existing email users should verify first, then choose Continue with Google.
 
 ## Production hosting and SEO
 
@@ -102,3 +102,7 @@ npm audit
 Backend tests create isolated temporary databases. They exercise signup/verification/login, consent, account separation, owner authorization/export and deletion. Scheduler tests use injected push delivery and check five-hour spacing, DST, retries and cancellation. SSR tests start an isolated production-mode server, without sending mail, and check initial HTML, private-file protection, headers, SEO and 404s. Browser tests use disposable ordinary accounts; never grant an owner role in the active preview to simplify a UI test.
 
 Before public launch, supply actual operator contact information in the privacy policy, hosting-provider details and backup retention. Review applicable jurisdictional requirements with appropriate expertise. Do not publish credentials, private exports or local verification URLs.
+
+## Public GitHub Pages edition
+
+The workflow publishes `main` to https://haiderimran019.github.io/Riyadh-as-Saliheen/ using `npm run build:pages`. It includes the approved home, hadith chapters, full Quran with English toggle, local bookmarks, and on-device Adhan prayer calculations. Known public reading pages are prerendered with route metadata and a subpath-aware sitemap. GPS remains in the browser. No backend credentials or account data are bundled. Account and reminder pages explain that these services need the persistent Node host; they do not submit to missing API routes.

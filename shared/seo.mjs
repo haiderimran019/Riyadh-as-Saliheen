@@ -1,6 +1,6 @@
 const titles={'/':'Riyad as-Salihin — Hadith, Quran & Prayer Times','/library':'Riyad as-Salihin Hadith Collection','/quran':'The Quran — Arabic with English Translation','/prayers':'Prayer Times for Your Location','/about':'About Riyad as-Salihin','/sources':'Sources & Credits','/privacy':'Privacy Policy','/terms':'Terms of Use','/account':'Your Account','/admin':'Owner Dashboard','/reminders':'Your Daily Reminders','/saved':'Saved Passages','/settings':'Reading Settings','/search':'Search the Collection','/feedback':'Feedback'}
 export function pageSeo(url,data={},indexable=true){
- const value=new URL(url,data.origin||'http://127.0.0.1:5173'),path=value.pathname
+ const value=new URL(url,data.origin||'http://127.0.0.1:5173'),path=value.pathname.replace(/\/+$/,'')||'/'
  let title=titles[path]||'Riyad as-Salihin',description='Read Imam al-Nawawi’s Riyad as-Salihin, explore the Quran with English translation, and calculate prayer times with clear source attribution.',canonicalPath=path
  const q=/^\/quran\/(\d+)$/.exec(path),chapter=/^\/collection\/riyad-as-salihin\/chapter\/(\d+)$/.exec(path)
  if(q){const item=data.quranIndex?.chapters.find(x=>x.id===Number(q[1]));if(item){const ayah=Math.min(item.count,Math.max(1,parseInt(value.searchParams.get('ayah')||'1',10)||1)),start=Math.floor((ayah-1)/10)*10+1;title=`Surah ${item.name} — Arabic & English Translation`;description=`Read Surah ${item.name} (${item.meaning}), ayahs ${start}–${Math.min(start+9,item.count)}, in Arabic with the English translation and notes published by QuranEnc.com.`;canonicalPath=`/quran/${item.id}${start>1?`?ayah=${start}`:''}`}}
@@ -8,5 +8,5 @@ export function pageSeo(url,data={},indexable=true){
  if(path==='/collection/riyad-as-salihin'){title=titles['/library'];canonicalPath='/library'}
  if(data.status===404){title='Page not found — Riyad';description='This page could not be found. Return to the Riyad reading collection.'}
  const privatePage=/^\/(account|admin|reminders|settings|saved|search|feedback)(\/|$)/.test(path)
- return {title,description,canonical:new URL(canonicalPath,data.origin||value.origin).href,robots:indexable&&!privatePage&&data.status!==404?'index,follow,max-image-preview:large':'noindex,follow'}
+ return {title,description,canonical:new URL(`${data.basePath||''}${canonicalPath}`,data.origin||value.origin).href,robots:indexable&&!privatePage&&data.status!==404?'index,follow,max-image-preview:large':'noindex,follow'}
 }
