@@ -11,6 +11,7 @@ export async function sendAccountMail(to, subject, url) {
     const transport=nodemailer.createTransport({host:process.env.SMTP_HOST,port:Number(process.env.SMTP_PORT || 587),secure:process.env.SMTP_SECURE==='true',auth:process.env.SMTP_USER ? {user:process.env.SMTP_USER,pass:process.env.SMTP_PASSWORD} : undefined})
     await transport.sendMail({from:process.env.SMTP_FROM,to,subject,text})
   } else {
+    if(config.production)throw new Error('Email delivery is not configured. Continue with Google instead.')
     const folder=resolve(config.dataDir,'mail');mkdirSync(folder,{recursive:true,mode:0o700})
     writeFileSync(resolve(folder,`${Date.now()}-${randomUUID()}.json`),JSON.stringify({to,subject,url,createdAt:Date.now()},null,2),{mode:0o600})
   }

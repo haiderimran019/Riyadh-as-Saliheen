@@ -35,3 +35,9 @@ scripts/source-data/real/
 !/server/.env.example
 
 /.server-dist/
+/.vercel/
+
+# Provider CLI skill cache; not application source.
+/.agents/
+/skills-lock.json
+/.swc

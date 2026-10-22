@@ -1,6 +1,6 @@
 # Accounts, reminders, server rendering and owner access
 
-This release preserves the approved home composition and reading design, adds Quran and prayer pages, and runs a real Node backend. Node 22.13 or newer is required. No cloud service is provisioned automatically.
+This release preserves the approved home composition and reading design, adds Quran and prayer pages, and runs a real Node backend. Node 22.13 or newer is required. The production service uses Vercel with Neon Postgres; see [the deployment guide](VERCEL-DEPLOYMENT.md).
 
 ## Start locally
 
@@ -17,7 +17,7 @@ The UI opens at http://127.0.0.1:5173, with its API on loopback port 8787. `serv
 
 1. Open `/account`, choose Create account, and register with the email configured privately as `RIYAD_OWNER_EMAIL`. Choose your own password; do not put passwords in source or chat.
 2. Accept the account privacy notice. Location and notification consent are separate and optional.
-3. In local development, verification email is written to `.data/mail`, not sent to an inbox. On your computer run:
+3. Without SMTP in local development, verification email is written to `.data/mail`. When Gmail SMTP is configured, use the link sent to your inbox instead. For outbox-only development, run:
 
    ```sh
    npm run mail:verify -- your-owner-email@example.com
@@ -27,13 +27,13 @@ The UI opens at http://127.0.0.1:5173, with its API on loopback port 8787. `serv
 4. Run `npm run owner:grant`. The CLI grants only the configured owner email and requires an existing, verified account that accepted the current privacy notice. The first registered user never becomes an administrator automatically.
 5. Refresh Account and open Owner dashboard at `/admin`. Name, email, account dates, consented approximate location, notification device count, and reminder preferences are available. Export CSV or JSON from that screen. Owner access is checked on every API request and exports are audited. Password hashes, session tokens, OAuth tokens and push encryption keys are excluded.
 
-The owner CLI requires local filesystem access. Do not expose it as an HTTP endpoint. User account IDs scope all ordinary account routes. Regular users cannot read owner data or another account's location/export.
+For the cloud database, use the production environment with the same CLI as described in the deployment guide. The owner CLI requires trusted operator access. Do not expose it as an HTTP endpoint. User account IDs scope all ordinary account routes. Regular users cannot read owner data or another account's location/export.
 
 ## Where the data is stored
 
 | Location | Contents | Access |
 | --- | --- | --- |
-| `.data/riyad.sqlite` plus WAL/SHM | Auth users, hashed credentials, sessions, consent history, last saved location, reminder settings, push subscriptions and durable jobs | Backend and trusted operator only |
+| Private Neon Postgres in production; `.data/riyad.sqlite` plus WAL/SHM locally | Auth users, hashed credentials, sessions, consent history, last saved location, reminder settings, push subscriptions and durable jobs | Backend and trusted operator only |
 | `.data/auth-secret.json` | Stable signing secret | Backend only |
 | `.data/vapid.json` | Web Push public/private key pair | Backend only; only public key is sent to clients |
 | `.data/mail/` | Development-only verification/reset links | Local operator only; never an HTTP resource |
@@ -56,16 +56,16 @@ Users separately select daily hadith, daily ayah, five prayer reminders, and vib
 
 The browser requests notification permission only after the reader chooses to connect a device. The application stores the resulting push subscription privately. A persistent job queue plans future reminders, claims jobs with leases, retries temporary failures, deduplicates successful device sends, removes expired subscriptions and cancels disabled reminders. Jobs older than 30 days are removed. Notifications link to the complete source text, rather than truncating a religious quotation. Signing out disconnects the current browser's push subscription.
 
-Run the backend continuously for scheduled delivery. A sleeping/stopped laptop cannot send reminders. Device settings, network conditions and push providers can delay delivery. Vibration is best-effort and is unsupported in Safari and some other browsers. iPhone/iPad push requires an installed Home Screen web app on a supported OS and a user gesture. The service worker handles visible push only; it does not cache religious text for offline reading. Production needs HTTPS and unchanged VAPID keys on a persistent private volume. Real-device delivery and vibration must be tested on the actual deployment and device; synthetic tests do not prove that physical delivery occurred.
+The local backend must remain running for local reminders. Production reminders use Vercel Workflow durable sleeps, with a daily protected reconciliation job; the public service does not depend on your laptop. Device settings, network conditions and push providers can delay delivery. Vibration is best-effort and is unsupported in Safari and some other browsers. iPhone/iPad push requires an installed Home Screen web app on a supported OS and a user gesture. The service worker handles visible push only; it does not cache religious text for offline reading. Production needs HTTPS and stable private VAPID keys in the hosting environment. Real-device delivery and vibration must be tested on the actual deployment and device; synthetic tests do not prove that physical delivery occurred.
 
 ## Email and Google configuration
 
-For real verification/reset delivery, set SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASSWORD and SMTP_FROM privately. Use your mail provider's TLS port/settings and verified sender domain. Do not disable TLS validation. In production, SMTP and an HTTPS APP_ORIGIN are mandatory. Verification is required before password login and saving account data. Reset tokens expire; successful password reset revokes sessions.
+For real verification/reset delivery, set SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASSWORD and SMTP_FROM privately. Use your mail provider's TLS port/settings and verified sender domain. Do not disable TLS validation. Production requires an HTTPS APP_ORIGIN. Email/password registration is disabled until SMTP is configured. Verification is required before password login and saving account data. Reset tokens expire; successful password reset revokes sessions.
 
-Google is prepared but deliberately unavailable until GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are configured. In Google Cloud create a Web OAuth client, configure its consent screen, and add the exact callback:
+Google is enabled only when GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are configured privately. In Google Cloud create a Web OAuth client, configure its consent screen, and add the exact callback:
 
 - Local: `http://127.0.0.1:5173/api/auth/callback/google`
-- Public: `https://your-domain.example/api/auth/callback/google`
+- Public: `https://riyad-as-salihin.vercel.app/api/auth/callback/google`
 
 Use the actual APP_ORIGIN and the same host throughout login; localhost and 127.0.0.1 are different origins. Configure Google publishing/test-user settings as appropriate. Never put secrets in VITE_ variables. Restart the backend after changing its environment. Google-created accounts review the app privacy notice before saving data. Same-email Google linking requires the local account email to have been verified first. An unverified password account cannot be silently linked. Provider tokens are encrypted in storage; profile images are not retained. Existing email users should verify first, then choose Continue with Google.
 
@@ -82,7 +82,7 @@ Public routes use the same React components for server HTML and client hydration
 
 Each route has a descriptive title, description, canonical URL, Open Graph/Twitter metadata and safe JSON-LD. `/sitemap.xml` lists public reading routes, stable `?hadith=` passage links, and paginated Quran pages. `/robots.txt` excludes account/admin/API/settings/search/saved/reminder pages. Private pages send noindex and no-store; localhost is always noindex. Unknown routes return 404. Canonical domains come from configured APP_ORIGIN rather than an untrusted Host header. Search ranking and indexing are not guaranteed; submit the public sitemap to Search Console after a real deployment.
 
-GitHub Pages and a static Pages upload cannot execute this backend, scheduler or per-request SSR. Existing static deployment workflows are legacy reader-only publishing paths and are not the deployment mechanism for this release. No deployment is performed by local development or this task.
+GitHub Pages serves the static reading edition. The full backend and per-request SSR use Vercel, Neon Postgres and Workflow. `npm run build:cloud` generates the deployable function output; local development does not deploy it. See [Vercel deployment](VERCEL-DEPLOYMENT.md) for configuration and data access.
 
 ## Security and release checks
 
@@ -101,8 +101,8 @@ npm audit
 
 Backend tests create isolated temporary databases. They exercise signup/verification/login, consent, account separation, owner authorization/export and deletion. Scheduler tests use injected push delivery and check five-hour spacing, DST, retries and cancellation. SSR tests start an isolated production-mode server, without sending mail, and check initial HTML, private-file protection, headers, SEO and 404s. Browser tests use disposable ordinary accounts; never grant an owner role in the active preview to simplify a UI test.
 
-Before public launch, supply actual operator contact information in the privacy policy, hosting-provider details and backup retention. Review applicable jurisdictional requirements with appropriate expertise. Do not publish credentials, private exports or local verification URLs.
+The privacy policy names the operator and hosting, database and mail providers. No additional operator backup archive is currently created; provider-managed recovery/email copies follow their service retention. Do not publish credentials, private exports or local verification URLs.
 
-## Public GitHub Pages edition
+## Public addresses
 
-The workflow publishes `main` to https://haiderimran019.github.io/Riyadh-as-Saliheen/ using `npm run build:pages`. It includes the approved home, hadith chapters, full Quran with English toggle, local bookmarks, and on-device Adhan prayer calculations. Known public reading pages are prerendered with route metadata and a subpath-aware sitemap. GPS remains in the browser. No backend credentials or account data are bundled. Account and reminder pages explain that these services need the persistent Node host; they do not submit to missing API routes.
+The full service is https://riyad-as-salihin.vercel.app. The Pages workflow forwards https://haiderimran019.github.io/Riyadh-as-Saliheen/ and its reading deep links to that host. The optional `npm run build:pages` command still creates a separate static reading edition for archival/self-hosted reading; accounts and server push require the full backend.

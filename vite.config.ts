@@ -1,4 +1,4 @@
-import { copyFileSync, cpSync, existsSync, readFileSync } from 'node:fs'
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -41,7 +41,12 @@ export default defineConfig(({ mode,isSsrBuild }) => {
           if (isSsrBuild || env.VITE_DATA_MODE !== 'real') return
           const source = resolve('data-local/generated')
           if (!existsSync(source)) throw new Error('Real mode requires data-local/generated. Run npm run data:import:riyad first.')
-          cpSync(source, resolve('dist/data-local/generated'), { recursive: true })
+          for (const file of ['collections.json','sources.json','quran-of-day.json','riyad-as-salihin','quran','translations/en/riyad-as-salihin','translations/ur/riyad-as-salihin']) {
+            const destination=resolve('dist/data-local/generated',file)
+            if(!existsSync(resolve(source,file)))continue
+            mkdirSync(resolve(destination,'..'),{recursive:true})
+            cpSync(resolve(source,file),destination,{recursive:true})
+          }
           copyFileSync(resolve('dist/index.html'), resolve('dist/404.html'))
         },
       },

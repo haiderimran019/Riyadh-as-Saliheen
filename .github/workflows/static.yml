@@ -1,4 +1,4 @@
-name: Publish Riyad reading website
+name: Publish Riyad public app link
 
 on:
   push:
@@ -30,29 +30,8 @@ jobs:
           node-version: 22
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Import the approved Riyad Arabic and English edition
-        run: npm run data:import:riyad -- --languages=ar,en
-
-      - name: Import versioned QuranEnc daily verse data
-        run: npm run data:import:quran-day
-
-      - name: Import verified Urdu matching narrations
-        run: npm run data:import:urdu
-
-      - name: Import the full Quran reader
-        run: npm run data:import:quran
-
-      - name: Build and prerender the public reading site
-        env:
-          VITE_DATA_MODE: real
-          VITE_BASE_PATH: /Riyadh-as-Saliheen/
-        run: npm run build:pages
-
-      - name: Verify the public artifact
-        run: npm run test:pages
+      - name: Forward the old public address to the complete app
+        run: node scripts/publish-pages-link.mjs
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

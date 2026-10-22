@@ -40,7 +40,7 @@ Imports remain ignored under `data-local/generated`. Default Vite-only placehold
 
 See [the account, owner, notification and deployment guide](docs/ACCOUNTS-AND-REMINDERS.md). Register and verify your configured owner email, then run `npm run owner:grant` and open `/admin`. The dashboard has private CSV/JSON exports. No user is made an owner automatically.
 
-Locally, mail is stored privately rather than sent. For verification, choose **Already registered but not verified?**, enter your email and resend, then run `npm run mail:verify -- your-email@example.com` yourself. It opens your own private verification link without printing its token. `npm run mail:latest -- your-email@example.com` displays the latest private verification/reset link when needed. Real SMTP is required for production. Google OAuth is prepared and remains disabled until genuine credentials/callbacks are configured. Secrets, account data and consented locations are never bundled into public output.
+Without SMTP configured, development mail is stored in a private local outbox. For verification, choose **Already registered but not verified?**, enter your email and resend, then run `npm run mail:verify -- your-email@example.com` yourself. It opens your own private verification link without printing its token. `npm run mail:latest -- your-email@example.com` displays the latest private verification/reset link when needed. Real SMTP is required for production. Google sign-in uses the privately configured OAuth client and exact callbacks. Secrets, account data and consented locations are never bundled into public output.
 
 ## Build, validate and serve
 
@@ -54,8 +54,8 @@ npm run test:ssr
 PLAYWRIGHT_BASE_URL=http://127.0.0.1:5173 npx playwright test --workers=2
 ```
 
-`npm run build:server` builds client assets and the React server renderer. `npm start` requires an HTTPS APP_ORIGIN, SMTP, VAPID contact and a persistent private database volume. Run one persistent Node process behind an HTTPS proxy; follow the deployment guide before public launch. The scheduler must remain running to send reminders. Delivery and vibration depend on device/browser support and notification permission.
+`npm run build:server` builds client assets and the React server renderer. Local `npm start` uses a persistent SQLite process. The public Vercel deployment uses `npm run build:cloud`, private Neon Postgres, Gmail SMTP, and Vercel Workflow for durable reminder sleeps. Its database and credentials are separate from the local preview. See [the deployment guide](docs/VERCEL-DEPLOYMENT.md). Delivery and vibration depend on device/browser support and notification permission.
 
 Public pages ship reading HTML, route metadata, canonical links and structured data. Public reading URLs are listed in `/sitemap.xml`; personal pages are noindex. Localhost blocks indexing. The application does not provide offline reading.
 
-`npm run build:pages` builds a static reading edition and prerenders the home, chapter, Quran and information pages. The Pages workflow publishes it on every push to `main`. Quran uses imported JSON; prayer times run on-device, including consented GPS. Personal pages explain that accounts and push need the Node service instead of presenting a broken login. Pages cannot run the SQLite account service, mail delivery, scheduled push or per-request server rendering. The persistent Node deployment remains a separate setup.
+The full public app is hosted at [riyad-as-salihin.vercel.app](https://riyad-as-salihin.vercel.app). The GitHub Pages workflow forwards the old public address and reading deep links there, so visitors get the working backend. `npm run build:pages` remains available to build a separate static reading edition; that optional edition calculates prayers on-device and explains the missing account service.
