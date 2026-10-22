@@ -6,6 +6,15 @@ The application now has a Node/SQLite backend and React server rendering. Name/e
 
 Arabic/English Riyad text comes from IslamHouse / IslamEnc. Available Urdu is partial HadeethEnc matching narrations. Quran text, translation and notes come from QuranEnc with edition attribution. See [DATA_SOURCES.md](DATA_SOURCES.md) and NOTICE. Source wording is preserved.
 
+## Links and collection
+
+- [GitHub repository](https://github.com/haiderimran019/Riyadh-as-Saliheen)
+- [Earlier static reading website](https://haiderimran019.github.io/Riyadh-as-Saliheen/) — the new Node backend is not deployed there by this source push.
+
+The Riyad import contains 364 chapters, 1,892 Arabic narrations and 1,873 paired English translations. Available Urdu covers 238 matching entries and is not a complete Urdu edition. The full Quran reader contains 114 surahs and 6,236 ayahs. Search, chapter discovery, saved folders, reading progress, English/Urdu interface and responsive layouts remain available.
+
+The stack uses React, TypeScript, Vite, React Router and Lucide, with MiniSearch, Dexie/IndexedDB, Zod, Better Auth, Express, native SQLite, Adhan and Web Push. Vitest, Node integration tests, Playwright and GitHub Actions support validation.
+
 ## Local development
 
 Use Node 22.13 or newer:
