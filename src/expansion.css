@@ -196,7 +196,7 @@ html[lang='ar'] .overview-garden::after { background:linear-gradient(270deg,#202
 html[dir='rtl'] .welcome-story,html[dir='rtl'] .overview-garden { direction:rtl; }
 @media(max-width:700px) { .overview-heading p,.overview-prayer > p,.overview-reading-paths small,.overview-section-title > a { font-size:12px; } .overview-heading p { max-width:25ch; } .overview-section-title { flex-wrap:wrap; } .overview-section-title h2 { flex:1 1 160px; } .overview-prayer > footer { font-size:11px; } }
 
-@media(min-width:701px) and (max-width:1000px) { html[lang='ar'] .sidebar-utility { font-size:0; } }
+@media(min-width:701px) and (max-width:1000px) { html[lang='ar'] .workspace-sidebar .sidebar-utility { font-size:0; } }
 @media(max-width:700px) and (max-height:850px) {
   .workspace-sidebar .sidebar-intro,.workspace-sidebar .sidebar-note,.workspace-sidebar .sidebar-privacy { display:none; }
   .workspace-sidebar .workspace-navigation { margin-top:28px; }
