@@ -23,6 +23,7 @@ jobs:
       - run: npm run data:import:quran-day
       - run: npm run data:import:urdu
       - run: npm run data:import:quran
+      - run: npm run data:import:quran-editions
       - run: npm run test:backend
       - run: npm run build:server
       - run: npm run test:ssr

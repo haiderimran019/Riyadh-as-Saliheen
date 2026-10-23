@@ -82,7 +82,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
           <p>{t('Reference:')} {hadith.number}</p>
         </div>
         <div className="hadith-quick-actions">
-          <button type="button" aria-label={saved ? `${t('Remove hadith from saved')} ${displayNumber}` : `${t('Save hadith')} ${displayNumber}`} aria-pressed={saved} disabled={saving} onClick={() => void toggleBookmark()}><Bookmark size={20} fill={saved ? 'currentColor' : 'none'} /></button>
+          <button type="button" data-track="hadith.bookmark" aria-label={saved ? `${t('Remove hadith from saved')} ${displayNumber}` : `${t('Save hadith')} ${displayNumber}`} aria-pressed={saved} disabled={saving} onClick={() => void toggleBookmark()}><Bookmark size={20} fill={saved ? 'currentColor' : 'none'} /></button>
           <button type="button" aria-label={copied ? t('Copied') : `${t('Copy')} ${t('Hadith')} ${displayNumber}`} onClick={() => void copyReading()}>{copied ? <Check size={19} /> : <Copy size={19} />}</button>
           <button type="button" aria-label={`${t('Share')} ${t('Hadith')} ${displayNumber}`} onClick={() => void shareHadithImage(hadith, translation, translationMetadata)}><Share2 size={19} /></button>
         </div>
@@ -111,7 +111,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
         </section>
       )}
 
-      {language !== 'ar' && !translation && <p className="notice">{t(language === 'ur' ? 'Urdu translation is not available for this narration; the Arabic text above is from the source edition.' : 'English translation is not available for this narration; the Arabic text above is from the source edition.')}</p>}
+      {language !== 'ar' && !translation && <p className="notice">{t(language === 'bn' ? 'Bengali hadith translation is not supplied by this edition. The Arabic text is complete.' : language === 'ur' ? 'Urdu translation is not available for this narration; the Arabic text above is from the source edition.' : 'English translation is not available for this narration; the Arabic text above is from the source edition.')}</p>}
 
       <p className="passage-status" role="status" aria-live="polite">{copied ? t('Copied with source attribution') : saved ? <Link to="/saved">{t('Saved to your passages')} <ArrowUpRight size={13}/></Link> : ''}</p>
       {saveError && <p className="bookmark-message" role="alert">{saveError}</p>}
@@ -122,7 +122,7 @@ export function HadithCard({ hadith, translation, translationMetadata, showDiacr
         </div>
         <div className="save-controls">
           {saved && folders.length > 0 && (
-            <select aria-label={`Folder for hadith ${displayNumber}`} value={folderId} onChange={(event) => moveBookmark(event.target.value)}>
+            <select aria-label={`${t('Folder')} · ${t('Hadith')} ${displayNumber}`} value={folderId} onChange={(event) => moveBookmark(event.target.value)}>
               <option value="">{t('No folder')}</option>
               {folders.map((folder) => <option key={folder.id} value={folder.id}>{folder.name}</option>)}
             </select>

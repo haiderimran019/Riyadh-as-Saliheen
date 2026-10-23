@@ -2,7 +2,11 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { getSetting, setSetting } from './data/db'
 import { APP_EVENTS } from './core/appEvents'
 
-export type AppLanguage = 'en' | 'ur'
+import arabic from './locales/ar.json'
+import bengali from './locales/bn.json'
+import urduExtra from './locales/ur-extra.json'
+
+export type AppLanguage = 'en' | 'ur' | 'ar' | 'bn'
 
 const urdu: Record<string, string> = {
   "Continue hadith": "حدیث کا مطالعہ جاری رکھیں",
@@ -351,25 +355,28 @@ const urdu: Record<string, string> = {
   "Manage reminders": "یاد دہانیوں کا انتظام کریں",
 }
 
+export const uiTranslations:Record<Exclude<AppLanguage,'en'>,Record<string,string>>={ar:arabic,bn:bengali,ur:{...urdu,...urduExtra}}
+export function translateUI(language:AppLanguage,text:string){return language==='en'?text:uiTranslations[language]?.[text]??text}
+
 type LocaleContextValue = { language: AppLanguage; setLanguage: (language: AppLanguage) => void; t: (text: string) => string }
 const LocaleContext = createContext<LocaleContextValue | null>(null)
 
 export function AppLocaleProvider({ children }: { children: ReactNode }) {
   const [language, setCurrentLanguage] = useState<AppLanguage>('en')
   useEffect(() => {
-    void getSetting<AppLanguage>('appLanguage', 'en').then(setCurrentLanguage)
+    void getSetting<AppLanguage>('appLanguage', 'en').then(value=>setCurrentLanguage(['en','ur','ar','bn'].includes(value)?value:'en')).catch(()=>undefined)
     const update = (event: Event) => setCurrentLanguage((event as CustomEvent<AppLanguage>).detail)
     window.addEventListener(APP_EVENTS.appLanguageChange, update)
     return () => window.removeEventListener(APP_EVENTS.appLanguageChange, update)
   }, [])
   useEffect(() => {
     document.documentElement.lang = language
-    document.documentElement.dir = language === 'ur' ? 'rtl' : 'ltr'
+    document.documentElement.dir = language === 'ur' || language === 'ar' ? 'rtl' : 'ltr'
   }, [language])
   const value = useMemo<LocaleContextValue>(() => ({
     language,
     setLanguage: (next) => { setCurrentLanguage(next); void setSetting('appLanguage', next); window.dispatchEvent(new CustomEvent(APP_EVENTS.appLanguageChange, { detail: next })) },
-    t: (text) => language === 'ur' ? (urdu[text] ?? text) : text,
+    t: (text) => translateUI(language,text),
   }), [language])
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>
 }

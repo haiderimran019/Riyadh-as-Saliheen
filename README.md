@@ -2,16 +2,16 @@
 
 A free, ad-free reading space for Riyad as-Salihin, the Quran with English translation, and location-based prayer times. The approved botanical reading design is preserved. Optional verified accounts support consented saved locations and daily/prayer push reminders.
 
-The application now has a Node/SQLite backend and React server rendering. Name/email are collected at signup; saving a location and connecting notifications each require separate consent. Bookmarks, folders, progress and display settings remain in browser IndexedDB. Fonts and imported reading text are served by the app; there are no advertising trackers.
+The application now has a Node/SQLite backend and React server rendering. Google sign-in is required for the reading app. Name/email support the account; location sharing, notifications and usage analytics each require separate consent. Bookmarks, folders, progress and display settings remain in browser IndexedDB. Fonts and imported reading text are served by the app; there are no advertising trackers.
 
 Arabic/English Riyad text comes from IslamHouse / IslamEnc. Available Urdu is partial HadeethEnc matching narrations. Quran text, translation and notes come from QuranEnc with edition attribution. See [DATA_SOURCES.md](DATA_SOURCES.md) and NOTICE. Source wording is preserved.
 
 ## Links and collection
 
 - [GitHub repository](https://github.com/haiderimran019/Riyadh-as-Saliheen)
-- [Public reading website](https://haiderimran019.github.io/Riyadh-as-Saliheen/) — automatically published from `main`, with the new design, hadith, full Quran, on-device prayer calculations and browser-only saved passages. Accounts and server push require the separately hosted Node backend.
+- [Public application](https://riyad-as-salihin.vercel.app/) — the full Vercel app with Google access, private Neon accounts, Quran, hadith, on-device prayer calculations, browser bookmarks and durable reminders. The old GitHub Pages address forwards here.
 
-The Riyad import contains 364 chapters, 1,892 Arabic narrations and 1,873 paired English translations. Available Urdu covers 238 matching entries and is not a complete Urdu edition. The full Quran reader contains 114 surahs and 6,236 ayahs. Search, chapter discovery, saved folders, reading progress, English/Urdu interface and responsive layouts remain available.
+The Riyad import contains 364 chapters, 1,892 Arabic narrations and 1,873 paired English translations. Available Urdu covers 238 matching entries and is not a complete Urdu edition. The full Quran reader contains 114 surahs and 6,236 ayahs. Search, chapter discovery, saved folders, reading progress, English, Urdu, Bengali and Arabic interfaces are available. Quran More contains six published translations, Uthmani and authentic IndoPak scripts, and a flowing Mushaf layout. The new home combines current prayer, both reading return links and full daily passages.
 
 The stack uses React, TypeScript, Vite, React Router and Lucide, with MiniSearch, Dexie/IndexedDB, Zod, Better Auth, Express, native SQLite, Adhan and Web Push. Vitest, Node integration tests, Playwright and GitHub Actions support validation.
 
@@ -58,4 +58,6 @@ PLAYWRIGHT_BASE_URL=http://127.0.0.1:5173 npx playwright test --workers=2
 
 Public pages ship reading HTML, route metadata, canonical links and structured data. Public reading URLs are listed in `/sitemap.xml`; personal pages are noindex. Localhost blocks indexing. The application does not provide offline reading.
 
-The full public app is hosted at [riyad-as-salihin.vercel.app](https://riyad-as-salihin.vercel.app). The GitHub Pages workflow forwards the old public address and reading deep links there, so visitors get the working backend. `npm run build:pages` remains available to build a separate static reading edition; that optional edition calculates prayers on-device and explains the missing account service.
+The full public app is hosted at [riyad-as-salihin.vercel.app](https://riyad-as-salihin.vercel.app). The GitHub Pages workflow forwards the old public address and reading deep links there, so visitors get the working backend. `npm run build:pages` remains available to build a separate static reading edition; the production Pages workflow is a forwarding page. Public reading access requires the Google-connected backend.
+
+The [0.3.0 release guide](docs/RELEASE-0.3.0.md) explains the owner dashboard, precise GPS choices, analytics retention and verification.

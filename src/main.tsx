@@ -7,6 +7,8 @@ import { STATIC_READING } from './config'
 import '@fontsource/noto-nastaliq-urdu/400.css'
 import './styles.css'
 import './features.css'
+import '@fontsource/noto-sans-bengali/400.css'
+import './expansion.css'
 
 // A tab opened before a deployment can still reference the previous route
 // bundles. Fetch the current server document instead of leaving a blank route.

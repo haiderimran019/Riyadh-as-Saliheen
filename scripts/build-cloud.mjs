@@ -13,6 +13,7 @@ for(const [file,script,args] of [
  ['quran-of-day.json','data:import:quran-day',[]],
  ['translations/ur/riyad-as-salihin/all.json','data:import:urdu',[]],
  ['quran/index.json','data:import:quran',[]],
+ ['quran/editions.json','data:import:quran-editions',[]],
 ])if(!existsSync(`data-local/generated/${file}`))command('npm',['run',script,'--',...args])
 command('npm',['run','build:server'])
 if(process.env.VERCEL_ENV==='production')command(process.execPath,['scripts/cloud-migrate.mjs'])

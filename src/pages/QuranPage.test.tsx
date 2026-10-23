@@ -19,7 +19,7 @@ vi.mock('../data/db', () => ({
     quranProgress: { put: stores.progress, get: async () => undefined },
   },
 }))
-const index: QuranIndex = { publisher: 'QuranEnc', sourceUrl: 'https://quranenc.com', ayahCount: 42, edition: { title: 'Test edition', version: '1', key: 'en' }, chapters: [{ id: 2, name: 'Al-Baqarah', arabic: 'البقرة', meaning: 'The Cow', count: 42 }] }
+const index: QuranIndex = { publisher: 'QuranEnc', sourceUrl: 'https://quranenc.com', ayahCount: 42, edition: { title: 'Test edition', version: '1', key: 'english_saheeh' }, chapters: [{ id: 2, name: 'Al-Baqarah', arabic: 'البقرة', meaning: 'The Cow', count: 42 }] }
 const dataset: QuranSura = { metadata: { publisher: 'QuranEnc', sourceUrl: 'https://quranenc.com', edition: index.edition }, result: Array.from({ length: 42 }, (_, i) => ({ id: String(i + 1), sura: '2', aya: String(i + 1), arabic_text: `نص الآية ${i + 1}`, translation: `Full translation of ayah ${i + 1}. ${'Long uncut reading. '.repeat(30)}End of ayah ${i + 1}.`, footnotes: '' })) }
 vi.mock('../services/reading', () => ({ quranIndex: async () => index, quranSurah: async () => dataset }))
 

@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { App } from './App'
 
 vi.mock('./data/db', () => ({ getSetting: async (_key: string, fallback: unknown) => fallback, setSetting: async () => undefined }))
-vi.mock('./services/AccountContext', () => ({ AccountProvider: ({ children }: { children: ReactNode }) => children, useAccount: () => ({ account: null }) }))
+vi.mock('./services/AccountContext', () => ({ AccountProvider: ({ children }: { children: ReactNode }) => children, useAccount: () => ({ account: null,loading:false,capabilities:{requireGoogleSignIn:false} }) }))
 vi.mock('./features/registry', () => ({ routeFeatures: [{ path: '/', page: () => <main>Reading home</main> }] }))
 vi.mock('./components/FeedbackModal', () => ({ FeedbackModal: () => null }))
 beforeEach(() => {

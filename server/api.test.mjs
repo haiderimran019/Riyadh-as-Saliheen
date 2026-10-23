@@ -4,11 +4,12 @@ import { mkdtempSync,readdirSync,readFileSync,rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { spawn } from 'node:child_process'
+import { randomUUID } from 'node:crypto'
 import { DatabaseSync } from 'node:sqlite'
 
 test('real authentication, consent, owner exports and account isolation', {timeout:60000}, async t=>{
  const dataDir=mkdtempSync(resolve(tmpdir(),'riyad-api-')),port=8791,origin=`http://127.0.0.1:${port}`
- const child=spawn(process.execPath,['server/index.mjs'],{env:{...process.env,RIYAD_SKIP_ENV_FILE:'1',RIYAD_DATA_DIR:dataDir,APP_ORIGIN:origin,API_PORT:String(port),RIYAD_OWNER_EMAIL:'owner@example.test',NODE_ENV:'test'},stdio:['ignore','pipe','pipe']})
+ const child=spawn(process.execPath,['server/index.mjs'],{env:{...process.env,RIYAD_REQUIRE_GOOGLE:'0',RIYAD_SKIP_ENV_FILE:'1',RIYAD_DATA_DIR:dataDir,APP_ORIGIN:origin,API_PORT:String(port),RIYAD_OWNER_EMAIL:'owner@example.test',NODE_ENV:'test'},stdio:['ignore','pipe','pipe']})
  let output='';child.stdout.on('data',x=>output+=x);child.stderr.on('data',x=>output+=x)
  t.after(()=>{child.kill('SIGTERM');setTimeout(()=>rmSync(dataDir,{recursive:true,force:true}),300).unref()})
  let ready=false;for(let i=0;i<100;i++){try{const r=await fetch(`${origin}/api/health`);if(r.ok){ready=true;break}}catch{}await new Promise(r=>setTimeout(r,100))}assert.ok(ready,output)
@@ -36,6 +37,39 @@ test('real authentication, consent, owner exports and account isolation', {timeo
  const metadata=await request('/quran');assert.equal(metadata.value.chapters.length,114);assert.equal(metadata.value.ayahCount,6236)
  const surah=await request('/quran/1');assert.equal(surah.value.result.length,7);assert.ok(surah.value.result[0].footnotes)
  const maliciousPush=await request('/account/push',{cookie:ownerCookie,method:'POST',body:{subscription:{endpoint:'http://127.0.0.1:22',keys:{}}}});assert.equal(maliciousPush.response.status,400)
+ // Optional usage stays closed until a separate choice. No free-form text is accepted.
+ const usage={sessionId:randomUUID(),activeMs:0,ended:false,timezone:'Asia/Karachi',language:'bn',events:[]}
+ assert.equal((await request('/usage',{cookie:ownerCookie,method:'POST',body:usage})).response.status,403)
+ assert.equal((await request('/account/analytics',{cookie:ownerCookie,method:'PUT',body:{enabled:true}})).response.status,200)
+ const event=(type,page='home',flow='',control='')=>({id:randomUUID(),type,page,flow,control})
+ const events=[event('page.view'),event('page.view','quran'),event('control.click','quran','','quran.translation'),event('flow.started','prayers','location')]
+ assert.equal((await request('/usage',{cookie:ownerCookie,method:'POST',body:{...usage,events,ended:true}})).response.status,202)
+ assert.equal((await request('/usage',{cookie:ownerCookie,method:'POST',body:{...usage,searchText:'private search'}})).response.status,400)
+ assert.equal((await request('/usage',{cookie:ownerCookie,method:'POST',body:{...usage,events:[{...event('page.view'),page:'/quran/2?ayah=255'}]}})).response.status,400)
+ assert.equal((await request('/admin/analytics',{cookie:otherCookie})).response.status,403)
+ const report=(await request('/admin/analytics?timezone=Asia%2FKarachi',{cookie:ownerCookie})).value
+ assert.equal(report.sessions,1);assert.equal(report.readers,1);assert.equal(report.funnels[0].abandoned,1)
+ assert.equal(report.controls[0].name,'quran.translation')
+ assert.equal((await request('/account/export',{cookie:otherCookie})).value.usage.sessions.length,0)
+ assert.equal((await request('/account/export',{cookie:ownerCookie})).value.usage.events.length,4)
+ await request('/account/analytics',{cookie:otherCookie,method:'PUT',body:{enabled:true}})
+ assert.equal((await request('/usage',{cookie:otherCookie,method:'POST',body:usage})).response.status,400)
+ assert.equal((await request('/account/analytics',{cookie:ownerCookie,method:'PUT',body:{enabled:false}})).response.status,200)
+ assert.equal(database.prepare('SELECT count(*) AS n FROM app_usage_events').get().n,0)
+ assert.equal((await request('/account/export',{cookie:ownerCookie})).value.usage.sessions.length,0)
+ assert.equal((await request('/usage',{cookie:ownerCookie,method:'POST',body:usage})).response.status,403)
+ // Precise coordinates need their own affirmative choice, and only replace a single row.
+ const precise={latitude:24.86073456,longitude:67.00112345,label:'Current location',timezone:'Asia/Karachi',source:'gps',consent:true,precision:'precise',accuracy:18,live:true}
+ assert.equal((await request('/account/location',{cookie:ownerCookie,method:'PUT',body:precise})).response.status,400)
+ assert.equal((await request('/account/location',{cookie:ownerCookie,method:'PUT',body:{...precise,preciseConsent:true}})).value.location.latitude,24.860735)
+ await request('/account/location',{cookie:ownerCookie,method:'PUT',body:{...precise,latitude:25.00123456,preciseConsent:true}})
+ assert.equal(database.prepare('SELECT count(*) AS n FROM app_locations WHERE user_id=?').get(owner.id).n,1)
+ assert.equal((await request('/account',{cookie:otherCookie})).value.location,null)
+ for(const edition of ['english_rwwad','english_hilali_khan','urdu_junagarhi','urdu_jalandhry','bengali_muhiuddin']){
+  const response=await request(`/quran/2?edition=${edition}`);assert.equal(response.response.status,200);assert.equal(response.value.result.length,286);assert.equal(response.value.metadata.edition.key,edition)
+ }
+ assert.equal((await request('/quran/1?edition=../../secret')).response.status,400)
+ assert.equal((await request('/quran/1?script=unpublished')).response.status,400)
  const deleted=await request('/auth/delete-user',{cookie:ownerCookie,method:'POST',body:{password}});assert.equal(deleted.response.status,200)
  assert.equal(database.prepare('SELECT count(*) AS n FROM app_locations WHERE user_id=?').get(owner.id).n,0)
  assert.equal(database.prepare('SELECT count(*) AS n FROM app_consents WHERE user_id=?').get(owner.id).n,0)

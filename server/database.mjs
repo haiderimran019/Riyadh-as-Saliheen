@@ -22,7 +22,7 @@ export const db=await (async()=>{
  chmodSync(path,0o600);database.exec('PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;');return database
 })()
 function sqlForPostgres(sql){
- let query=sql.replace(/\b(FROM|JOIN|INTO|UPDATE|REFERENCES)\s+(user|session|account|verification)\b/gi,'$1 "$2"').replace(/\b(emailVerified|createdAt|updatedAt|expiresAt|userId|userAgent)\b/g,'"$1"').replace(/"emailVerified"\s*=\s*1/g,'"emailVerified"=true')
+ let query=sql.replace(/\b(FROM|JOIN|INTO|UPDATE|REFERENCES)\s+(user|session|account|verification)\b/gi,'$1 "$2"').replace(/\b(emailVerified|createdAt|updatedAt|expiresAt|userId|userAgent|providerId)\b/g,'"$1"').replace(/"emailVerified"\s*=\s*1/g,'"emailVerified"=true')
  let index=0,quoted=false,result=''
  for(let i=0;i<query.length;i++){const c=query[i];if(c==="'"){if(quoted&&query[i+1]==="'"){result+="''";i++;continue}quoted=!quoted}result+=c==='?'&&!quoted?`$${++index}`:c}
  return result
@@ -54,6 +54,12 @@ export async function migrateApplication(){
     CREATE TABLE IF NOT EXISTS app_deliveries (job_id TEXT NOT NULL REFERENCES app_jobs(id) ON DELETE CASCADE, subscription_id TEXT NOT NULL REFERENCES app_push(id) ON DELETE CASCADE, delivered_at INTEGER, attempts INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(job_id,subscription_id));
     CREATE TABLE IF NOT EXISTS app_audit (id INTEGER PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE, action TEXT NOT NULL, created_at INTEGER NOT NULL);
 
+    CREATE TABLE IF NOT EXISTS app_location_details (user_id TEXT PRIMARY KEY REFERENCES user(id) ON DELETE CASCADE, precision TEXT NOT NULL DEFAULT 'approximate', accuracy REAL, live INTEGER NOT NULL DEFAULT 0);
+    CREATE TABLE IF NOT EXISTS app_analytics_consent (user_id TEXT PRIMARY KEY REFERENCES user(id) ON DELETE CASCADE, enabled INTEGER NOT NULL DEFAULT 0, version TEXT NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS app_usage_sessions (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE, started_at INTEGER NOT NULL, last_seen INTEGER NOT NULL, active_ms INTEGER NOT NULL DEFAULT 0, ended_at INTEGER, timezone TEXT NOT NULL, language TEXT NOT NULL);
+    CREATE INDEX IF NOT EXISTS app_usage_user_time ON app_usage_sessions(user_id,started_at);
+    CREATE TABLE IF NOT EXISTS app_usage_events (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE, session_id TEXT NOT NULL REFERENCES app_usage_sessions(id) ON DELETE CASCADE, event_type TEXT NOT NULL, page TEXT NOT NULL, control TEXT NOT NULL, flow TEXT NOT NULL, occurred_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS app_usage_event_time ON app_usage_events(occurred_at);
     CREATE TABLE IF NOT EXISTS app_schema (id INTEGER PRIMARY KEY, version INTEGER NOT NULL);
     CREATE TABLE IF NOT EXISTS app_workflows (user_id TEXT PRIMARY KEY REFERENCES user(id) ON DELETE CASCADE, generation TEXT NOT NULL, run_id TEXT, updated_at INTEGER NOT NULL);
     CREATE TABLE IF NOT EXISTS app_rate_limits (bucket TEXT PRIMARY KEY, count INTEGER NOT NULL, resets_at INTEGER NOT NULL);
@@ -64,11 +70,14 @@ export async function migrateApplication(){
   const ddl=sqlForPostgres(schema).replace(/id INTEGER PRIMARY KEY/g,'id BIGSERIAL PRIMARY KEY').replace(/\bINTEGER\b/g,'BIGINT').replace(/\bREAL\b/g,'DOUBLE PRECISION')
   await db.query(ddl)
  }else db.exec(schema)
+ // Preserve the v1 runtime probe while a rolling deployment serves both builds.
+ // New capability rows are additive, so older cold starts keep working.
  await run('INSERT INTO app_schema(id,version) VALUES(1,1) ON CONFLICT(id) DO UPDATE SET version=excluded.version')
+ await run('INSERT INTO app_schema(id,version) VALUES(2,2) ON CONFLICT(id) DO UPDATE SET version=excluded.version')
 }
-export async function assertSchema(){const row=await get('SELECT version FROM app_schema WHERE id=1');if(row?.version!==1)throw new Error('Apply the committed Riyad database migration before serving accounts.')}
+export async function assertSchema(){const row=await get('SELECT version FROM app_schema WHERE id=2');if(row?.version!==2)throw new Error('Apply the committed Riyad database migration before serving accounts.')}
 export async function closeDatabase(){if(postgres)await db.end();else db.close()}
 export const defaultPreferences=(timezone='UTC')=>({hadith:false,ayah:false,prayers:false,vibration:true,hadithTime:'09:00',timezone,method:'MuslimWorldLeague',school:'standard'})
 export async function preferences(userId){const row=await get('SELECT * FROM app_reminders WHERE user_id=?',userId);return row?{hadith:!!row.hadith,ayah:!!row.ayah,prayers:!!row.prayers,vibration:!!row.vibration,hadithTime:row.hadith_time,timezone:row.timezone,method:row.method,school:row.school}:defaultPreferences()}
-export async function locationFor(id){const x=await get('SELECT * FROM app_locations WHERE user_id=?',id);return x?{latitude:x.latitude,longitude:x.longitude,label:x.label,timezone:x.timezone,source:x.source,updatedAt:x.updated_at}:null}
+export async function locationFor(id){const x=await get('SELECT l.*,d.precision,d.accuracy,d.live FROM app_locations l LEFT JOIN app_location_details d ON d.user_id=l.user_id WHERE l.user_id=?',id);return x?{latitude:x.latitude,longitude:x.longitude,label:x.label,timezone:x.timezone,source:x.source,updatedAt:x.updated_at,precision:x.precision||'approximate',accuracy:x.accuracy,live:!!x.live}:null}
 export async function recordConsent(userId,purpose,granted){await run('INSERT INTO app_consents(user_id,purpose,granted,version,recorded_at) VALUES(?,?,?,?,?)',userId,purpose,Number(granted),config.privacyVersion,Date.now())}

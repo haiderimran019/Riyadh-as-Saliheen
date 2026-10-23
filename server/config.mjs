@@ -15,7 +15,8 @@ export const config = {
   ownerEmail: (process.env.RIYAD_OWNER_EMAIL || '').toLowerCase().trim(),
   googleEnabled: Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
   smtpEnabled: Boolean(process.env.SMTP_HOST && process.env.SMTP_FROM),
-  privacyVersion: '2026-10-22-cloud-2',
+  privacyVersion: '2026-10-23-choice-3',
+  requireGoogleSignIn: process.env.RIYAD_REQUIRE_GOOGLE !== '0',
 }
 const originUrl=new URL(config.origin)
 if(originUrl.origin!==config.origin||originUrl.username||originUrl.password||!['http:','https:'].includes(originUrl.protocol))throw new Error('APP_ORIGIN must be a single origin without a path or credentials.')

@@ -1,6 +1,6 @@
 # Accounts, reminders, server rendering and owner access
 
-This release preserves the approved home composition and reading design, adds Quran and prayer pages, and runs a real Node backend. Node 22.13 or newer is required. The production service uses Vercel with Neon Postgres; see [the deployment guide](VERCEL-DEPLOYMENT.md).
+Release 0.3.0 adds the combined daily home, four interface languages, six Quran editions, authentic IndoPak text, consented usage reports and improved foreground GPS. It runs a real Node backend. Node 22.13 or newer is required. The production service uses Vercel with Neon Postgres; see [the deployment guide](VERCEL-DEPLOYMENT.md).
 
 ## Start locally
 
@@ -15,7 +15,7 @@ The UI opens at http://127.0.0.1:5173, with its API on loopback port 8787. `serv
 
 ## Create the owner's account
 
-1. Open `/account`, choose Create account, and register with the email configured privately as `RIYAD_OWNER_EMAIL`. Choose your own password; do not put passwords in source or chat.
+1. Open `/account` and continue with Google using the address configured privately as `RIYAD_OWNER_EMAIL`. Existing verified email accounts can link the same Google address. Never put passwords or tokens in source or chat.
 2. Accept the account privacy notice. Location and notification consent are separate and optional.
 3. Without SMTP in local development, verification email is written to `.data/mail`. When Gmail SMTP is configured, use the link sent to your inbox instead. For outbox-only development, run:
 
@@ -42,17 +42,19 @@ For the cloud database, use the production environment with the same CLI as desc
 
 Private files have mode 600 and their containing directory mode 700 on this Mac. They are Git-ignored and denied by Vite. Production serves only `dist`, with an allowlisted server renderer; it never serves the repository root. Account exports are downloads, not public URLs. Treat exported locations and emails as private data.
 
-Name/email are collected only on signup. GPS is requested on a button press. Coordinates are sent transiently to this backend for prayer calculations and are not sent to third-party prayer APIs. An explicit additional checkbox is required to save coordinates to an account. Stored coordinates are rounded to three decimal places, roughly 100 metres, with one last location rather than tracking/history. Removing that location disables prayer reminders. There is no hidden reading telemetry. HTTP hosting/proxy logs are an operator responsibility and must not record request bodies or login links.
+Google supplies name/email at sign-in. GPS is requested explicitly and prayer calculations plus coordinate-to-timezone lookup run on the device. A separate checkbox allows approximate account storage (three decimal places), and a further checkbox allows precise GPS sharing (six decimal places, measured accuracy and latest update). Only the latest coordinate pair is retained. Foreground live updates replace it at most once per minute and stop when hidden or disabled. Removing account location disables prayer reminders and rejects further automatic updates until explicitly saved again.
+
+Optional usage analytics starts only after a separate affirmative choice under the current privacy notice. It records account-linked session starts, observed duration/active time, general page categories, allowlisted feature controls, paths and selected task completion. No verse references, search text, form values or GPS enters analytics. Withdrawal deletes prior sessions/events. Owner reports and JSON exports are under `/admin`; the daily protected reconciliation deletes usage older than 30 days. Browser close updates are best effort, so task drop-off is inferred rather than certain. Hosting/proxy logs must not record bodies, credentials or login links.
 
 ## Prayer times and Quran
 
-Prayer calculations use Adhan with explicit coordinates, date, IANA timezone, selectable calculation method and standard/Hanafi Asr. Sunrise is displayed separately and never scheduled as a prayer. GPS timezone defaults to the device timezone; readers can change it. Congregation times remain the local mosque's timetable.
+Prayer calculations use Adhan with explicit coordinates, date, IANA timezone, Hanafi or Shafi Asr. The regional Fajr/Isha convention is selected automatically from the location timezone. Sunrise is displayed separately and never scheduled as a prayer. GPS timezone is looked up offline from coordinates; manual city selection remains a fallback. Congregation times remain the local mosque's timetable.
 
 The full Quran import contains 114 surahs and 6,236 ayahs, Arabic, English translation and supplied notes. QuranEnc edition key `english_saheeh` is published as **English Translation - Noor International Center**, version **1.1.2** at this import. The key is not used as the translator's displayed name. Quran Foundation supplies chapter-name/count metadata. English is on by default and can be toggled immediately; text is unchanged. Run `npm run data:import:quran` to refresh the complete edition, retaining publisher/version metadata.
 
 ## Push reminders
 
-Users separately select daily hadith, daily ayah, five prayer reminders, and vibration. Default daily times are 09:00 and 14:00. The ayah reminder is always scheduled exactly five elapsed hours after the hadith reminder, including DST transitions and midnight. A timezone and calculation method are explicit. Prayer reminders require a saved account location.
+Users separately select daily hadith, daily ayah, five prayer reminders, and vibration. Default daily times are 09:00 and 14:00. The ayah reminder is always scheduled exactly five elapsed hours after the hadith reminder, including DST transitions and midnight. The reminder timezone is visible; its regional convention is automatic and its school offers only Hanafi/Shafi. Prayer reminders require a saved account location.
 
 The browser requests notification permission only after the reader chooses to connect a device. The application stores the resulting push subscription privately. A persistent job queue plans future reminders, claims jobs with leases, retries temporary failures, deduplicates successful device sends, removes expired subscriptions and cancels disabled reminders. Jobs older than 30 days are removed. Notifications link to the complete source text, rather than truncating a religious quotation. Signing out disconnects the current browser's push subscription.
 
@@ -78,11 +80,11 @@ npm start
 
 Use one continuously running Node process with a persistent private SQLite volume, a reverse proxy terminating HTTPS, and generated content alongside `dist` and `.server-dist`. Configure APP_ORIGIN, API_HOST/API_PORT, RIYAD_DATA_DIR, owner email, SMTP, VAPID_SUBJECT and optional OAuth. Back up the database consistently using SQLite's backup mechanism rather than copying an active WAL file alone; encrypt backups, restrict access and define retention/restoration procedures. Do not run independent ephemeral replicas against separate SQLite files. Use shared database/queue infrastructure before scaling to multiple app instances.
 
-Public routes use the same React components for server HTML and client hydration. Home content, catalogue entries, chapter passages, Quran text/translations and legal pages are delivered in initial HTML. Personal bookmarks and browser preferences remain local and enhance the hydrated view. Private account data is fetched only through authenticated APIs and is never embedded in a shared HTML response. No JavaScript is needed to follow public reading links; noscript navigation supplements controls where needed.
+Reading routes require a Google-linked session and use the same React components for server HTML and client hydration. Home content, catalogue entries, chapter passages, Quran text/translations and legal pages are delivered in initial HTML. Personal bookmarks and browser preferences remain local and enhance the hydrated view. Private account data is fetched only through authenticated APIs and is never embedded in a shared HTML response. Signed-in HTML contains the full reading text; noscript navigation supplements controls where needed.
 
-Each route has a descriptive title, description, canonical URL, Open Graph/Twitter metadata and safe JSON-LD. `/sitemap.xml` lists public reading routes, stable `?hadith=` passage links, and paginated Quran pages. `/robots.txt` excludes account/admin/API/settings/search/saved/reminder pages. Private pages send noindex and no-store; localhost is always noindex. Unknown routes return 404. Canonical domains come from configured APP_ORIGIN rather than an untrusted Host header. Search ranking and indexing are not guaranteed; submit the public sitemap to Search Console after a real deployment.
+Each route has a descriptive title, description, canonical URL, Open Graph/Twitter metadata and safe JSON-LD. `/sitemap.xml` lists only public About, Sources, Privacy and Terms pages while Google access is required. Protected reading pages are noindex; direct reading requests redirect to sign-in and preserve the target. `/robots.txt` excludes account/admin/API/settings/search/saved/reminder pages. Private pages send noindex and no-store; localhost is always noindex. Unknown routes return 404. Canonical domains come from configured APP_ORIGIN rather than an untrusted Host header. Search ranking and indexing are not guaranteed; submit the public sitemap to Search Console after a real deployment.
 
-GitHub Pages serves the static reading edition. The full backend and per-request SSR use Vercel, Neon Postgres and Workflow. `npm run build:cloud` generates the deployable function output; local development does not deploy it. See [Vercel deployment](VERCEL-DEPLOYMENT.md) for configuration and data access.
+GitHub Pages forwards to the complete Vercel app. The full backend and per-request SSR use Vercel, Neon Postgres and Workflow. `npm run build:cloud` generates the deployable function output; local development does not deploy it. See [Vercel deployment](VERCEL-DEPLOYMENT.md) for configuration and data access.
 
 ## Security and release checks
 

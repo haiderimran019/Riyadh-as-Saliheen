@@ -1,0 +1,197 @@
+@font-face { font-family:'Riyad IndoPak'; src:url('/api/quran/font/indopak.woff2') format('woff2'); font-display:block; }
+.language-select { display:inline-flex; gap:7px; align-items:center; color:var(--muted); flex-shrink:0; }
+.language-select select { width:95px; padding:0 3px; font-size:12px; border:0; background:transparent; color:var(--text); cursor:pointer; }
+html[lang='ar'] { --serif:'Amiri',serif; }
+html[lang='ar'] body { font-family:'Amiri',serif; font-size:18px; }
+html[lang='bn'] { --serif:'Noto Sans Bengali',sans-serif; }
+html[lang='bn'] body { font-family:'Noto Sans Bengali',sans-serif; }
+html[lang='ar'] :is(button,select,input,.workspace-navigation a,.sidebar-utility,.feature-footnote) { font-size:15px; }
+html[lang='bn'] :is(button,select,input,.workspace-navigation a,.sidebar-utility) { line-height:1.8; }
+.access-loading { min-height:100dvh; display:grid; place-items:center; color:var(--muted); font-size:18px; }
+.daily-overview { max-width:1440px; margin:auto; padding:34px 46px 38px; }
+.overview-heading { display:flex; align-items:center; justify-content:space-between; gap:24px; margin-bottom:25px; }
+.overview-heading h1 { font-family:var(--serif); font-weight:440; font-size:43px; line-height:1.15; letter-spacing:-.025em; }
+.overview-heading p { color:var(--muted); font-size:12px; margin-top:10px; }
+.overview-heading time { font-size:11px; color:var(--muted); text-align:end; }
+.overview-opening { display:grid; grid-template-columns:1.4fr 1fr; gap:18px; }
+.overview-garden { min-height:230px; position:relative; overflow:hidden; border-radius:12px; background:#d5d1bb; }
+.overview-garden img { width:100%; height:100%; position:absolute; inset:0; object-fit:cover; object-position:50% 57%; }
+.overview-garden::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,#202d23a3,transparent 85%); }
+.overview-garden > div { position:relative; z-index:1; padding:30px; max-width:340px; color:#fffbed; display:flex; flex-direction:column; align-items:flex-start; }
+.overview-garden h2 { font-family:var(--serif); font-size:36px; line-height:1.14; font-weight:430; margin-top:18px; text-wrap:balance; }
+.overview-garden > div > span { font-size:24px; margin-top:15px; color:#f1edcf; }
+.overview-prayer { padding:26px 29px; border-radius:12px; background:#303b2f; color:#f9f5e7; display:flex; flex-direction:column; }
+.overview-prayer > header { display:flex; gap:10px; align-items:center; font-size:12px; color:#d3dbbc; }
+.overview-prayer > header a { margin-inline-start:auto; display:grid; place-items:center; width:36px; min-height:36px; }
+.prayer-now-time { display:flex; flex-direction:column; align-items:flex-start; margin-top:17px; }
+.prayer-now-time h2 { font-size:29px; line-height:1.2; font-family:var(--serif); font-weight:440; }
+.prayer-now-time time { font-family:var(--serif); font-size:46px; line-height:1.2; margin-top:5px; font-variant-numeric:tabular-nums; }
+.overview-prayer > p { font-size:11px; color:#cbd4bb; margin-top:8px; }
+.overview-prayer > h2 { font-family:var(--serif); font-size:32px; font-weight:440; line-height:1.2; margin-top:20px; }
+.overview-prayer > button { display:flex; gap:9px; align-items:center; color:#f9f5e7; align-self:flex-start; font-size:12px; margin-top:15px; padding:0; }
+.overview-prayer > footer { border-top:1px solid #58634d; display:flex; align-items:center; gap:6px; margin-top:16px; padding-top:12px; font-size:10px; color:#cbd4bb; }
+.overview-prayer > footer span { margin-inline-start:auto; }
+.overview-reading-paths { display:grid; grid-template-columns:1fr 1fr; margin:24px 0 32px; border-block:1px solid var(--border); }
+.overview-reading-paths > a { display:flex; gap:15px; align-items:center; padding:20px 21px; min-width:0; }
+.overview-reading-paths > a:first-child { border-inline-end:1px solid var(--border); padding-inline-start:0; }
+.overview-reading-paths > a:hover { background:var(--surface-soft); }
+.overview-reading-paths strong { font-family:var(--serif); font-size:25px; font-weight:450; line-height:1.25; }
+.overview-reading-paths small { display:block; font-size:11px; color:var(--muted); margin-top:6px; }
+.overview-reading-paths > a > span:last-child { display:flex; align-items:center; gap:10px; font-size:11px; margin-inline-start:auto; }
+.overview-readings { display:grid; grid-template-columns:1fr 1fr; gap:38px; }
+.overview-section-title { display:flex; align-items:center; justify-content:space-between; gap:15px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+.overview-section-title h2 { font-family:var(--serif); font-size:29px; font-weight:430; line-height:1.2; }
+.overview-section-title > a { display:inline-flex; gap:5px; align-items:center; font-size:11px; color:var(--accent-strong); white-space:nowrap; min-height:44px; }
+.overview-quran { background:var(--surface-soft); padding:24px 26px; border-radius:12px; align-self:start; }
+.overview-arabic { font-family:'Amiri',serif; font-size:25px; line-height:2.05; margin:23px 0 16px; white-space:pre-line; overflow-wrap:anywhere; }
+.overview-meaning { font-family:var(--serif); font-size:18px; line-height:1.8; white-space:pre-line; overflow-wrap:anywhere; }
+.overview-meaning[lang='ur'] { font-family:'Noto Nastaliq Urdu',serif; font-size:16px; line-height:2.7; }
+.overview-meaning[lang='bn'] { font-family:'Noto Sans Bengali',sans-serif; font-size:16px; line-height:2; }
+.overview-readings section > footer { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; align-items:center; margin-top:25px; font-size:11px; padding-top:17px; border-top:1px solid var(--border); }
+.overview-readings section > footer small { color:var(--muted); font-size:10px; }
+.overview-readings details { font-size:11px; color:var(--muted); margin-top:15px; }
+.overview-readings details p { font-size:12px; white-space:pre-line; }
+.overview-hadith { padding-block:24px; }
+.overview-bottom { display:flex; flex-wrap:wrap; align-items:center; gap:25px; border-top:1px solid var(--border); margin-top:36px; padding-top:20px; }
+.overview-bottom > span { font-family:var(--serif); color:var(--muted); font-size:22px; margin-inline-end:auto; }
+.overview-bottom a { display:flex; align-items:center; gap:10px; font-size:12px; min-height:44px; }
+.school-choice { display:flex; gap:8px; margin:17px 0; border:1px solid var(--border); padding:5px; border-radius:8px; }
+.school-choice button { flex:1; border-radius:5px; min-height:44px; font-size:13px; }
+.school-choice button[aria-pressed='true'] { background:var(--accent); color:var(--bg); }
+.gps-status { color:var(--muted); font-size:11px; line-height:1.8; margin-top:12px; }
+.quran-display-settings { padding-bottom:22px; border-bottom:1px solid var(--border); }
+.quran-display-settings h3 { font-family:var(--serif); font-size:25px; font-weight:440; }
+.quran-display-settings select { max-width:100%; }
+.quran-display-settings .theme-choice { justify-content:center; }
+.script-indopak .quran-arabic { font-family:'Riyad IndoPak'; line-height:2.5; }
+.quran-translation[lang='ur'] p { font-family:'Noto Nastaliq Urdu',serif; line-height:2.8; }
+.quran-translation[lang='bn'] p { font-family:'Noto Sans Bengali',sans-serif; line-height:2; }
+.view-mushaf { padding:26px; border:1px solid var(--border); margin-top:20px; border-radius:8px; background:var(--surface); }
+.view-mushaf .quran-arabic { text-align:center; line-height:2.5; }
+.view-mushaf .quran-ayah { padding-block:26px; }
+.quran-reader-toolbar .quran-more { margin-inline-start:0; }
+.usage-choice { position:fixed; z-index:65; inset-inline-end:22px; bottom:20px; max-width:550px; padding:23px; background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:0 12px 35px #17221633; }
+.usage-choice strong { font-family:var(--serif); font-weight:450; font-size:25px; }
+.usage-choice p { color:var(--muted); font-size:12px; line-height:1.8; margin-top:10px; }
+.usage-choice > div:last-child { display:flex; justify-content:flex-end; gap:12px; margin-top:17px; }
+.analytics-account-choice { padding:28px 0; border-block:1px solid var(--border); margin-bottom:25px; }
+.analytics-account-choice h2 { font-family:var(--serif); font-size:29px; font-weight:440; }
+.analytics-account-choice p { color:var(--muted); font-size:13px; line-height:1.8; max-width:65ch; margin-top:12px; }
+.usage-dashboard { margin-block:40px; padding-block:28px; border-block:1px solid var(--border); }
+.usage-dashboard > header { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+.usage-dashboard h2 { font-family:var(--serif); font-size:35px; font-weight:440; }
+.usage-dashboard h3 { font-family:var(--serif); font-size:26px; font-weight:440; margin-bottom:12px; }
+.usage-dashboard p { font-size:12px; color:var(--muted); max-width:75ch; margin-top:9px; }
+.usage-filters { display:flex; align-items:center; flex-wrap:wrap; gap:20px; margin:25px 0; }
+.usage-filters label { display:flex; gap:10px; align-items:center; font-size:12px; }
+.usage-filters select { background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:5px; padding-inline:10px; }
+.usage-totals { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; border-block:1px solid var(--border); padding:25px 0; margin-bottom:32px; }
+.usage-totals strong { display:block; font-family:var(--serif); font-size:34px; font-weight:440; }
+.usage-totals span { font-size:11px; color:var(--muted); }
+.hour-chart { height:180px; display:grid; grid-template-columns:repeat(24,minmax(0,1fr)); gap:6px; margin-top:25px; padding-bottom:25px; border-bottom:1px solid var(--border); }
+.hour-chart > div { position:relative; height:100%; display:flex; align-items:flex-end; }
+.hour-chart span { width:100%; min-height:2px; background:var(--accent); border-radius:3px 3px 0 0; }
+.hour-chart small { position:absolute; bottom:-21px; font-size:10px; color:var(--muted); }
+.usage-rankings { display:grid; grid-template-columns:1fr 1fr; gap:28px; margin:35px 0; }
+.usage-ranking:last-child { grid-column:1 / -1; }
+.usage-dashboard table { width:100%; border-collapse:collapse; font-size:12px; }
+.usage-dashboard th,.usage-dashboard td { text-align:start; padding:12px 8px; border-bottom:1px solid var(--border); }
+.usage-dashboard th { font-weight:550; color:var(--muted); }
+.welcome-page { max-width:1400px; margin:auto; min-height:100dvh; padding:25px 38px 40px; }
+.welcome-page > header { display:flex; align-items:center; justify-content:space-between; padding-bottom:24px; }
+.welcome-wordmark { display:flex; align-items:center; gap:9px; font-family:var(--serif); font-size:35px; }
+.welcome-layout { display:grid; grid-template-columns:1.1fr 1fr; gap:65px; align-items:center; }
+.welcome-story { height:640px; max-height:80dvh; min-height:430px; position:relative; border-radius:12px; overflow:hidden; background:#333c2e; }
+.welcome-story img { position:absolute; inset:0; height:100%; width:100%; object-fit:cover; }
+.welcome-story::after { content:''; position:absolute; inset:0; background:linear-gradient(transparent 30%,#1a2a21d9); }
+.welcome-story > div { position:absolute; z-index:1; bottom:0; padding:40px; color:#fff8e5; }
+.welcome-story h1 { font-family:var(--serif); font-size:58px; font-weight:430; line-height:1.05; }
+.welcome-story p { font-size:14px; max-width:35ch; margin-top:20px; }
+.welcome-signin { max-width:470px; padding-block:25px; }
+.welcome-signin h2 { font-family:var(--serif); font-weight:430; font-size:48px; line-height:1.12; margin-top:24px; }
+.welcome-signin > p { font-size:14px; color:var(--muted); line-height:1.9; margin-top:20px; }
+.welcome-features { display:flex; flex-direction:column; gap:16px; padding-block:24px; margin-top:16px; border-block:1px solid var(--border); font-size:12px; }
+.welcome-features span { display:flex; align-items:center; gap:10px; }
+.welcome-signin .google-action { width:100%; justify-content:space-between; }
+.google-letter { font-family:'Manrope Variable',sans-serif; font-weight:650; font-size:22px; }
+.welcome-signin > .welcome-note { font-size:11px; }
+.welcome-signin > nav { display:flex; gap:22px; margin-top:25px; font-size:11px; }
+.welcome-signin > nav a { min-height:44px; display:inline-flex; align-items:center; }
+html[lang='ur'] :is(.overview-heading h1,.overview-garden h2,.overview-section-title h2,.overview-reading-paths strong,.overview-prayer h2,.welcome-story h1,.welcome-signin h2) { font-family:'Noto Nastaliq Urdu',serif; line-height:2; font-size:28px; }
+html[lang='ar'] .overview-garden::after { background:linear-gradient(270deg,#202d23b0,transparent 90%); }
+@media(max-width:1200px) { .daily-overview { padding-inline:30px; } .overview-opening { grid-template-columns:1.1fr 1fr; } .overview-reading-paths > a { padding-inline:14px; gap:11px; } .overview-reading-paths strong { font-size:23px; } .overview-section-title { align-items:flex-start; flex-direction:column; gap:0; } .overview-section-title > a { min-height:36px; } .welcome-layout { gap:35px; } }
+@media(max-width:700px) {
+  .daily-overview { padding:25px 22px 28px; }
+  .overview-heading { align-items:flex-start; gap:12px; margin-bottom:20px; }
+  .overview-heading h1 { font-size:32px; }
+  .overview-heading p { font-size:11px; line-height:1.7; max-width:25ch; }
+  .overview-heading time { font-size:10px; max-width:83px; line-height:1.7; }
+  .overview-opening { grid-template-columns:1fr; gap:0; }
+  .overview-garden { min-height:153px; border-radius:10px 10px 0 0; }
+  .overview-garden > div { padding:20px 24px; max-width:285px; }
+  .overview-garden > div > svg { display:none; }
+  .overview-garden h2 { font-size:29px; margin-top:0; }
+  .overview-garden > div > span { font-size:22px; margin-top:8px; }
+  .overview-prayer { padding:18px 22px; border-radius:0 0 10px 10px; }
+  .overview-prayer > header { font-size:11px; }
+  .prayer-now-time { flex-direction:row; align-items:baseline; justify-content:space-between; margin-top:9px; gap:12px; }
+  .prayer-now-time h2 { font-size:27px; }
+  .prayer-now-time time { font-size:35px; margin:0; }
+  .overview-prayer > h2 { font-size:28px; margin-top:10px; }
+  .overview-prayer > p { font-size:10px; }
+  .overview-prayer > footer { margin-top:12px; padding-top:10px; font-size:9px; }
+  .overview-reading-paths { margin-block:18px 23px; }
+  .overview-reading-paths > a { flex-wrap:wrap; gap:7px 10px; padding:15px 12px; }
+  .overview-reading-paths > a > svg { width:20px; }
+  .overview-reading-paths strong { font-size:21px; }
+  .overview-reading-paths small { font-size:9px; line-height:1.8; }
+  .overview-reading-paths > a > span:last-child { margin-inline-start:30px; font-size:10px; min-height:30px; }
+  .overview-readings { grid-template-columns:1fr; gap:20px; }
+  .overview-quran { padding:22px; }
+  .overview-section-title { flex-direction:row; align-items:flex-start; gap:12px; padding-bottom:12px; }
+  .overview-section-title h2 { font-size:27px; }
+  .overview-section-title > a { font-size:10px; }
+  .overview-arabic { font-size:24px; }
+  .overview-meaning { font-size:19px; }
+  .overview-hadith { padding-block:15px; }
+  .overview-bottom { margin-top:22px; gap:12px; }
+  .overview-bottom > span { flex-basis:100%; }
+  .overview-bottom a { font-size:11px; margin-inline-end:12px; }
+  .usage-choice { inset-inline:12px; bottom:calc(96px + env(safe-area-inset-bottom)); max-height:55dvh; overflow:auto; padding:19px; }
+  .usage-choice strong { font-size:24px; }
+  .usage-choice p { font-size:11px; }
+  .usage-choice .primary-action,.usage-choice .outlined-action { font-size:11px; }
+  .usage-totals { grid-template-columns:1fr 1fr; }
+  .usage-rankings { grid-template-columns:1fr; }
+  .usage-dashboard table { font-size:11px; }
+  .hour-chart { gap:3px; }
+  .view-mushaf { padding:17px; }
+  .quran-reader-toolbar > .quran-more { display:none; }
+  .welcome-page { padding:18px 22px 30px; }
+  .welcome-layout { grid-template-columns:1fr; gap:20px; }
+  .welcome-story { min-height:190px; height:190px; max-height:none; }
+  .welcome-story > div { padding:24px; max-width:350px; }
+  .welcome-story h1 { font-size:35px; }
+  .welcome-story p { font-size:11px; margin-top:10px; }
+  .welcome-signin { max-width:none; padding-block:10px; }
+  .welcome-signin > svg { display:none; }
+  .welcome-signin h2 { font-size:35px; margin-top:5px; }
+  .welcome-signin > p { font-size:12px; }
+  html[lang='ur'] :is(.overview-heading h1,.overview-garden h2,.overview-section-title h2,.overview-reading-paths strong,.overview-prayer h2,.welcome-story h1,.welcome-signin h2) { font-size:23px; }
+  html[lang='bn'] .overview-heading h1 { font-size:27px; line-height:1.5; }
+  html[lang='ar'] .overview-heading h1 { font-size:35px; }
+}
+@media(max-height:800px) and (min-width:701px) { .sidebar-intro,.sidebar-note,.sidebar-privacy { display:none; } .workspace-navigation { margin-top:28px; } .workspace-sidebar { padding-block:27px; } .sidebar-bottom { padding-top:20px; } }
+@media(prefers-reduced-motion:no-preference) { .overview-opening { animation:overview-arrival .6s cubic-bezier(.16,1,.3,1); } @keyframes overview-arrival { from { filter:saturate(.7); transform:translateY(6px); } to { filter:saturate(1); transform:none; } } }
+
+.account-consent-banner { padding:12px 30px; border-bottom:1px solid var(--border); background:var(--surface-soft); font-size:13px; }
+.account-consent-banner a { display:inline-flex; gap:8px; align-items:center; min-height:36px; }
+.usage-frequency { margin-block:32px; }
+.usage-frequency h3 { margin-top:30px; }
+.overview-opening > *, .overview-readings > * { min-width:0; }
+.overview-heading p,.overview-prayer > p,.overview-reading-paths small,.overview-section-title > a,.overview-bottom a { font-size:13px; }
+.overview-prayer > header,.overview-prayer > button { font-size:14px; min-height:44px; }
+.overview-prayer > footer { font-size:12px; }
+.language-select select { min-height:44px; }
+html[dir='rtl'] .welcome-story,html[dir='rtl'] .overview-garden { direction:rtl; }
+@media(max-width:700px) { .overview-heading p,.overview-prayer > p,.overview-reading-paths small,.overview-section-title > a { font-size:12px; } .overview-heading p { max-width:25ch; } .overview-section-title { flex-wrap:wrap; } .overview-section-title h2 { flex:1 1 160px; } .overview-prayer > footer { font-size:11px; } }

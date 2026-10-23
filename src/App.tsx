@@ -2,6 +2,10 @@ import { Suspense, useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, Bell, BookMarked, BookOpen, Bookmark, ChevronRight, Flower2, House, Menu, Moon, MoreHorizontal, Search, Settings2, ShieldCheck, UserRound, X } from 'lucide-react'
 import { Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { DATA_MODE } from './config'
+import { QuranSettingsProvider } from './services/QuranSettings'
+import { LocationProvider } from './services/LocationContext'
+import { AnalyticsProvider } from './services/AnalyticsContext'
+import { useBootData } from './ssr/BootData'
 import { ReadingControlsSheet } from './components/ReadingControlsSheet'
 import { SiteFooter } from './components/SiteFooter'
 import { FeedbackModal } from './components/FeedbackModal'
@@ -21,11 +25,12 @@ const navigation = [
   { path: '/saved', label: 'Saved passages', Icon: Bookmark },
   { path: '/reminders', label: 'Reminders', Icon: Bell },
 ]
-export function App() { return <AppLocaleProvider><AccountProvider><AppShell /></AccountProvider></AppLocaleProvider> }
+export function App() { return <AppLocaleProvider><AccountProvider><LocationProvider><QuranSettingsProvider><AnalyticsProvider><AppShell /></AnalyticsProvider></QuranSettingsProvider></LocationProvider></AccountProvider></AppLocaleProvider> }
 
 function AppShell() {
   const { t } = useI18n()
-  const { account } = useAccount()
+  const { account, capabilities, loading } = useAccount()
+  const boot=useBootData()
   const routeLocation = useLocation()
   const location = {...routeLocation,pathname:routeLocation.pathname.replace(/\/+$/,'')||'/'}
   const navigate = useNavigate()
@@ -93,6 +98,12 @@ function AppShell() {
     })().catch(() => undefined)
     return () => { active = false }
   }, [])
+  const openPage=['/account','/privacy','/terms','/about','/sources'].includes(location.pathname)
+  if(!openPage&&capabilities?.requireGoogleSignIn!==false){
+    if(loading&&!boot.authenticated)return <main className="access-loading" role="status">{t('Opening your reading space…')}</main>
+    if(!loading&&(!account||!account.googleConnected))return <Navigate to={`/account?returnTo=${encodeURIComponent(location.pathname+location.search+location.hash)}`} replace/>
+  }
+  if(location.pathname==='/account'&&!account&&capabilities?.requireGoogleSignIn!==false)return <><Seo/><Suspense fallback={<main className="access-loading">{t('Opening your account…')}</main>}><Routes>{routeFeatures.filter(x=>x.path==='/account').map(({path,page:Page})=><Route key={path} path={path} element={<Page/>}/>)}</Routes></Suspense></>
   return <div className={`app-shell ${isReader ? 'reading-shell' : ''}`}>
     <Seo/><a className="skip-link" href="#main-content">{t('Skip to content')}</a>
     {menuOpen && <button className="nav-scrim" aria-label={t('Close menu')} onClick={() => { setMenuOpen(false); menuButtonRef.current?.focus() }} />}
@@ -111,17 +122,18 @@ function AppShell() {
         <form className="global-search" role="search" onSubmit={(event) => { event.preventDefault(); navigate(`/search${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ''}`) }}><Search size={17} /><input ref={inputRef} aria-label={t('Search the collection')} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('Search the collection')} /><kbd>⌘ K</kbd></form>
         <div className="workspace-topbar-actions"><LanguagePicker /></div>
       </header>
+      {account&&account.privacyVersion!==capabilities?.privacyVersion&&<aside className="account-consent-banner"><Link to="/account">{t('Review your account privacy choices')}<ArrowUpRight size={16}/></Link></aside>}
       {DATA_MODE === 'placeholder' && <p className="preview-banner" role="status">{t('Preview build: content is being added')}</p>}
       <div id="main-content" tabIndex={-1}>
         <Suspense fallback={<div className="route-loading" role="status"><BookOpen size={26} /><span>{t('Opening the collection')}</span></div>}><Routes>
           <Route path="/collection/hadeethenc" element={<Navigate to="/library" replace />} />
           <Route path="/collection/hadeethenc/chapter/:chapterId" element={<Navigate to="/library" replace />} />
           {routeFeatures.map(({ path, page: Page }) => <Route key={path} path={path} element={<Page />} />)}
-          <Route path="*" element={<main className="feature-page"><h1>Page not found</h1><p>This page is unavailable.</p><Link className="primary-action" to="/">Return to Riyad</Link></main>} />
+          <Route path="*" element={<main className="feature-page"><h1>{t('Page not found')}</h1><p>{t('This page is unavailable.')}</p><Link className="primary-action" to="/">{t('Return to Riyad')}</Link></main>} />
         </Routes></Suspense>
       </div>
       <SiteFooter />
-      <nav className="mobile-floating-navigation" aria-label={t('Mobile navigation')}><NavLink to="/" end aria-label={t('Today')}><House size={20}/><span>{t('Today')}</span></NavLink><NavLink to="/library" aria-label={t('Hadith')}><BookOpen size={20}/><span>{t('Hadith')}</span></NavLink><NavLink to="/quran" aria-label={t('Quran')}><BookMarked size={20}/><span>{t('Quran')}</span></NavLink><NavLink to="/prayers" aria-label={t('Prayers')}><Moon size={20}/><span>{t('Prayers')}</span></NavLink><button aria-label={t('Reading settings')} aria-haspopup="dialog" aria-controls="reading-settings-dialog" aria-expanded={readingSettingsOpen} onClick={()=>dispatchAppEvent(APP_EVENTS.openReadingSettings)}><MoreHorizontal size={20}/><span>{t('More')}</span></button></nav>
+      <nav className="mobile-floating-navigation" aria-label={t('Mobile navigation')}><NavLink to="/" end aria-label={t('Today')}><House size={20}/><span>{t('Today')}</span></NavLink><NavLink to="/library" aria-label={t('Hadith')}><BookOpen size={20}/><span>{t('Hadith')}</span></NavLink><NavLink to="/quran" aria-label={t('Quran')}><BookMarked size={20}/><span>{t('Quran')}</span></NavLink><NavLink to="/prayers" aria-label={t('Prayers')}><Moon size={20}/><span>{t('Prayers')}</span></NavLink><button data-track="reading.more" aria-label={t('Reading settings')} aria-haspopup="dialog" aria-controls="reading-settings-dialog" aria-expanded={readingSettingsOpen} onClick={()=>dispatchAppEvent(APP_EVENTS.openReadingSettings)}><MoreHorizontal size={20}/><span>{t('More')}</span></button></nav>
     </div>
     <ReadingControlsSheet /><FeedbackModal />
   </div>

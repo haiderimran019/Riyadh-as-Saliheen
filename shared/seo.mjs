@@ -8,6 +8,6 @@ export function pageSeo(url,data={},indexable=true){
  if(chapter){const item=data.collection?.chapters.find(x=>x.id===chapter[1]);if(item){title=`${item.title} — Riyad as-Salihin, Chapter ${item.id}`;description=`Read chapter ${item.id} of Imam al-Nawawi’s Riyad as-Salihin: ${item.title}, in Arabic with available English translation, published by IslamHouse / IslamEnc.`;const id=value.searchParams.get('hadith');if(id&&data.chapter?.records.some(x=>x.id===id)){canonicalPath+=`?hadith=${encodeURIComponent(id)}`;title=`Hadith ${data.chapter.records.find(x=>x.id===id).number} — ${item.title}`}}}
  if(path==='/collection/riyad-as-salihin'){title=titles['/library'];canonicalPath='/library'}
  if(data.status===404){title='Page not found — Riyad';description='This page could not be found. Return to the Riyad reading collection.'}
- const privatePage=/^\/(account|admin|reminders|settings|saved|search|feedback)(\/|$)/.test(path)
+ const privatePage=(data.capabilities?.requireGoogleSignIn&&!['/about','/sources','/privacy','/terms'].includes(path))||/^\/(account|admin|reminders|settings|saved|search|feedback)(\/|$)/.test(path)
  return {title,description,canonical:new URL(`${data.basePath||''}${canonicalPath}`,data.origin||value.origin).href,robots:indexable&&!privatePage&&data.status!==404?'index,follow,max-image-preview:large':'noindex,follow'}
 }

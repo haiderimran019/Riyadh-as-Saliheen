@@ -1,6 +1,6 @@
 # Public Riyad service
 
-The full app uses the Vercel project `riyad-as-salihin` in `haiderimran019`, at https://riyad-as-salihin.vercel.app. The approved home composition is unchanged. Public reading pages render on the server, while account APIs use private Neon Postgres in Singapore. The local SQLite database is never uploaded.
+The full app uses the Vercel project `riyad-as-salihin` in `haiderimran019`, at https://riyad-as-salihin.vercel.app. The daily home combines Quran, hadith and the current prayer. Google-authenticated reading pages render on the server, while account APIs use private Neon Postgres in Singapore. The local SQLite database is never uploaded.
 
 ## Build and deploy
 
@@ -33,7 +33,7 @@ The first signup never becomes an owner automatically. Only the configured, veri
 
 ## Reminders and retention
 
-Vercel Workflow sleeps durably until each opted-in hadith, ayah or prayer occurrence. Hadith and ayah times remain five elapsed hours apart across DST and midnight. Jobs use database leases, device receipts, bounded retries and schedule generations. Preference changes invalidate older sleeping runs; disabling or deleting data stops future sends. The authenticated daily cron repairs stopped schedules and cleans expired security counters and reminder history.
+Vercel Workflow sleeps durably until each opted-in hadith, ayah or prayer occurrence. Hadith and ayah times remain five elapsed hours apart across DST and midnight. Jobs use database leases, device receipts, bounded retries and schedule generations. Preference changes invalidate older sleeping runs; disabling or deleting data stops future sends. The authenticated daily cron repairs stopped schedules and cleans expired security counters and reminder history and optional usage data after 30 days.
 
 Workflow arguments contain opaque user/schedule identifiers. Completed-run plaintext retention is set to zero. Account deletion cascades through active application tables; provider recovery/email retention remains subject to the providers. Reminder history is cleaned after 30 days during daily reconciliation, including for users who have stopped reminders. No additional operator backup archive is currently created.
 

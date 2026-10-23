@@ -32,7 +32,7 @@ test('durable schedules deduplicate, retry without resending successful devices,
     const { enqueueForUser, processJobs, validateSubscription } = await import('./push.mjs');
     const now = DateTime.fromISO('2026-10-22T09:00:00', { zone: 'Asia/Karachi' }).toMillis();
     await run('INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt,privacyAccepted) VALUES(?,?,?,?,?,?,?)', 'scheduler-user', 'Schedule test', 'schedule@example.test', 1, now, now, 1);
-    await run('INSERT INTO app_profiles(user_id,privacy_version,accepted_at,created_at) VALUES(?,?,?,?)', 'scheduler-user', '2026-10-22-cloud-2', now, now);
+    await run('INSERT INTO app_profiles(user_id,privacy_version,accepted_at,created_at) VALUES(?,?,?,?)', 'scheduler-user', '2026-10-23-choice-3', now, now);
     await run('INSERT INTO app_reminders(user_id,hadith,ayah,prayers,vibration,hadith_time,timezone,method,school,updated_at) VALUES(?,1,1,0,1,?,?,?,?,?)', 'scheduler-user', '09:00', 'Asia/Karachi', 'Karachi', 'hanafi', now);
     for (const id of ['device-one', 'device-two'])
         await run('INSERT INTO app_push(id,user_id,endpoint,subscription,created_at) VALUES(?,?,?,?,?)', id, 'scheduler-user', `https://fcm.googleapis.com/fcm/send/${id}`, '{}', now);

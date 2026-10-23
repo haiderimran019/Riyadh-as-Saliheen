@@ -1,7 +1,7 @@
 {
   "name": "hadith-reader",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -21,7 +21,7 @@
     "server": "node server/index.mjs",
     "start": "NODE_ENV=production node server/index.mjs",
     "data:import:quran": "node scripts/import-quran-reader.mjs",
-    "test:backend": "node --test server/api.test.mjs server/scheduler.test.mjs",
+    "test:backend": "node --test server/api.test.mjs server/access.test.mjs server/scheduler.test.mjs server/quran-scripts.test.mjs",
     "mail:latest": "node scripts/owner-tools.mjs mail",
     "owner:grant": "node scripts/owner-tools.mjs grant",
     "build:server": "VITE_DATA_MODE=real VITE_BASE_PATH=/ npm run build",
@@ -32,7 +32,8 @@
     "mail:configure": "node scripts/configure-mail.mjs",
     "test:postgres": "node --test server/postgres.test.mjs",
     "build:cloud": "node scripts/build-cloud.mjs",
-    "db:migrate": "node scripts/cloud-migrate.mjs"
+    "db:migrate": "node scripts/cloud-migrate.mjs",
+    "data:import:quran-editions": "node scripts/import-quran-editions.mjs"
   },
   "dependencies": {
     "@fontsource-variable/manrope": "^5.3.0",
@@ -58,6 +59,7 @@
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.1",
     "rollup": "^4.65.0",
+    "tz-lookup": "^6.1.25",
     "web-push": "3.6.7",
     "workflow": "^5.2.3"
   },
@@ -69,6 +71,7 @@
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "@types/tz-lookup": "^6.1.2",
     "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^25.0.1",
     "typescript": "~5.7.2",
