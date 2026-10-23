@@ -133,6 +133,6 @@ export function QuranPage() {
       </>}
     </>}
     {(error||fontError) && <div className="notice error" role="alert"><p>{t(error||fontError)}</p><button onClick={() => setRetry(x => x + 1)}>{t('Try again')}</button></div>}
-    <p className="feature-footnote">{t('Arabic text, translations and notes:')} <a href={current?.metadata.sourceUrl || index?.sourceUrl || 'https://quranenc.com/en/home/api/'} target="_blank" rel="noreferrer">{current?.metadata.publisher||'QuranEnc.com'}</a>. {t('Source wording is preserved. Translations explain the meaning of the Quran.')}</p>
+    <p className="feature-footnote">{t('Arabic')}: <a href={current?.script?.sourceUrl||'https://quranenc.com/en/home/api/'} target="_blank" rel="noreferrer">{current?.script?'Quran Foundation / QuranWBW.com':'QuranEnc.com'}</a> · {t('Translation source:')} <a href={current?.metadata.sourceUrl || index?.sourceUrl || 'https://quranenc.com/en/home/api/'} target="_blank" rel="noreferrer">{current?.metadata.publisher||'QuranEnc.com'}</a>. {t('Source wording is preserved. Translations explain the meaning of the Quran.')}</p>
   </main>
 }

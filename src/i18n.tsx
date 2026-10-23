@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { getSetting, setSetting } from './data/db'
 import { APP_EVENTS } from './core/appEvents'
 
@@ -363,9 +363,10 @@ const LocaleContext = createContext<LocaleContextValue | null>(null)
 
 export function AppLocaleProvider({ children }: { children: ReactNode }) {
   const [language, setCurrentLanguage] = useState<AppLanguage>('en')
+  const chosen=useRef(false)
   useEffect(() => {
-    void getSetting<AppLanguage>('appLanguage', 'en').then(value=>setCurrentLanguage(['en','ur','ar','bn'].includes(value)?value:'en')).catch(()=>undefined)
-    const update = (event: Event) => setCurrentLanguage((event as CustomEvent<AppLanguage>).detail)
+    void getSetting<AppLanguage>('appLanguage', 'en').then(value=>{if(!chosen.current)setCurrentLanguage(['en','ur','ar','bn'].includes(value)?value:'en')}).catch(()=>undefined)
+    const update = (event: Event) => {const next=(event as CustomEvent<AppLanguage>).detail;if(['en','ur','ar','bn'].includes(next)){chosen.current=true;setCurrentLanguage(next)}}
     window.addEventListener(APP_EVENTS.appLanguageChange, update)
     return () => window.removeEventListener(APP_EVENTS.appLanguageChange, update)
   }, [])
@@ -375,7 +376,7 @@ export function AppLocaleProvider({ children }: { children: ReactNode }) {
   }, [language])
   const value = useMemo<LocaleContextValue>(() => ({
     language,
-    setLanguage: (next) => { setCurrentLanguage(next); void setSetting('appLanguage', next); window.dispatchEvent(new CustomEvent(APP_EVENTS.appLanguageChange, { detail: next })) },
+    setLanguage: (next) => { chosen.current=true;setCurrentLanguage(next); void setSetting('appLanguage', next); window.dispatchEvent(new CustomEvent(APP_EVENTS.appLanguageChange, { detail: next })) },
     t: (text) => translateUI(language,text),
   }), [language])
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>
