@@ -17,5 +17,6 @@ test('GPS can be stopped before the device supplies a fix, including after a tim
  expect(screen.getByRole('alert')).toHaveTextContent('GPS is taking longer')
  fireEvent.click(screen.getByRole('button',{name:'Stop live GPS'}))
  expect(native.clear).toHaveBeenCalledWith(17)
+ expect(screen.queryByRole('alert')).not.toBeInTheDocument()
  expect(screen.queryByRole('button',{name:'Stop live GPS'})).not.toBeInTheDocument()
 })

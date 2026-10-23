@@ -38,7 +38,7 @@ export function LocationProvider({children}: {children: ReactNode}) {
   const stop = useCallback(() => {
     active.current = false; sharingFor.current=''; requestId.current++
     if (watch.current !== null) navigator.geolocation?.clearWatch(watch.current)
-    watch.current = null; setLive(false); setLocating(false)
+    watch.current = null; setLive(false); setLocating(false);setError('')
     void setSetting('prayer-live-location',false)
   }, [])
   const choose = useCallback(async(value: SavedLocation) => { setLocation(value); await setSetting('prayer-location',JSON.stringify(value)) }, [])
@@ -66,8 +66,8 @@ export function LocationProvider({children}: {children: ReactNode}) {
     const failure = (reason: GeolocationPositionError) => {
       if (!active.current || generation !== requestId.current) return
       setLocating(false)
+      if(reason.code===1)stop()
       setError(reason.code===1?'Allow location access in your browser and device settings, then try again.':reason.code===3?'GPS is taking longer than usual. Keep this page open; it will update when a fix arrives.':'Your device cannot provide a location yet. Check its location services and try again.')
-      if(reason.code===1) stop()
     }
     // A quick cached/network fix can succeed where high-accuracy GPS is slow.
     navigator.geolocation.getCurrentPosition(p=>void success(p),()=>undefined,{enableHighAccuracy:false,timeout:8000,maximumAge:60000})
